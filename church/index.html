@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Church. — A place to breathe. Belong. Grow.</title>
+  <meta name="description" content="A place to breathe. A place to belong. A place to grow. Join us Sundays at 4 PM in Smithville, Tennessee." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ───────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* ─── Design Tokens ──────────────────────────────────────── */
+    :root {
+      --bg:       #FAFAF8;
+      --surface:  #FFFFFF;
+      --alt-bg:   #F0EDE8;
+      --navy:     #1C2B3A;
+      --copper:   #B87333;
+      --copper-light: #D4904A;
+      --text:     #2D2D2D;
+      --muted:    #6B7280;
+      --border:   #E5E0D9;
+      --radius:   12px;
+      --shadow:   0 2px 16px rgba(0, 0, 0, 0.07);
+      --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.10);
+      --container: 1100px;
+    }
+
+    /* ─── Typography ─────────────────────────────────────────── */
+    h1, h2, h3, h4 {
+      font-family: 'Playfair Display', Georgia, serif;
+      line-height: 1.2;
+      color: var(--navy);
+    }
+    h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 700; }
+    h2 { font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 600; }
+    h3 { font-size: 1.1rem; font-weight: 600; }
+    p  { color: var(--text); font-size: 1rem; line-height: 1.75; }
+
+    /* ─── Layout Utilities ───────────────────────────────────── */
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .section {
+      padding: 88px 0;
+    }
+    .section--alt {
+      background-color: var(--alt-bg);
+    }
+    .eyebrow {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-bottom: 16px;
+    }
+
+    /* ─── Buttons ────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+      white-space: nowrap;
+    }
+    .btn--primary {
+      background-color: var(--navy);
+      color: #FFFFFF;
+      border-color: var(--navy);
+    }
+    .btn--primary:hover {
+      background-color: #243650;
+      border-color: #243650;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(28, 43, 58, 0.3);
+    }
+    .btn--outline {
+      background-color: transparent;
+      color: var(--navy);
+      border-color: var(--navy);
+    }
+    .btn--outline:hover {
+      background-color: var(--navy);
+      color: #FFFFFF;
+      transform: translateY(-1px);
+    }
+    .btn--outline-white {
+      background-color: transparent;
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+    .btn--outline-white:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: #FFFFFF;
+    }
+    .btn--copper {
+      background-color: var(--copper);
+      color: #FFFFFF;
+      border-color: var(--copper);
+    }
+    .btn--copper:hover {
+      background-color: var(--copper-light);
+      border-color: var(--copper-light);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(184, 115, 51, 0.35);
+    }
+
+    /* ─── Navigation ─────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+    }
+    .nav__logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+    }
+    .nav__links {
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav__links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: color 0.15s, background-color 0.15s;
+    }
+    .nav__links a:hover {
+      color: var(--navy);
+      background-color: var(--alt-bg);
+    }
+    .nav__links .nav__cta {
+      margin-left: 8px;
+      color: #FFFFFF;
+      background-color: var(--navy);
+      padding: 8px 18px;
+    }
+    .nav__links .nav__cta:hover {
+      background-color: #243650;
+      color: #FFFFFF;
+    }
+    .nav__hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      transition: background-color 0.15s;
+    }
+    .nav__hamburger:hover { background-color: var(--alt-bg); }
+    .nav__hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background-color: var(--navy);
+      border-radius: 2px;
+      transition: transform 0.25s, opacity 0.25s;
+    }
+    .nav__hamburger.is-open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav__hamburger.is-open span:nth-child(2) { opacity: 0; }
+    .nav__hamburger.is-open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile overlay menu */
+    .nav__mobile {
+      display: none;
+      position: fixed;
+      inset: 0;
+      top: 68px;
+      background-color: var(--surface);
+      z-index: 99;
+      flex-direction: column;
+      padding: 32px 24px;
+      gap: 4px;
+      border-top: 1px solid var(--border);
+    }
+    .nav__mobile.is-open { display: flex; }
+    .nav__mobile a {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.15s;
+    }
+    .nav__mobile a:hover { color: var(--copper); }
+    .nav__mobile a:last-child { border-bottom: none; }
+    .nav__mobile .nav__mobile-cta {
+      margin-top: 20px;
+      text-align: center;
+      border-bottom: none;
+      background-color: var(--navy);
+      color: #FFFFFF;
+      padding: 16px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .nav__mobile .nav__mobile-cta:hover { background-color: #243650; color: #FFFFFF; }
+
+    @media (min-width: 768px) {
+      .nav__links  { display: flex; }
+      .nav__hamburger { display: none; }
+    }
+
+    /* ─── Hero ───────────────────────────────────────────────── */
+    .hero {
+      padding: 96px 0 80px;
+      background-color: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -120px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(184, 115, 51, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero__content {
+      max-width: 680px;
+      position: relative;
+    }
+    .hero__heading {
+      margin-bottom: 24px;
+    }
+    .hero__body {
+      font-size: 1.1rem;
+      color: var(--muted);
+      margin-bottom: 36px;
+      max-width: 540px;
+    }
+    .hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 44px;
+    }
+    .hero__pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .hero__pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+    .hero__pill::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--copper);
+      flex-shrink: 0;
+    }
+
+    /* ─── Visit ──────────────────────────────────────────────── */
+    .visit__header {
+      max-width: 600px;
+      margin-bottom: 48px;
+    }
+    .visit__header h2 { margin-bottom: 0; }
+    .visit__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+    .visit__card {
+      background-color: var(--surface);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .visit__card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .visit__card-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-bottom: 8px;
+    }
+    .visit__card-value {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--navy);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 600px) {
+      .visit__grid { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Messages ───────────────────────────────────────────── */
+    .messages__inner {
+      display: grid;
+      gap: 48px;
+      align-items: center;
+    }
+    .messages__text .eyebrow { margin-bottom: 12px; }
+    .messages__text h2 { margin-bottom: 20px; }
+    .messages__text p { color: var(--muted); margin-bottom: 28px; }
+    .messages__video {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      background-color: var(--navy);
+    }
+    .messages__video iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    @media (min-width: 900px) {
+      .messages__inner {
+        grid-template-columns: 1fr 1.1fr;
+      }
+    }
+
+    /* ─── Pastors ────────────────────────────────────────────── */
+    .pastors__inner {
+      display: grid;
+      gap: 56px;
+      align-items: center;
+    }
+    .pastors__image-wrap {
+      display: flex;
+      justify-content: center;
+    }
+    .pastors__photo {
+      width: 280px;
+      height: 320px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--navy) 0%, #2e4a66 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+    .pastors__photo::before {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      right: -40px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: rgba(184, 115, 51, 0.2);
+    }
+    .pastors__initials {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.05em;
+      z-index: 1;
+    }
+    .pastors__photo-caption {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+      z-index: 1;
+    }
+    .pastors__text .eyebrow { margin-bottom: 12px; }
+    .pastors__text h2 { margin-bottom: 20px; }
+    .pastors__text p { color: var(--muted); margin-bottom: 16px; }
+    .pastors__text p:last-of-type { margin-bottom: 32px; }
+
+    @media (min-width: 900px) {
+      .pastors__inner {
+        grid-template-columns: auto 1fr;
+      }
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────── */
+    .footer {
+      background-color: var(--navy);
+      color: rgba(255, 255, 255, 0.85);
+      padding: 72px 0 0;
+    }
+    .footer__grid {
+      display: grid;
+      gap: 48px;
+      margin-bottom: 56px;
+    }
+    .footer__brand .nav__logo {
+      color: #FFFFFF;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .footer__tagline {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.55);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+    .footer__section-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--copper);
+      margin-bottom: 16px;
+    }
+    .footer__info-item {
+      margin-bottom: 10px;
+    }
+    .footer__info-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+      display: block;
+      margin-bottom: 2px;
+    }
+    .footer__info-value {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .footer__links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .footer__links a {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+      transition: color 0.15s;
+      padding: 2px 0;
+    }
+    .footer__links a:hover { color: var(--copper); }
+    .footer__bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer__bottom p {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.35);
+    }
+    .footer__bottom a {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.35);
+      transition: color 0.15s;
+    }
+    .footer__bottom a:hover { color: rgba(255, 255, 255, 0.7); }
+
+    @media (min-width: 640px) {
+      .footer__grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (min-width: 1024px) {
+      .footer__grid { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+    }
+
+    /* ─── Divider ────────────────────────────────────────────── */
+    .divider {
+      width: 48px;
+      height: 3px;
+      background-color: var(--copper);
+      border-radius: 2px;
+      margin: 20px 0 32px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ─────────────────────────────────────────── -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="container nav__inner">
+      <a href="#" class="nav__logo" aria-label="Church. - Home">Church.</a>
+
+      <ul class="nav__links" role="list">
+        <li><a href="#">Home</a></li>
+        <li><a href="#messages">Messages</a></li>
+        <li><a href="#">Beliefs</a></li>
+        <li><a href="#">Resources</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#" class="nav__cta btn btn--primary">Give Online</a></li>
+      </ul>
+
+      <button class="nav__hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu overlay -->
+  <nav class="nav__mobile" id="mobile-menu" aria-label="Mobile navigation" role="navigation">
+    <a href="#" onclick="closeMobileMenu()">Home</a>
+    <a href="#messages" onclick="closeMobileMenu()">Messages</a>
+    <a href="#" onclick="closeMobileMenu()">Beliefs</a>
+    <a href="#" onclick="closeMobileMenu()">Resources</a>
+    <a href="#" onclick="closeMobileMenu()">Contact</a>
+    <a href="#" onclick="closeMobileMenu()">Blog</a>
+    <a href="#" onclick="closeMobileMenu()" class="nav__mobile-cta">Give Online</a>
+  </nav>
+
+  <main>
+
+    <!-- ── Hero ───────────────────────────────────────────────── -->
+    <section class="hero" aria-label="Welcome">
+      <div class="container">
+        <div class="hero__content">
+          <span class="eyebrow">Faith &middot; Family &middot; Community &middot; Generosity</span>
+          <h1 class="hero__heading">
+            A place to breathe.<br />
+            A place to belong.<br />
+            A place to grow.
+          </h1>
+          <div class="divider"></div>
+          <p class="hero__body">
+            If you are tired, worn out, or burned out on religion, this is a place to slow down,
+            connect, and grow with people who want something real.
+          </p>
+          <div class="hero__actions">
+            <a href="#" class="btn btn--primary">Get Connected</a>
+            <a href="#messages" class="btn btn--outline">Watch Messages</a>
+          </div>
+          <div class="hero__pills">
+            <span class="hero__pill">No pressure</span>
+            <span class="hero__pill">Come as you are</span>
+            <span class="hero__pill">Real people, not perfect people</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Plan Your Visit ────────────────────────────────────── -->
+    <section id="visit" class="section section--alt" aria-label="Plan your first visit">
+      <div class="container">
+        <div class="visit__header">
+          <span class="eyebrow">Plan Your First Visit</span>
+          <h2>You do not have to walk in wondering what to expect.</h2>
+        </div>
+
+        <div class="visit__grid">
+          <div class="visit__card">
+            <p class="visit__card-label">When</p>
+            <p class="visit__card-value">Sundays at 4 PM</p>
+          </div>
+          <div class="visit__card">
+            <p class="visit__card-label">Where</p>
+            <p class="visit__card-value">Smithville, Tennessee</p>
+          </div>
+          <div class="visit__card">
+            <p class="visit__card-label">Style</p>
+            <p class="visit__card-value">Family style gathering</p>
+          </div>
+          <div class="visit__card">
+            <p class="visit__card-label">Feel</p>
+            <p class="visit__card-value">No pressure. Real community.</p>
+          </div>
+        </div>
+
+        <a href="#" class="btn btn--primary">Plan Your Visit</a>
+      </div>
+    </section>
+
+    <!-- ── This Week's Message ────────────────────────────────── -->
+    <section id="messages" class="section" aria-label="This week's message">
+      <div class="container">
+        <div class="messages__inner">
+          <div class="messages__text">
+            <span class="eyebrow">This Week's Message</span>
+            <h2>Catch the latest message from Church.</h2>
+            <p>
+              Missed this week or want to watch again? Start here and stay connected
+              to what we are learning together.
+            </p>
+            <a href="#" class="btn btn--primary">View All Messages</a>
+          </div>
+          <div>
+            <div class="messages__video">
+              <iframe
+                src="https://www.youtube.com/embed/videoseries?list=PLnull"
+                title="Latest message from Church."
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Meet Your Pastors ──────────────────────────────────── -->
+    <section class="section section--alt" aria-label="Meet your pastors">
+      <div class="container">
+        <div class="pastors__inner">
+          <div class="pastors__image-wrap">
+            <div class="pastors__photo" role="img" aria-label="Mat and Dara Koenig, pastors">
+              <span class="pastors__initials">M&amp;D</span>
+              <span class="pastors__photo-caption">Mat &amp; Dara Koenig</span>
+            </div>
+          </div>
+          <div class="pastors__text">
+            <span class="eyebrow">Meet Your Pastors</span>
+            <h2>Hey, we're Mat &amp; Dara.</h2>
+            <div class="divider"></div>
+            <p>
+              We know walking into something new can feel uncomfortable. That's why the
+              environment at Church. was created to feel like family from day one.
+            </p>
+            <p>
+              No pressure. No pretending. Just real people growing together and learning
+              to walk with Jesus in everyday life.
+            </p>
+            <a href="#visit" class="btn btn--primary">Plan Your First Visit</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer class="footer" aria-label="Site footer">
+    <div class="container">
+      <div class="footer__grid">
+
+        <!-- Brand column -->
+        <div class="footer__brand">
+          <a href="#" class="nav__logo">Church.</a>
+          <p class="footer__tagline">
+            A place to breathe.<br />
+            A place to belong.<br />
+            A place to grow.
+          </p>
+          <a href="#visit" class="btn btn--copper">Plan Your Visit</a>
+        </div>
+
+        <!-- Info column -->
+        <div>
+          <p class="footer__section-title">Info</p>
+          <div class="footer__info-item">
+            <span class="footer__info-label">Location</span>
+            <span class="footer__info-value">Smithville, Tennessee</span>
+          </div>
+          <div class="footer__info-item">
+            <span class="footer__info-label">Pastors</span>
+            <span class="footer__info-value">Mat &amp; Dara Koenig</span>
+          </div>
+          <div class="footer__info-item">
+            <span class="footer__info-label">Gathering Time</span>
+            <span class="footer__info-value">Sundays at 4 PM</span>
+          </div>
+        </div>
+
+        <!-- Quick Links column -->
+        <div>
+          <p class="footer__section-title">Quick Links</p>
+          <ul class="footer__links" role="list">
+            <li><a href="#">Home</a></li>
+            <li><a href="#messages">Messages</a></li>
+            <li><a href="#">Beliefs</a></li>
+            <li><a href="#">Resources</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <!-- Connect column -->
+        <div>
+          <p class="footer__section-title">Connect</p>
+          <ul class="footer__links" role="list">
+            <li><a href="#">Social Media</a></li>
+            <li><a href="#">Give Online</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer__bottom">
+        <p>&copy; 2026 Church. All rights reserved.</p>
+        <a href="https://localchurchgathering.com" target="_blank" rel="noopener noreferrer">
+          localchurchgathering.com
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('is-open');
+      hamburger.classList.toggle('is-open', isOpen);
+      hamburger.setAttribute('aria-expanded', String(isOpen));
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('is-open');
+      hamburger.classList.remove('is-open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    // Close menu on outside click
+    document.addEventListener('click', (e) => {
+      if (mobileMenu.classList.contains('is-open') &&
+          !mobileMenu.contains(e.target) &&
+          !hamburger.contains(e.target)) {
+        closeMobileMenu();
+      }
+    });
+  </script>
+
+</body>
+</html>
