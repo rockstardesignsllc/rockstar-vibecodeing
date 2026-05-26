@@ -1,7 +1,9 @@
 import type { RouteObject } from 'react-router';
 import React from 'react';
 
-import App from './App';
+import { RootLayout } from './layouts/root-layout';
+import { AppShell } from './layouts/app-shell';
+import Landing from './routes/landing';
 import Home from './routes/home';
 import Chat from './routes/chat/chat';
 import Profile from './routes/profile';
@@ -13,36 +15,50 @@ import { ProtectedRoute } from './routes/protected-route';
 
 const routes = [
 	{
-		path: '/',
-		Component: App,
+		Component: RootLayout,
 		children: [
 			{
-				index: true,
-				Component: Home,
+				path: '/',
+				Component: Landing,
 			},
 			{
-				path: 'chat/:chatId',
-				Component: Chat,
-			},
-			{
-				path: 'profile',
-				element: React.createElement(ProtectedRoute, { children: React.createElement(Profile) }),
-			},
-			{
-				path: 'settings',
-				element: React.createElement(ProtectedRoute, { children: React.createElement(Settings) }),
-			},
-			{
-				path: 'apps',
-				element: React.createElement(ProtectedRoute, { children: React.createElement(AppsPage) }),
-			},
-			{
-				path: 'app/:id',
-				Component: AppView,
-			},
-			{
-				path: 'discover',
-				Component: DiscoverPage,
+				Component: AppShell,
+				children: [
+					{
+						path: 'create',
+						Component: Home,
+					},
+					{
+						path: 'chat/:chatId',
+						Component: Chat,
+					},
+					{
+						path: 'profile',
+						element: React.createElement(ProtectedRoute, {
+							children: React.createElement(Profile),
+						}),
+					},
+					{
+						path: 'settings',
+						element: React.createElement(ProtectedRoute, {
+							children: React.createElement(Settings),
+						}),
+					},
+					{
+						path: 'apps',
+						element: React.createElement(ProtectedRoute, {
+							children: React.createElement(AppsPage),
+						}),
+					},
+					{
+						path: 'app/:id',
+						Component: AppView,
+					},
+					{
+						path: 'discover',
+						Component: DiscoverPage,
+					},
+				],
 			},
 		],
 	},
