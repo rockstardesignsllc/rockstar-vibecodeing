@@ -1,0 +1,546 @@
+<!--
+  Rockstar Customer Engagement Calculator
+  Paste this entire file into a HighLevel "Custom HTML/JS" element.
+  - Without query parameters it renders the dealer workspace (proposal builder).
+  - With ?proposal=1&p=<data> it renders the customer-facing proposal.
+-->
+<div id="afp-tool"></div>
+
+<style>
+#afp-tool{--navy:#10233d;--mint:#19b986;--mint-dark:#138b68;--ink:#172235;--muted:#637286;--line:#dbe2ea;font-family:Arial,Helvetica,sans-serif;color:var(--ink);max-width:1120px;margin:24px auto}
+#afp-tool *{box-sizing:border-box}
+#afp-tool button,#afp-tool input,#afp-tool select{font:inherit}
+#afp-tool p{line-height:1.55;color:var(--muted)}
+#afp-tool h2{font-size:32px;letter-spacing:-1px;margin:0 0 10px;line-height:1.1}
+#afp-tool button{border:0;border-radius:7px;padding:12px 16px;background:var(--mint);color:#fff;font-weight:800;cursor:pointer;text-decoration:none;font-size:14px}
+#afp-tool .afp-kicker{color:var(--mint-dark);font-size:11px;font-weight:800;letter-spacing:.13em;margin:0 0 10px}
+#afp-tool .afp-label,#afp-tool .afp-field{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#526174;display:block}
+#afp-tool .afp-field input,#afp-tool .afp-field select{width:100%;border:1px solid var(--line);border-radius:7px;margin-top:6px;padding:10px;color:var(--ink);background:#fff;outline-color:var(--mint);font-size:14px;letter-spacing:0;text-transform:none}
+
+#afp-tool .afp-brand{display:flex;align-items:center;gap:12px;color:#fff;background:var(--navy);padding:16px 20px;border-radius:12px 12px 0 0}
+#afp-tool .afp-brand span{font-size:11px;letter-spacing:.12em;opacity:.65;margin-left:auto;text-align:right}
+#afp-tool .afp-mark{width:36px;height:36px;border-radius:8px;background:var(--mint);color:var(--navy);display:grid;place-items:center;font-weight:900;flex:none}
+#afp-tool .afp-logo{height:40px;max-width:150px;object-fit:contain;background:#fff;border-radius:6px;padding:3px;flex:none}
+
+#afp-tool .afp-wrap{background:#f5f7fa;padding:28px;border-radius:18px}
+#afp-tool .afp-intro{padding:30px 0 20px;max-width:660px}
+#afp-tool .afp-card{background:#fff;border:1px solid #e4e9ef;border-radius:13px;padding:24px;box-shadow:0 10px 30px #132f4b0b}
+#afp-tool .afp-section{font-size:15px;margin:26px 0 12px;padding-top:20px;border-top:1px solid #e7ebf0;color:var(--navy)}
+#afp-tool .afp-section:first-child{margin-top:0;padding-top:0;border:0}
+#afp-tool .afp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#afp-tool .afp-hint{font-size:12px;margin:0 0 12px}
+#afp-tool .afp-note{font-size:11px;margin:14px 0 0}
+#afp-tool .afp-checks{display:flex;flex-direction:column;justify-content:flex-end;gap:10px}
+#afp-tool .afp-check{display:flex;align-items:center;gap:9px;font-size:14px;color:var(--ink);cursor:pointer}
+#afp-tool .afp-check input{width:18px;height:18px;margin:0;accent-color:var(--mint)}
+#afp-tool .afp-term-picks{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:14px}
+#afp-tool .afp-chip{display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);border-radius:7px;padding:10px 4px;font-size:13px;font-weight:700;cursor:pointer}
+#afp-tool .afp-chip:has(input:checked){border-color:var(--mint);background:#eef8f5}
+#afp-tool .afp-chip input{margin:0;accent-color:var(--mint)}
+#afp-tool .afp-summary{display:grid;grid-template-columns:1fr auto;gap:8px;background:#eef8f5;border-radius:9px;padding:16px;margin:24px 0 20px;color:#536a73;font-size:13px}
+#afp-tool .afp-summary strong{font-size:16px;color:var(--navy);text-align:right}
+#afp-tool .afp-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#afp-tool .afp-link{border-radius:7px;padding:12px 16px;background:#edf1f5;color:#263950;font-weight:800;text-decoration:none;font-size:14px}
+#afp-tool .afp-text-btn{background:none;color:var(--mint-dark);padding:0;font-size:11px;text-decoration:underline}
+
+#afp-tool .afp-customer{background:#f6f8fa;padding:0 0 24px;border-radius:12px;overflow:hidden}
+#afp-tool .afp-customer .afp-brand{border-radius:0}
+#afp-tool .afp-hero{padding:38px 30px;display:flex;justify-content:space-between;gap:20px;align-items:end;background:#fff}
+#afp-tool .afp-hero h2{font-size:34px}
+#afp-tool .afp-sub{font-size:14px;margin:0}
+#afp-tool .afp-price{text-align:right}
+#afp-tool .afp-price small{display:block;color:var(--muted);font-size:12px}
+#afp-tool .afp-price strong{font-size:27px;display:block;margin:5px 0}
+#afp-tool .afp-calculator{margin:0 20px;background:#fff;border-radius:13px;overflow:hidden;display:grid;grid-template-columns:.8fr 1.2fr;box-shadow:0 10px 30px #132f4b10}
+#afp-tool .afp-payment{background:var(--navy);color:#fff;padding:34px}
+#afp-tool .afp-payment .afp-kicker{color:#71e4bd}
+#afp-tool .afp-payment .afp-label{color:#9fb2c4;margin-top:18px}
+#afp-tool .afp-payment-value{font-size:44px;font-weight:800;letter-spacing:-1.8px}
+#afp-tool .afp-payment-value span{font-size:14px;color:#c3d0dc;letter-spacing:0}
+#afp-tool .afp-payment p{color:#c1ceda;font-size:13px}
+#afp-tool .afp-payment .afp-request{width:100%;margin-top:22px}
+#afp-tool .afp-payment .afp-save{width:100%;margin-top:10px;background:transparent;border:1px solid #71e4bd;color:#71e4bd}
+#afp-tool .afp-controls{padding:30px}
+#afp-tool .afp-control{padding-bottom:22px;margin-bottom:22px;border-bottom:1px solid #e7ebf0}
+#afp-tool .afp-control:last-child{border:0;margin:0;padding:0}
+#afp-tool .afp-control-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:800}
+#afp-tool .afp-control-head b{font-size:15px}
+#afp-tool .afp-locked{font-size:12px;margin:8px 0 0}
+#afp-tool input[type=range]{width:100%;accent-color:var(--mint);padding:0;margin:14px 0 0}
+#afp-tool .afp-term-buttons{display:grid;grid-template-columns:repeat(auto-fit,minmax(56px,1fr));gap:6px;margin-top:15px}
+#afp-tool .afp-term-buttons button{padding:8px 2px;background:#fff;border:1px solid var(--line);color:#596779;font-size:12px}
+#afp-tool .afp-term-buttons button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+#afp-tool .afp-disclaimer{font-size:11px;line-height:1.6;color:#728093;padding:20px 30px 0}
+#afp-tool .afp-disclaimer strong{color:#445466}
+
+@media(max-width:700px){
+  #afp-tool .afp-wrap{padding:15px}
+  #afp-tool .afp-grid{grid-template-columns:1fr}
+  #afp-tool .afp-term-picks{grid-template-columns:repeat(3,1fr)}
+  #afp-tool .afp-brand span{display:none}
+  #afp-tool .afp-hero{display:block;padding:28px 22px}
+  #afp-tool .afp-hero h2{font-size:29px}
+  #afp-tool .afp-price{text-align:left;margin-top:22px}
+  #afp-tool .afp-calculator{grid-template-columns:1fr;margin:0 12px}
+  #afp-tool .afp-payment,#afp-tool .afp-controls{padding:25px 20px}
+}
+</style>
+
+<script>
+(() => {
+  const root = document.getElementById('afp-tool');
+  if (!root) return;
+
+  const ROCKSTAR_LOGO = 'data:image/webp;base64,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';
+  const TERMS = [24,36,48,60,72,84];
+  const NUMERIC_KEYS = ['price','tax','fees','rate','term','down'];
+  const PROFILE_KEYS = ['dealer','email','logo'];
+  const PROFILE_STORAGE_KEY = 'afp-dealer-profile';
+  const MIN_FINANCED = 250;
+
+  const defaults = {
+    dealer:'',email:'',logo:'',name:'',stock:'',
+    year:'',make:'',model:'',mileage:'',
+    price:30000,tax:0,fees:0,rate:7.49,term:60,down:1000,
+    terms:TERMS.slice(),hideRate:false,lockRate:false
+  };
+
+  const num = (v,d=0) => v !== '' && v !== null && Number.isFinite(+v) ? +v : d;
+  const money = n => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0})
+    .format(Math.max(0,Number.isFinite(n) ? n : 0));
+  const percent = n => Number(n).toFixed(2) + '%';
+  const esc = value => String(value ?? '').replace(/[&<>'"]/g,c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'
+  }[c]));
+
+  const payment = (principal,apr,months) => {
+    const r = apr/100/12;
+    return r ? principal*r*Math.pow(1+r,months)/(Math.pow(1+r,months)-1) : principal/months;
+  };
+  const downForPayment = (pay,total,apr,months) => {
+    const r = apr/100/12;
+    const financed = r ? pay*(Math.pow(1+r,months)-1)/(r*Math.pow(1+r,months)) : pay*months;
+    return Math.max(0,Math.min(total,total-financed));
+  };
+
+  const toBase64Url = text => {
+    let binary = '';
+    new TextEncoder().encode(text).forEach(b => { binary += String.fromCharCode(b); });
+    return btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  };
+  const fromBase64Url = text => {
+    const binary = atob(text.replace(/-/g,'+').replace(/_/g,'/'));
+    return new TextDecoder().decode(Uint8Array.from(binary,c => c.charCodeAt(0)));
+  };
+
+  const closestTerm = (term,allowed) =>
+    allowed.reduce((best,t) => Math.abs(t-term) < Math.abs(best-term) ? t : best, allowed[0]);
+
+  function normalize(raw) {
+    const out = {...defaults,terms:TERMS.slice()};
+    Object.keys(defaults).forEach(k => {
+      const v = raw[k];
+      if (v === undefined || v === null) return;
+      if (NUMERIC_KEYS.includes(k)) {
+        out[k] = num(v,defaults[k]);
+      } else if (k === 'terms') {
+        const picked = (Array.isArray(v) ? v : String(v).split(',')).map(Number);
+        const allowed = TERMS.filter(t => picked.includes(t));
+        if (allowed.length) out.terms = allowed;
+      } else if (typeof defaults[k] === 'boolean') {
+        out[k] = v === true || v === '1' || v === 'true';
+      } else {
+        out[k] = String(v);
+      }
+    });
+    out.term = closestTerm(out.term,out.terms);
+    if (out.hideRate) out.lockRate = false;
+    return out;
+  }
+
+  const loadProfile = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(PROFILE_STORAGE_KEY) || '{}');
+      return Object.fromEntries(PROFILE_KEYS.filter(k => typeof saved[k] === 'string').map(k => [k,saved[k]]));
+    } catch { return {}; }
+  };
+  const saveProfile = () => {
+    try {
+      localStorage.setItem(PROFILE_STORAGE_KEY,JSON.stringify(Object.fromEntries(PROFILE_KEYS.map(k => [k,d[k]]))));
+    } catch { /* storage unavailable; the form still works without it */ }
+  };
+  const clearProfile = () => {
+    try { localStorage.removeItem(PROFILE_STORAGE_KEY); } catch { /* storage unavailable */ }
+  };
+
+  const q = new URLSearchParams(location.search);
+  const isCustomer = q.get('proposal') === '1';
+
+  function readProposal() {
+    if (!q.has('p')) return normalize(Object.fromEntries(q));
+    try { return normalize(JSON.parse(fromBase64Url(q.get('p')))); } catch { return null; }
+  }
+
+  let d = isCustomer ? readProposal() : normalize({...defaults,...loadProfile()});
+
+  const totalPrice = () => num(d.price) + num(d.tax) + num(d.fees);
+  const maxDown = () => Math.max(0,totalPrice() - MIN_FINANCED);
+  const effectiveDown = () => Math.max(0,Math.min(maxDown(),num(d.down)));
+  const clampDown = () => { d.down = effectiveDown(); };
+  const monthly = () => payment(totalPrice() - effectiveDown(),d.rate,d.term);
+  const dealerName = () => d.dealer || 'Your dealership';
+  const vehicleName = () => [d.year,d.make,d.model].filter(Boolean).join(' ');
+  const mileageText = () => d.mileage === '' ? '' :
+    (Number.isFinite(+d.mileage) ? Number(d.mileage).toLocaleString('en-US') : d.mileage) + ' miles';
+
+  const dealerLogo = () => d.logo
+    ? `<img class="afp-logo" src="${esc(d.logo)}" alt="${esc(dealerName())} logo" onerror="this.style.display='none'">`
+    : `<div class="afp-mark">${esc(dealerName().charAt(0).toUpperCase())}</div>`;
+
+  const disclaimerText = () =>
+    'This estimate is for informational purposes only and is not an offer to finance, credit decision, ' +
+    'or guarantee of financing. It is based on the APR, term, down payment, vehicle price, taxes, and fees ' +
+    'shown. Actual payment, APR, amount financed, required down payment, taxes, fees, lender terms, vehicle ' +
+    'price, and availability may change based on credit approval, lender requirements, verification, final ' +
+    `contract terms, and prior sale. Contact ${dealerName()} to confirm all details before making a purchase decision.`;
+
+  function estimateRows() {
+    const rows = [
+      ['Purchase price',money(d.price)],
+      ['Tax',money(d.tax)],
+      ['Title, registration & dealer fees',money(d.fees)],
+      ['Total price',money(totalPrice())],
+      ['Down payment',money(d.down)],
+      ['Amount financed',money(totalPrice() - d.down)]
+    ];
+    if (!d.hideRate) rows.push(['APR',percent(d.rate)]);
+    rows.push(['Term',`${d.term} months`],['Estimated monthly payment',money(monthly())]);
+    return rows;
+  }
+
+  function field(key,label,type='text',placeholder='') {
+    return `<label class="afp-field">${label}<input data-key="${key}" type="${type}" value="${esc(d[key])}" placeholder="${esc(placeholder)}"></label>`;
+  }
+
+  function checkbox(flag,label) {
+    return `<label class="afp-check"><input type="checkbox" data-flag="${flag}" ${d[flag] ? 'checked' : ''}>${label}</label>`;
+  }
+
+  const proposalUrl = () => `${location.origin}${location.pathname}?proposal=1&p=${toBase64Url(JSON.stringify(d))}`;
+
+  function builder() {
+    root.innerHTML = `
+      <div class="afp-wrap">
+        <div class="afp-brand">
+          <img class="afp-logo" src="${ROCKSTAR_LOGO}" alt="Rockstar logo">
+          <b>Rockstar Customer Engagement Calculator</b>
+          <span>DEALER WORKSPACE</span>
+        </div>
+        <div class="afp-intro">
+          <p class="afp-kicker">PERSONALIZED FINANCING</p>
+          <h2>Create a proposal your customer can explore.</h2>
+          <p>Fill in the details, copy the link, and send it to your customer.</p>
+        </div>
+        <div class="afp-card">
+          <h3 class="afp-section">Dealership</h3>
+          <div class="afp-grid">
+            ${field('dealer','Dealer name','text','Your dealership')}
+            ${field('email','Dealer notification email','email')}
+            ${field('logo','Dealer logo image URL (optional)','url','https://...')}
+          </div>
+          <p class="afp-note">Dealer name, email, and logo are remembered on this device.
+            <button type="button" class="afp-text-btn" id="afp-forget">Forget saved dealer info</button></p>
+
+          <h3 class="afp-section">Customer &amp; vehicle</h3>
+          <div class="afp-grid">
+            ${field('name','Customer first name')}
+            ${field('stock','Stock number')}
+            ${field('year','Year')}
+            ${field('make','Make')}
+            ${field('model','Model / trim')}
+            ${field('mileage','Mileage')}
+          </div>
+
+          <h3 class="afp-section">Pricing</h3>
+          <div class="afp-grid">
+            ${field('price','Purchase price','number')}
+            ${field('tax','Tax','number')}
+            ${field('fees','Title, registration & dealer fees','number')}
+            ${field('down','Starting down payment','number')}
+          </div>
+
+          <h3 class="afp-section">Interest rate</h3>
+          <div class="afp-grid">
+            ${field('rate','Default APR (%)','number')}
+            <div class="afp-checks">
+              ${checkbox('hideRate','Do not show interest rate')}
+              ${checkbox('lockRate','Display rate but customer cannot edit')}
+            </div>
+          </div>
+
+          <h3 class="afp-section">Finance term</h3>
+          <p class="afp-hint">Check the terms your customer can choose from. Check only one to lock the term.</p>
+          <div class="afp-term-picks">
+            ${TERMS.map(t => `<label class="afp-chip"><input type="checkbox" data-term-allow="${t}" ${d.terms.includes(t) ? 'checked' : ''}>${t} mo</label>`).join('')}
+          </div>
+          <div class="afp-grid">
+            <label class="afp-field">Starting term<select id="afp-term-default"></select></label>
+          </div>
+
+          <div class="afp-summary">
+            <span>Total price</span><strong id="afp-total"></strong>
+            <span>Estimated payment</span><strong id="afp-start-payment"></strong>
+          </div>
+          <div class="afp-actions">
+            <button type="button" id="afp-copy">Copy personalized link</button>
+            <a id="afp-preview" class="afp-link" target="_blank" rel="noopener">Preview proposal</a>
+          </div>
+          <p class="afp-note">The customer's Request button opens their email app with the dealer's address and selected proposal prefilled.</p>
+        </div>
+      </div>`;
+
+    const termSelect = root.querySelector('#afp-term-default');
+
+    const refresh = () => {
+      termSelect.innerHTML = d.terms
+        .map(t => `<option value="${t}" ${t === d.term ? 'selected' : ''}>${t} months</option>`).join('');
+      root.querySelector('#afp-total').textContent = money(totalPrice());
+      root.querySelector('#afp-start-payment').textContent = money(monthly()) + '/mo';
+      root.querySelector('#afp-preview').href = proposalUrl();
+    };
+
+    root.querySelectorAll('input[data-key]').forEach(el => {
+      el.addEventListener('input',() => {
+        const key = el.dataset.key;
+        d[key] = NUMERIC_KEYS.includes(key) ? num(el.value) : el.value;
+        if (PROFILE_KEYS.includes(key)) saveProfile();
+        refresh();
+      });
+    });
+
+    root.querySelectorAll('input[data-flag]').forEach(el => {
+      el.addEventListener('change',() => {
+        d[el.dataset.flag] = el.checked;
+        if (el.checked) {
+          root.querySelectorAll('input[data-flag]').forEach(other => {
+            if (other !== el) { other.checked = false; d[other.dataset.flag] = false; }
+          });
+        }
+        refresh();
+      });
+    });
+
+    root.querySelectorAll('input[data-term-allow]').forEach(el => {
+      el.addEventListener('change',() => {
+        const allowed = TERMS.filter(t => root.querySelector(`[data-term-allow="${t}"]`).checked);
+        if (!allowed.length) { el.checked = true; return; }
+        d.terms = allowed;
+        d.term = closestTerm(d.term,allowed);
+        refresh();
+      });
+    });
+
+    termSelect.addEventListener('change',() => {
+      d.term = num(termSelect.value,d.terms[0]);
+      refresh();
+    });
+
+    root.querySelector('#afp-forget').onclick = () => {
+      clearProfile();
+      PROFILE_KEYS.forEach(k => { d[k] = ''; });
+      builder();
+    };
+
+    const copyButton = root.querySelector('#afp-copy');
+    copyButton.onclick = () => navigator.clipboard.writeText(proposalUrl()).then(() => {
+      copyButton.textContent = 'Link copied';
+      setTimeout(() => { copyButton.textContent = 'Copy personalized link'; },2000);
+    });
+
+    refresh();
+  }
+
+  function rateControl() {
+    if (d.hideRate) return '';
+    if (d.lockRate) return `
+      <div class="afp-control">
+        <div class="afp-control-head"><span class="afp-label">Interest rate</span><b>${percent(d.rate)}</b></div>
+        <p class="afp-locked">Rate set by ${esc(dealerName())}</p>
+      </div>`;
+    return `
+      <div class="afp-control">
+        <div class="afp-control-head"><span class="afp-label">Interest rate</span><b id="afp-rate-value"></b></div>
+        <input id="afp-rate-slider" type="range" min="0" max="${Math.max(20,Math.ceil(d.rate))}" step=".01" value="${d.rate}">
+      </div>`;
+  }
+
+  function termControl() {
+    if (d.terms.length === 1) return `
+      <div class="afp-control">
+        <div class="afp-control-head"><span class="afp-label">Finance term</span><b>${d.term} months</b></div>
+        <p class="afp-locked">Term set by ${esc(dealerName())}</p>
+      </div>`;
+    return `
+      <div class="afp-control">
+        <div class="afp-control-head"><span class="afp-label">Finance term</span><b id="afp-term-value"></b></div>
+        <div class="afp-term-buttons">
+          ${d.terms.map(t => `<button type="button" data-term="${t}">${t}</button>`).join('')}
+        </div>
+      </div>`;
+  }
+
+  function printableProposal() {
+    const logo = d.logo ? `<img src="${esc(d.logo)}" alt="" onerror="this.remove()">` : '';
+    const rows = estimateRows().map(([label,value],i,all) =>
+      `<tr class="${i === all.length-1 ? 'total' : ''}"><td>${esc(label)}</td><td>${esc(value)}</td></tr>`).join('');
+    const details = [d.stock ? `Stock #${d.stock}` : '',mileageText()].filter(Boolean).join(' | ');
+    const date = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    return `<!doctype html><html><head><meta charset="utf-8">
+      <title>${esc(`${dealerName()} proposal - ${vehicleName() || 'Vehicle'}${d.name ? ` - ${d.name}` : ''}`)}</title>
+      <style>
+        body{font-family:Arial,Helvetica,sans-serif;color:#172235;margin:40px;max-width:720px}
+        header{display:flex;align-items:center;gap:14px;border-bottom:3px solid #10233d;padding-bottom:16px}
+        header img{max-height:56px;max-width:180px;object-fit:contain}
+        header h1{font-size:22px;margin:0}header p{margin:2px 0 0;color:#637286;font-size:13px}
+        h2{font-size:26px;margin:28px 0 4px}.sub{color:#637286;margin:0 0 24px}
+        table{width:100%;border-collapse:collapse;font-size:15px}
+        td{padding:10px 0;border-bottom:1px solid #dbe2ea}td:last-child{text-align:right;font-weight:700}
+        tr.total td{font-size:20px;color:#10233d;border-bottom:3px solid #19b986}
+        .disclaimer{font-size:10px;line-height:1.6;color:#728093;margin-top:28px}
+        @page{margin:14mm}
+      </style></head><body>
+      <header>${logo}<div><h1>${esc(dealerName())}</h1><p>Personalized vehicle proposal &middot; ${esc(date)}</p></div></header>
+      <h2>${esc(d.name ? `${d.name}'s ` : 'Your ')}${esc(vehicleName() || 'vehicle')}</h2>
+      <p class="sub">${esc(details)}</p>
+      <table>${rows}</table>
+      ${d.email ? `<p>Questions? Contact ${esc(dealerName())} at ${esc(d.email)}.</p>` : ''}
+      <p class="disclaimer"><strong>Important financing estimate disclosure</strong><br>${esc(disclaimerText())}</p>
+      </body></html>`;
+  }
+
+  function saveProposal() {
+    const win = window.open('','_blank');
+    if (!win) { window.print(); return; }
+    win.document.open();
+    win.document.write(printableProposal());
+    win.document.close();
+    const images = Array.from(win.document.images).map(img =>
+      img.complete ? null : new Promise(resolve => { img.onload = img.onerror = resolve; }));
+    Promise.all(images).then(() => { win.focus(); win.print(); });
+  }
+
+  function requestProposal() {
+    const subject = encodeURIComponent(`Proposal request: ${vehicleName()}`);
+    const body = encodeURIComponent(
+      `Proposal request\n\nVehicle: ${vehicleName()}\nStock #: ${d.stock}\nCustomer: ${d.name}\n\n` +
+      'Selected estimate\n' + estimateRows().map(([label,value]) => `${label}: ${value}`).join('\n') +
+      '\n\nPlease contact me to finalize this proposal.'
+    );
+    location.href = `mailto:${encodeURIComponent(d.email)}?subject=${subject}&body=${body}`;
+  }
+
+  function customer() {
+    clampDown();
+    const total = totalPrice();
+    const details = [d.stock ? `Stock #${esc(d.stock)}` : '',esc(mileageText())].filter(Boolean).join(' | ');
+
+    root.innerHTML = `
+      <div class="afp-customer">
+        <div class="afp-brand">
+          ${dealerLogo()}
+          <b>${esc(dealerName())}</b>
+          <span>PERSONALIZED VEHICLE PROPOSAL</span>
+        </div>
+        <div class="afp-hero">
+          <div>
+            <p class="afp-kicker">HELLO, ${esc((d.name || 'there').toUpperCase())}</p>
+            <h2>Your ${esc(vehicleName() || 'next vehicle')}.</h2>
+            <p class="afp-sub">${details}</p>
+          </div>
+          <div class="afp-price">
+            <small>Total price</small>
+            <strong>${money(total)}</strong>
+            <small>Purchase ${money(d.price)} | Tax &amp; fees ${money(num(d.tax) + num(d.fees))}</small>
+          </div>
+        </div>
+        <div class="afp-calculator">
+          <div class="afp-payment">
+            <p class="afp-kicker">YOUR ESTIMATED PAYMENT</p>
+            <div class="afp-payment-value" id="afp-monthly"></div>
+            <p>Adjust the target payment and your down payment will update automatically.</p>
+            <label class="afp-label" for="afp-payment-slider">Target monthly payment</label>
+            <input id="afp-payment-slider" type="range" step="5">
+            <button type="button" class="afp-request" id="afp-request">Request this proposal</button>
+            <button type="button" class="afp-save" id="afp-save">Save this proposal</button>
+          </div>
+          <div class="afp-controls">
+            ${rateControl()}
+            ${termControl()}
+            <div class="afp-control">
+              <div class="afp-control-head"><span class="afp-label">Down payment</span><b id="afp-down-value"></b></div>
+              <input id="afp-down-slider" type="range" min="0" step="100">
+            </div>
+          </div>
+        </div>
+        <div class="afp-disclaimer">
+          <strong>Important financing estimate disclosure</strong><br>${esc(disclaimerText())}
+        </div>
+      </div>`;
+
+    const rateSlider = root.querySelector('#afp-rate-slider');
+    const paymentSlider = root.querySelector('#afp-payment-slider');
+    const downSlider = root.querySelector('#afp-down-slider');
+
+    const update = () => {
+      clampDown();
+      const pay = monthly();
+      const minPay = payment(total - maxDown(),d.rate,d.term);
+      const maxPay = payment(total,d.rate,d.term);
+
+      root.querySelector('#afp-monthly').innerHTML = `${money(pay)}<span>/ mo</span>`;
+      root.querySelector('#afp-down-value').textContent = money(d.down);
+      const rateValue = root.querySelector('#afp-rate-value');
+      if (rateValue) rateValue.textContent = percent(d.rate);
+      const termValue = root.querySelector('#afp-term-value');
+      if (termValue) termValue.textContent = `${d.term} months`;
+
+      paymentSlider.min = Math.floor(minPay/5)*5;
+      paymentSlider.max = Math.ceil(maxPay/5)*5;
+      paymentSlider.value = Math.min(maxPay,Math.max(minPay,pay));
+
+      downSlider.max = maxDown();
+      downSlider.value = d.down;
+
+      root.querySelectorAll('[data-term]').forEach(b => b.classList.toggle('on',+b.dataset.term === d.term));
+    };
+
+    if (rateSlider) rateSlider.oninput = () => { d.rate = num(rateSlider.value); update(); };
+    downSlider.oninput = () => { d.down = num(downSlider.value); update(); };
+    paymentSlider.oninput = () => {
+      d.down = downForPayment(num(paymentSlider.value),total,d.rate,d.term);
+      update();
+    };
+    root.querySelectorAll('[data-term]').forEach(b => {
+      b.onclick = () => { d.term = num(b.dataset.term); update(); };
+    });
+    root.querySelector('#afp-request').onclick = requestProposal;
+    root.querySelector('#afp-save').onclick = saveProposal;
+
+    update();
+  }
+
+  function invalidLink() {
+    root.innerHTML = `
+      <div class="afp-wrap">
+        <div class="afp-card">
+          <h2>This proposal link is incomplete.</h2>
+          <p>Part of the link may have been cut off. Please ask your dealer to send it again.</p>
+        </div>
+      </div>`;
+  }
+
+  if (!isCustomer) builder();
+  else if (d) customer();
+  else invalidLink();
+})();
+</script>
