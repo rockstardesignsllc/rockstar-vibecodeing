@@ -41,6 +41,8 @@
 #afp-tool .afp-summary strong{font-size:16px;color:var(--navy);text-align:right}
 #afp-tool .afp-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 #afp-tool .afp-link{border-radius:7px;padding:12px 16px;background:#edf1f5;color:#263950;font-weight:800;text-decoration:none;font-size:14px}
+#afp-tool .afp-warn{font-size:12px;font-weight:700;color:#c62828;margin:6px 0 0}
+#afp-tool .afp-field input.afp-invalid{border-color:#c62828;outline-color:#c62828}
 #afp-tool .afp-text-btn{background:none;color:var(--mint-dark);padding:0;font-size:11px;text-decoration:underline}
 
 #afp-tool .afp-customer{background:#f6f8fa;padding:0 0 24px;border-radius:12px;overflow:hidden}
@@ -98,6 +100,8 @@
   const PROFILE_KEYS = ['dealer','email','logo'];
   const PROFILE_STORAGE_KEY = 'afp-dealer-profile';
   const MIN_FINANCED = 250;
+  const TAX_PERCENT_SUSPECT_MAX = 100;
+  const TAX_PERCENT_SUSPECT_MIN_PRICE = 5000;
 
   const defaults = {
     dealer:'',email:'',logo:'',name:'',stock:'',
@@ -265,7 +269,10 @@
           <h3 class="afp-section">Pricing</h3>
           <div class="afp-grid">
             ${field('price','Purchase price','number')}
-            ${field('tax','Enter Total Sales Tax in Whole Dollars','number','e.g. 2150')}
+            <div>
+              ${field('tax','Enter Total Sales Tax in Whole Dollars','number','e.g. 2150')}
+              <p class="afp-warn" id="afp-tax-warn" hidden>Looks like a percentage. Enter the total tax in dollars.</p>
+            </div>
             ${field('fees','Enter Total of Title, Registration and Dealer Fees in Whole Dollars','number','e.g. 899')}
             ${field('down','Starting down payment','number')}
           </div>
@@ -308,6 +315,10 @@
       root.querySelector('#afp-total').textContent = money(totalPrice());
       root.querySelector('#afp-start-payment').textContent = money(monthly()) + '/mo';
       root.querySelector('#afp-preview').href = proposalUrl();
+      const taxLooksLikePercent = num(d.tax) > 0 && num(d.tax) < TAX_PERCENT_SUSPECT_MAX
+        && num(d.price) > TAX_PERCENT_SUSPECT_MIN_PRICE;
+      root.querySelector('#afp-tax-warn').hidden = !taxLooksLikePercent;
+      root.querySelector('[data-key="tax"]').classList.toggle('afp-invalid',taxLooksLikePercent);
     };
 
     root.querySelectorAll('input[data-key]').forEach(el => {
