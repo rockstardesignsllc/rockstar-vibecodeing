@@ -60,6 +60,7 @@
 #afp-tool .afp-payment p{color:#c1ceda;font-size:13px}
 #afp-tool .afp-payment .afp-request{width:100%;margin-top:22px}
 #afp-tool .afp-payment .afp-save{width:100%;margin-top:10px;background:transparent;border:1px solid #71e4bd;color:#71e4bd}
+#afp-tool .afp-payment .afp-save-hint{font-size:11px;text-align:center;margin:8px 0 0;color:#9fb2c4}
 #afp-tool .afp-controls{padding:30px}
 #afp-tool .afp-control{padding-bottom:22px;margin-bottom:22px;border-bottom:1px solid #e7ebf0}
 #afp-tool .afp-control:last-child{border:0;margin:0;padding:0}
@@ -472,6 +473,7 @@
             <input id="afp-payment-slider" type="range" step="5">
             <button type="button" class="afp-request" id="afp-request">Request this proposal</button>
             <button type="button" class="afp-save" id="afp-save">Save this proposal</button>
+            <p class="afp-save-hint">Opens a printable copy. Choose &ldquo;Save as PDF&rdquo; as the printer.</p>
           </div>
           <div class="afp-controls">
             ${rateControl()}
