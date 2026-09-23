@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rockstar Tech | RockstarAI — The AI Built for Dealerships</title>
+  <meta name="description" content="Voice AI, SMS automation, and web chat built specifically for car and powersports dealerships. The technology behind RockstarAI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+/* ═══════════════════════════════════════════════════════════
+   ROCKSTARAI — ROCKSTAR TECH PAGE
+   Design System: Apple-style, Inter, Red accent #d70015
+   Prefix: rk- to avoid GoHighLevel conflicts
+═══════════════════════════════════════════════════════════ */
+
+/* ─── Reset & Root ──────────────────────────────────────── */
+.rk-root {
+  --bg:           #f5f5f7;
+  --bg-soft:      #fafafc;
+  --white:        #ffffff;
+  --text:         #0b0b0d;
+  --muted:        #6e6e73;
+  --line:         rgba(17,17,17,0.08);
+  --line-soft:    rgba(17,17,17,0.04);
+  --red:          #d70015;
+  --red-dark:     #b30012;
+  --red-soft:     rgba(215,0,21,0.08);
+  --black:        #0b0c0f;
+  --shadow-soft:  0 20px 50px rgba(0,0,0,0.08);
+  --shadow-phone: 0 40px 90px rgba(0,0,0,0.22), 0 12px 30px rgba(0,0,0,0.12);
+  --container:    1240px;
+  --container-narrow: 920px;
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+  background: var(--bg);
+}
+.rk-root *, .rk-root *::before, .rk-root *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+}
+.rk-root a  { text-decoration: none; color: inherit; }
+.rk-root ul { list-style: none; }
+.rk-root img { display: block; max-width: 100%; }
+
+/* ─── Containers ─────────────────────────────────────────── */
+.rk-c {
+  max-width: var(--container);
+  width: min(calc(100% - 40px), var(--container));
+  margin: 0 auto;
+}
+.rk-c--narrow {
+  max-width: var(--container-narrow);
+  width: min(calc(100% - 40px), var(--container-narrow));
+  margin: 0 auto;
+}
+
+/* ─── Typography Tokens ──────────────────────────────────── */
+.rk-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 18px;
+}
+.rk-eyebrow--light { color: rgba(215,0,21,0.9); }
+
+.rk-big-headline {
+  font-size: clamp(34px, 5.4vw, 64px);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  text-wrap: balance;
+}
+.rk-big-headline--light { color: var(--white); }
+.rk-accent { color: var(--red); }
+
+/* ─── Buttons ────────────────────────────────────────────── */
+.rk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  border: none;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.rk-btn--red {
+  background: var(--red);
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(215,0,21,0.3);
+}
+.rk-btn--red:hover {
+  background: var(--red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(215,0,21,0.4);
+}
+.rk-btn--sec {
+  background: rgba(17,17,17,0.06);
+  color: var(--text);
+}
+.rk-btn--sec:hover {
+  background: rgba(17,17,17,0.10);
+  transform: translateY(-2px);
+}
+.rk-btn--light {
+  background: var(--white);
+  color: var(--black);
+}
+.rk-btn--light:hover {
+  background: #e8e8ea;
+  transform: translateY(-2px);
+}
+
+/* ─── Navigation ─────────────────────────────────────────── */
+.rk-nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(245,245,247,0.78);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border-bottom: 1px solid var(--line);
+}
+.rk-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  gap: 24px;
+}
+.rk-nav__logo-link { display: flex; align-items: center; flex-shrink: 0; }
+.rk-nav__logo { width: 150px; height: auto; }
+.rk-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+.rk-nav__links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 7px 13px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+.rk-nav__links a:hover,
+.rk-nav__links .rk-nav__active { color: var(--text); background: rgba(17,17,17,0.05); }
+.rk-nav__cta { height: 40px; font-size: 14px; padding: 0 20px; margin-left: 8px; }
+
+.rk-nav__burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px; height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.rk-nav__burger:hover { background: rgba(17,17,17,0.06); }
+.rk-nav__burger span {
+  display: block;
+  width: 22px; height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.rk-nav__burger--open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.rk-nav__burger--open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.rk-nav__burger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.rk-nav__mobile {
+  display: none;
+  position: fixed;
+  top: 80px; left: 16px; right: 16px;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08);
+  padding: 12px;
+  flex-direction: column;
+  z-index: 199;
+  border: 1px solid var(--line);
+}
+.rk-nav__mobile--open { display: flex; }
+.rk-nav__mobile a {
+  font-size: 16px; font-weight: 500;
+  color: var(--text);
+  padding: 14px 16px;
+  border-radius: 10px;
+  transition: background 0.15s, color 0.15s;
+}
+.rk-nav__mobile a:hover { background: var(--bg); color: var(--red); }
+.rk-mobile-cta {
+  margin-top: 8px !important;
+  background: var(--red) !important;
+  color: var(--white) !important;
+  text-align: center;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+}
+.rk-mobile-cta:hover { background: var(--red-dark) !important; color: var(--white) !important; }
+
+@media (max-width: 860px) {
+  .rk-nav__links { display: none; }
+  .rk-nav__cta.rk-btn { display: none; }
+  .rk-nav__burger { display: flex; }
+}
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes rk-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+@keyframes rk-pulse {
+  0%   { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(2); opacity: 0; }
+}
+@keyframes rk-wave {
+  0%, 100% { transform: scaleY(0.25); }
+  50%       { transform: scaleY(1); }
+}
+@keyframes rk-type {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50%       { transform: translateY(-4px); opacity: 1; }
+}
+@keyframes rk-ping {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.08); opacity: 0.85; }
+}
+
+/* ─── Phone Frames ───────────────────────────────────────── */
+.rk-phone {
+  position: relative;
+  width: 300px;
+  background: linear-gradient(160deg, #2a2a2e, #0d0d0f);
+  border-radius: 50px;
+  padding: 12px;
+  box-shadow: var(--shadow-phone);
+  flex-shrink: 0;
+}
+.rk-phone::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.08);
+  pointer-events: none;
+}
+.rk-phone--float { animation: rk-float 6s ease-in-out infinite; }
+.rk-phone--sm {
+  width: 260px;
+  border-radius: 44px;
+  padding: 10px;
+}
+.rk-phone--sm::after { border-radius: 44px; }
+
+.rk-phone__notch {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 110px; height: 28px;
+  background: #060608;
+  border-radius: 0 0 18px 18px;
+  z-index: 10;
+}
+.rk-phone__notch--sm { width: 88px; height: 24px; border-radius: 0 0 14px 14px; }
+
+.rk-phone__screen {
+  border-radius: 40px;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 9 / 19.5;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.rk-phone--sm .rk-phone__screen { border-radius: 36px; }
+
+/* Status bar */
+.rk-sb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 6px;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 5;
+}
+.rk-sb--light { }
+.rk-sb__time { font-size: 13px; font-weight: 700; color: white; letter-spacing: -0.02em; }
+.rk-sb__time--dark { color: var(--text); }
+.rk-sb__icons { display: flex; align-items: center; gap: 5px; }
+
+/* ── Voice Screen ──────────────────────────────────────────*/
+.rk-screen--voice {
+  background: linear-gradient(170deg, #1c0608 0%, #100f14 55%, #1a060a 100%);
+}
+.rk-voice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 50px 20px 20px;
+  gap: 8px;
+}
+.rk-voice__label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 2px;
+}
+.rk-voice__avatar-wrap {
+  position: relative;
+  width: 88px; height: 88px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 6px 0;
+}
+.rk-voice__avatar-wrap--sm { width: 64px; height: 64px; }
+.rk-voice__ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(215,0,21,0.45);
+  animation: rk-pulse 2.2s ease-out infinite;
+}
+.rk-voice__ring--2 { animation-delay: 0.8s; }
+.rk-voice__avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red) 0%, #7a000b 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 800;
+  color: white; letter-spacing: -0.02em;
+  position: relative; z-index: 1;
+  box-shadow: 0 8px 32px rgba(215,0,21,0.45);
+}
+.rk-voice__avatar--sm { width: 56px; height: 56px; font-size: 15px; }
+.rk-voice__name  { font-size: 16px; font-weight: 600; color: white; letter-spacing: -0.02em; }
+.rk-voice__name--sm { font-size: 12px; }
+.rk-voice__timer { font-size: 26px; font-weight: 700; color: white; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+.rk-voice__timer--sm { font-size: 18px; }
+.rk-voice__status { font-size: 12px; color: rgba(255,255,255,0.45); }
+
+.rk-waves {
+  display: flex; align-items: center; gap: 4px;
+  height: 28px; margin: 4px 0;
+}
+.rk-waves--sm { height: 20px; gap: 3px; }
+.rk-waves span {
+  display: block; width: 3px; height: 100%;
+  background: rgba(215,0,21,0.75);
+  border-radius: 2px;
+  animation: rk-wave 0.85s ease-in-out infinite;
+  transform-origin: center;
+}
+.rk-waves span:nth-child(1) { animation-delay: 0s; }
+.rk-waves span:nth-child(2) { animation-delay: 0.12s; }
+.rk-waves span:nth-child(3) { animation-delay: 0.24s; }
+.rk-waves span:nth-child(4) { animation-delay: 0.36s; }
+.rk-waves span:nth-child(5) { animation-delay: 0.48s; }
+.rk-waves span:nth-child(6) { animation-delay: 0.60s; }
+.rk-waves span:nth-child(7) { animation-delay: 0.72s; }
+
+.rk-voice__controls {
+  display: flex; align-items: center; gap: 18px;
+  margin-top: 6px;
+}
+.rk-vc {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.rk-vc--end {
+  width: 62px; height: 62px;
+  background: var(--red);
+  box-shadow: 0 6px 20px rgba(215,0,21,0.5);
+}
+
+/* ── SMS Screen ────────────────────────────────────────────*/
+.rk-screen--sms {
+  background: var(--white);
+  display: flex; flex-direction: column;
+}
+.rk-sms-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 42px 14px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  background: var(--white);
+}
+.rk-sms-av {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), #7a000b);
+  color: white; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.rk-sms-nm { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
+.rk-sms-st { font-size: 10px; color: #34c759; font-weight: 500; }
+.rk-sms-thread {
+  flex: 1; padding: 10px;
+  display: flex; flex-direction: column; gap: 6px;
+  overflow: hidden;
+}
+.rk-bubble {
+  max-width: 82%; padding: 8px 11px;
+  font-size: 11px; line-height: 1.45;
+  font-family: "Inter", system-ui, sans-serif;
+}
+.rk-bubble--in {
+  align-self: flex-start;
+  background: #efeff4; color: var(--text);
+  border-radius: 14px 14px 14px 4px;
+}
+.rk-bubble--out {
+  align-self: flex-end;
+  background: var(--red); color: white;
+  border-radius: 14px 14px 4px 14px;
+}
+.rk-dots {
+  display: flex; align-items: center; gap: 4px;
+  background: #efeff4;
+  border-radius: 14px 14px 14px 4px;
+  padding: 9px 12px; width: 52px;
+  align-self: flex-start;
+}
+.rk-dots span {
+  display: block; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--muted);
+  animation: rk-type 1.2s ease-in-out infinite;
+}
+.rk-dots span:nth-child(2) { animation-delay: 0.2s; }
+.rk-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ── Booking Screen ────────────────────────────────────────*/
+.rk-screen--booking {
+  background: linear-gradient(180deg, #ffffff 0%, #fff2f4 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.rk-booking {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 44px 14px 0; gap: 10px;
+  height: 100%; width: 100%;
+}
+.rk-booking__check {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: #34c759;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 20px rgba(52,199,89,0.32);
+}
+.rk-booking__title {
+  font-size: 14px; font-weight: 700;
+  color: var(--text); letter-spacing: -0.02em;
+}
+.rk-booking__cards { width: 100%; display: flex; flex-direction: column; gap: 5px; }
+.rk-booking__row {
+  display: flex; justify-content: space-between; align-items: center;
+  background: white; border-radius: 8px; padding: 7px 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.rk-booking__lbl {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.rk-booking__val { font-size: 10px; font-weight: 600; color: var(--text); }
+.rk-booking__bar {
+  width: calc(100% + 28px);
+  margin-top: auto;
+  background: var(--black); color: white;
+  font-size: 12px; font-weight: 600;
+  text-align: center; padding: 14px;
+  letter-spacing: 0.02em;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* ─── Hero ───────────────────────────────────────────────── */
+.rk-hero {
+  padding: 110px 0;
+  background: var(--bg);
+  position: relative; overflow: hidden;
+}
+.rk-hero::before {
+  content: '';
+  position: absolute; top: -15%; right: -4%;
+  width: 750px; height: 750px;
+  background: radial-gradient(circle, rgba(215,0,21,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.rk-hero::after {
+  content: '';
+  position: absolute; bottom: -10%; left: -6%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(215,0,21,0.05) 0%, transparent 65%);
+  pointer-events: none;
+}
+.rk-hero__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px; align-items: center;
+}
+.rk-hero__copy { position: relative; z-index: 1; }
+.rk-hero__h1 {
+  font-size: clamp(40px, 6.4vw, 88px);
+  font-weight: 900; line-height: 1.01;
+  letter-spacing: -0.05em;
+  color: var(--text); text-wrap: balance;
+  margin-bottom: 24px;
+}
+.rk-hero__sub {
+  font-size: 20px; line-height: 1.6;
+  color: var(--muted); max-width: 480px;
+  margin-bottom: 36px;
+}
+.rk-hero__btns { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 28px; }
+.rk-hero__tag { font-size: 14px; font-weight: 500; color: var(--muted); }
+.rk-hero__phone {
+  display: flex; justify-content: center; align-items: center;
+  position: relative; z-index: 1;
+}
+
+/* ─── Statement ──────────────────────────────────────────── */
+.rk-statement {
+  padding: 110px 0;
+  background: var(--white);
+  text-align: center;
+}
+
+/* ─── Steps ──────────────────────────────────────────────── */
+.rk-steps { padding: 110px 0; background: var(--bg); }
+.rk-steps__hd { text-align: center; margin-bottom: 72px; }
+.rk-steps__hd .rk-big-headline { margin-top: 4px; }
+.rk-steps__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px; align-items: start;
+}
+.rk-step {
+  background: var(--white);
+  border-radius: 24px; padding: 40px 28px 36px;
+  text-align: center;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.rk-step--up { transform: translateY(-30px); }
+.rk-step--up:hover { transform: translateY(-34px); box-shadow: 0 30px 70px rgba(0,0,0,0.13); }
+.rk-step:not(.rk-step--up):hover { transform: translateY(-4px); box-shadow: 0 28px 64px rgba(0,0,0,0.11); }
+.rk-step__num {
+  display: inline-block;
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 24px;
+}
+.rk-step__phone { display: flex; justify-content: center; margin-bottom: 28px; }
+.rk-step__title { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.03em; margin-bottom: 10px; }
+.rk-step__body  { font-size: 15px; line-height: 1.6; color: var(--muted); }
+
+/* ─── Capabilities ───────────────────────────────────────── */
+.rk-caps { padding: 110px 0; background: var(--bg-soft); }
+.rk-caps__hd { text-align: center; margin-bottom: 64px; }
+.rk-caps__hd .rk-big-headline { margin-top: 4px; margin-bottom: 16px; }
+.rk-caps__sub {
+  font-size: 18px; line-height: 1.6; color: var(--muted);
+  max-width: 560px; margin: 0 auto; text-wrap: balance;
+}
+.rk-caps__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.rk-cap {
+  background: var(--white);
+  border-radius: 20px; padding: 32px 28px;
+  border: 1px solid var(--line);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.rk-cap:hover { transform: translateY(-4px); box-shadow: var(--shadow-soft); }
+.rk-cap__icon {
+  width: 60px; height: 60px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--red), #8a0010);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 20px rgba(215,0,21,0.25);
+}
+.rk-cap__title { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; margin-bottom: 8px; }
+.rk-cap__body  { font-size: 15px; line-height: 1.6; color: var(--muted); }
+
+/* ─── Under The Hood (Dark) ──────────────────────────────── */
+.rk-hood { padding: 110px 0; background: var(--black); }
+.rk-hood__inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.rk-hood__copy .rk-eyebrow { margin-bottom: 14px; }
+.rk-hood__copy .rk-big-headline { margin-bottom: 20px; }
+.rk-hood__sub {
+  font-size: 17px; line-height: 1.65;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 36px; max-width: 440px;
+}
+.rk-hood__list { display: flex; flex-direction: column; }
+.rk-hood-item {
+  display: flex; gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.rk-hood-item:last-child { border-bottom: none; }
+.rk-hood-item__check {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(215,0,21,0.12);
+  border: 1px solid rgba(215,0,21,0.3);
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+.rk-hood-item__title { font-size: 15px; font-weight: 700; color: var(--white); letter-spacing: -0.02em; margin-bottom: 4px; }
+.rk-hood-item__body  { font-size: 14px; line-height: 1.55; color: rgba(255,255,255,0.42); }
+
+/* ─── Stat ────────────────────────────────────────────────── */
+.rk-stat { padding: 110px 0; background: var(--white); text-align: center; }
+.rk-stat .rk-eyebrow { margin-bottom: 12px; }
+.rk-stat__num {
+  font-size: clamp(80px, 14vw, 160px);
+  font-weight: 900; letter-spacing: -0.05em; line-height: 1;
+  background: linear-gradient(135deg, var(--text) 0%, var(--red) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 8px 0 16px;
+  display: inline-block;
+}
+.rk-stat__unit { font-size: clamp(40px, 6vw, 72px); }
+.rk-stat__line { font-size: 20px; line-height: 1.5; color: var(--muted); max-width: 480px; margin: 0 auto 48px; }
+.rk-stat__quote {
+  background: var(--bg); border-radius: 20px;
+  padding: 32px 36px; max-width: 600px; margin: 0 auto;
+  border: 1px solid var(--line); text-align: left;
+}
+.rk-stat__quote p  { font-size: 17px; line-height: 1.65; color: var(--text); font-style: italic; margin-bottom: 14px; }
+.rk-stat__quote em { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-style: normal; }
+
+/* ─── CTA ────────────────────────────────────────────────── */
+.rk-cta { padding: 110px 0; background: var(--bg); text-align: center; }
+.rk-cta .rk-big-headline { margin-top: 6px; margin-bottom: 20px; }
+.rk-cta__sub { font-size: 18px; line-height: 1.6; color: var(--muted); max-width: 480px; margin: 0 auto 36px; text-wrap: balance; }
+.rk-cta__btns { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+
+/* ─── Footer ─────────────────────────────────────────────── */
+.rk-footer { background: var(--white); border-top: 1px solid var(--line); padding: 56px 0 0; }
+.rk-footer__main {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding-bottom: 40px;
+}
+.rk-footer__logo { width: 170px; height: auto; margin-bottom: 20px; }
+.rk-footer__addr { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.rk-footer__tag  { font-size: 14px; color: var(--muted); }
+.rk-footer__copy { font-size: 13px; color: var(--muted); margin-top: 4px; margin-bottom: 24px; }
+.rk-footer__legal { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; }
+.rk-footer__legal a { font-size: 13px; color: var(--muted); transition: color 0.15s; }
+.rk-footer__legal a:hover { color: var(--red); }
+.rk-footer__disc {
+  border-top: 1px solid var(--line);
+  padding: 24px 0 32px; text-align: center;
+}
+.rk-footer__disc p { font-size: 12.5px; color: var(--muted); max-width: 760px; margin: 0 auto; line-height: 1.65; }
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 980px) {
+  .rk-hero__inner  { grid-template-columns: 1fr; }
+  .rk-hero__phone  { justify-content: flex-start; }
+  .rk-steps__grid  { grid-template-columns: 1fr; max-width: 460px; margin: 0 auto; }
+  .rk-step--up     { transform: none; }
+  .rk-step--up:hover { transform: translateY(-4px); }
+  .rk-caps__grid   { grid-template-columns: repeat(2, 1fr); }
+  .rk-hood__inner  { grid-template-columns: 1fr; gap: 52px; }
+}
+@media (max-width: 640px) {
+  .rk-hero, .rk-statement, .rk-steps, .rk-caps,
+  .rk-hood, .rk-stat, .rk-cta { padding: 70px 0; }
+  .rk-hero__h1 { font-size: 40px !important; }
+  .rk-hero__sub { font-size: 17px; }
+  .rk-hero__btns .rk-btn { width: 100%; }
+  .rk-big-headline { font-size: 30px !important; }
+  .rk-caps__grid { grid-template-columns: 1fr; }
+  .rk-phone { width: 280px; }
+  .rk-phone--sm { width: 240px; }
+  .rk-cta__btns .rk-btn { width: 100%; }
+  .rk-footer__legal { flex-direction: column; align-items: center; gap: 12px; }
+  .rk-stat__quote { padding: 24px 20px; }
+}
+@media (max-width: 420px) {
+  .rk-hero__h1 { font-size: 36px !important; }
+  .rk-big-headline { font-size: 28px !important; }
+  .rk-phone { width: 260px; }
+  .rk-phone--sm { width: 220px; }
+}
+@media (max-width: 380px) {
+  .rk-phone { width: 250px; }
+  .rk-phone--sm { width: 205px; }
+}
+  </style>
+</head>
+<body>
+<div class="rk-root">
+
+<!-- ══════════════════════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════════════════════ -->
+<header class="rk-nav-wrap">
+  <nav class="rk-nav rk-c" aria-label="Main navigation">
+    <a href="https://aifordealers.com/home" class="rk-nav__logo-link" aria-label="RockstarAI Home">
+      <img src="https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/hrsRmtnUmvqCKm3d01tx/media/66d9d3e6ab806e5cdc34eb29.png" alt="RockstarAI" class="rk-nav__logo" width="150" />
+    </a>
+    <ul class="rk-nav__links" role="list">
+      <li><a href="https://aifordealers.com/home">Home</a></li>
+      <li><a href="https://aifordealers.com/rockstar-tech-page" class="rk-nav__active">Rockstar Tech</a></li>
+      <li><a href="https://aifordealers.com/choose-your-ai-demo">AI Tools</a></li>
+      <li><a href="https://aifordealers.com/automotive-ai-comparison-page">Compare AI</a></li>
+      <li><a href="https://aifordealers.com/contact">Contact</a></li>
+    </ul>
+    <a href="https://app.rockstarinfo.com/widget/bookings/rockstarai" class="rk-btn rk-btn--red rk-nav__cta">Book a Call</a>
+    <button class="rk-nav__burger" id="rkBurger" aria-label="Open menu" aria-expanded="false" aria-controls="rkMobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <nav class="rk-nav__mobile" id="rkMobileMenu" aria-label="Mobile navigation">
+    <a href="https://aifordealers.com/home" onclick="rkClose()">Home</a>
+    <a href="https://aifordealers.com/rockstar-tech-page" onclick="rkClose()">Rockstar Tech</a>
+    <a href="https://aifordealers.com/choose-your-ai-demo" onclick="rkClose()">AI Tools</a>
+    <a href="https://aifordealers.com/automotive-ai-comparison-page" onclick="rkClose()">Compare AI</a>
+    <a href="https://aifordealers.com/contact" onclick="rkClose()">Contact</a>
+    <a href="https://app.rockstarinfo.com/widget/bookings/rockstarai" class="rk-mobile-cta" onclick="rkClose()">Book a Call</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════ -->
+<section class="rk-hero" aria-label="Hero">
+  <div class="rk-c">
+    <div class="rk-hero__inner">
+
+      <!-- Copy -->
+      <div class="rk-hero__copy">
+        <span class="rk-eyebrow">Rockstar Tech</span>
+        <h1 class="rk-hero__h1">The AI your<br>dealership runs on.</h1>
+        <p class="rk-hero__sub">Voice. SMS. Web chat. Built for automotive and powersports. Works 24/7. Contacts every lead in under 60 seconds. Never calls in sick.</p>
+        <div class="rk-hero__btns">
+          <a href="https://aifordealers.com/choose-your-ai-demo" class="rk-btn rk-btn--red">See It In Action</a>
+          <a href="https://app.rockstarinfo.com/widget/bookings/rockstarai" class="rk-btn rk-btn--sec">Book a Call</a>
+        </div>
+        <p class="rk-hero__tag">No scripts. No delays. No excuses.</p>
+      </div>
+
+      <!-- Voice Phone Mockup -->
+      <div class="rk-hero__phone">
+        <div class="rk-phone rk-phone--float" role="img" aria-label="RockstarAI active voice call screen">
+          <div class="rk-phone__notch"></div>
+          <div class="rk-phone__screen rk-screen--voice">
+            <div class="rk-sb">
+              <span class="rk-sb__time">9:41</span>
+              <div class="rk-sb__icons">
+                <!-- Signal -->
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="none" aria-hidden="true">
+                  <rect x="0" y="5" width="3" height="7" rx="1" fill="white" opacity="0.4"/>
+                  <rect x="4.5" y="3" width="3" height="9" rx="1" fill="white" opacity="0.6"/>
+                  <rect x="9" y="1" width="3" height="11" rx="1" fill="white" opacity="0.8"/>
+                  <rect x="13.5" y="0" width="3" height="12" rx="1" fill="white"/>
+                </svg>
+                <!-- WiFi -->
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+                  <path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" fill="white"/>
+                  <path d="M3.5 6.2A6.5 6.5 0 0 1 8 4.5a6.5 6.5 0 0 1 4.5 1.7" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+                  <path d="M1 3.2A10 10 0 0 1 8 1a10 10 0 0 1 7 2.2" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.4"/>
+                </svg>
+                <!-- Battery -->
+                <svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true">
+                  <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="white" stroke-opacity="0.35"/>
+                  <rect x="2" y="2" width="16" height="8" rx="2" fill="white"/>
+                  <path d="M23 4v4c.83-.37 1.5-1.16 1.5-2s-.67-1.63-1.5-2z" fill="white" opacity="0.4"/>
+                </svg>
+              </div>
+            </div>
+            <div class="rk-voice">
+              <span class="rk-voice__label">Active Call</span>
+              <div class="rk-voice__avatar-wrap">
+                <div class="rk-voice__ring"></div>
+                <div class="rk-voice__ring rk-voice__ring--2"></div>
+                <div class="rk-voice__avatar">RS</div>
+              </div>
+              <p class="rk-voice__name">RockstarAI Agent</p>
+              <p class="rk-voice__timer">02:47</p>
+              <p class="rk-voice__status">Qualifying lead...</p>
+              <div class="rk-waves">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="rk-voice__controls">
+                <div class="rk-vc" aria-label="Mute">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                </div>
+                <div class="rk-vc rk-vc--end" aria-label="End call">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.42 19.42 0 0 1 4.43 9.88 19.72 19.72 0 0 1 1.36 1.27 2 2 0 0 1 3.34.01L6.35 0a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.33 7.81"/></svg>
+                </div>
+                <div class="rk-vc" aria-label="Speaker">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     STATEMENT
+══════════════════════════════════════════════════════════ -->
+<section class="rk-statement" aria-label="Positioning statement">
+  <div class="rk-c--narrow">
+    <h2 class="rk-big-headline">Other vendors sell you software.<br><span class="rk-accent">We deploy a workforce.</span></h2>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     HOW IT WORKS — 3-CARD GRID
+══════════════════════════════════════════════════════════ -->
+<section class="rk-steps" aria-label="How it works">
+  <div class="rk-c">
+    <div class="rk-steps__hd">
+      <span class="rk-eyebrow">How It Works</span>
+      <h2 class="rk-big-headline">Three channels.<br>One AI team.</h2>
+    </div>
+    <div class="rk-steps__grid">
+
+      <!-- Step 1: SMS -->
+      <div class="rk-step">
+        <span class="rk-step__num">Step 01</span>
+        <div class="rk-step__phone">
+          <div class="rk-phone rk-phone--sm" role="img" aria-label="SMS follow-up conversation">
+            <div class="rk-phone__notch rk-phone__notch--sm"></div>
+            <div class="rk-phone__screen rk-screen--sms">
+              <div class="rk-sms-head">
+                <div class="rk-sms-av">MR</div>
+                <div>
+                  <p class="rk-sms-nm">Mike R.</p>
+                  <p class="rk-sms-st">Texting now</p>
+                </div>
+              </div>
+              <div class="rk-sms-thread">
+                <div class="rk-bubble rk-bubble--in">Hey is the F-150 still available?</div>
+                <div class="rk-bubble rk-bubble--out">Yes! Just came in. Are you trading anything in?</div>
+                <div class="rk-bubble rk-bubble--in">2021 Tacoma, 42k miles</div>
+                <div class="rk-bubble rk-bubble--out">Perfect. When can you come in? I can get it appraised same day.</div>
+                <div class="rk-dots"><span></span><span></span><span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3 class="rk-step__title">AI SMS Follow-Up</h3>
+        <p class="rk-step__body">Texts every lead the moment they come in. Keeps the conversation going until they book or opt out.</p>
+      </div>
+
+      <!-- Step 2: Voice (lifted) -->
+      <div class="rk-step rk-step--up">
+        <span class="rk-step__num">Step 02</span>
+        <div class="rk-step__phone">
+          <div class="rk-phone rk-phone--sm" role="img" aria-label="AI voice call in progress">
+            <div class="rk-phone__notch rk-phone__notch--sm"></div>
+            <div class="rk-phone__screen rk-screen--voice">
+              <div class="rk-sb">
+                <span class="rk-sb__time">9:41</span>
+                <div class="rk-sb__icons">
+                  <svg width="14" height="10" viewBox="0 0 17 12" fill="none" aria-hidden="true"><rect x="0" y="5" width="3" height="7" rx="1" fill="white" opacity="0.4"/><rect x="4.5" y="3" width="3" height="9" rx="1" fill="white" opacity="0.65"/><rect x="9" y="1" width="3" height="11" rx="1" fill="white" opacity="0.85"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="white"/></svg>
+                  <svg width="22" height="10" viewBox="0 0 25 12" fill="none" aria-hidden="true"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="white" stroke-opacity="0.35"/><rect x="2" y="2" width="15" height="8" rx="2" fill="white"/><path d="M23 4v4c.83-.37 1.5-1.16 1.5-2s-.67-1.63-1.5-2z" fill="white" opacity="0.4"/></svg>
+                </div>
+              </div>
+              <div class="rk-voice" style="padding-top:44px;padding-bottom:16px;gap:6px;">
+                <span class="rk-voice__label">Active Call</span>
+                <div class="rk-voice__avatar-wrap rk-voice__avatar-wrap--sm">
+                  <div class="rk-voice__ring"></div>
+                  <div class="rk-voice__avatar rk-voice__avatar--sm">RS</div>
+                </div>
+                <p class="rk-voice__name rk-voice__name--sm">Inbound Lead</p>
+                <p class="rk-voice__timer rk-voice__timer--sm">01:22</p>
+                <div class="rk-waves rk-waves--sm">
+                  <span></span><span></span><span></span><span></span><span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3 class="rk-step__title">AI Voice Agent</h3>
+        <p class="rk-step__body">Answers every inbound call. Qualifies the buyer. Handles objections. Schedules the appointment.</p>
+      </div>
+
+      <!-- Step 3: Booking -->
+      <div class="rk-step">
+        <span class="rk-step__num">Step 03</span>
+        <div class="rk-step__phone">
+          <div class="rk-phone rk-phone--sm" role="img" aria-label="Appointment booked confirmation screen">
+            <div class="rk-phone__notch rk-phone__notch--sm"></div>
+            <div class="rk-phone__screen rk-screen--booking">
+              <div class="rk-booking">
+                <div class="rk-booking__check">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <p class="rk-booking__title">Test Drive Booked</p>
+                <div class="rk-booking__cards">
+                  <div class="rk-booking__row">
+                    <span class="rk-booking__lbl">Vehicle</span>
+                    <span class="rk-booking__val">2024 F-150 XLT</span>
+                  </div>
+                  <div class="rk-booking__row">
+                    <span class="rk-booking__lbl">Date</span>
+                    <span class="rk-booking__val">Sat, May 10 @ 2pm</span>
+                  </div>
+                  <div class="rk-booking__row">
+                    <span class="rk-booking__lbl">Customer</span>
+                    <span class="rk-booking__val">Mike Robertson</span>
+                  </div>
+                </div>
+                <div class="rk-booking__bar">Added to Calendar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <h3 class="rk-step__title">Appointment Confirmed</h3>
+        <p class="rk-step__body">Books directly into your calendar. Sends confirmations. Follows up with reminders so they actually show.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     CAPABILITIES GRID
+══════════════════════════════════════════════════════════ -->
+<section class="rk-caps" aria-label="Full capability suite">
+  <div class="rk-c">
+    <div class="rk-caps__hd">
+      <span class="rk-eyebrow">Full Capability Suite</span>
+      <h2 class="rk-big-headline">Everything your BDC<br>should be doing.</h2>
+      <p class="rk-caps__sub">Six core systems. One AI team. Running around the clock so your people can focus on the lot.</p>
+    </div>
+    <div class="rk-caps__grid">
+
+      <div class="rk-cap">
+        <div class="rk-cap__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 14 19.79 19.79 0 0 1 1.62 5.38 2 2 0 0 1 3.6.01h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.58 7.91a16 16 0 0 0 6.16 6.16l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 14.92z"/></svg>
+        </div>
+        <h3 class="rk-cap__title">Inbound Voice AI</h3>
+        <p class="rk-cap__body">Handles every call with natural conversation. No scripts. No hold times. No missed opportunities after hours.</p>
+      </div>
+
+      <div class="rk-cap">
+        <div class="rk-cap__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3 class="rk-cap__title">SMS Follow-Up</h3>
+        <p class="rk-cap__body">Contacts every lead within 60 seconds. Automated sequences that feel personal. Keeps going until they respond.</p>
+      </div>
+
+      <div class="rk-cap">
+        <div class="rk-cap__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3 class="rk-cap__title">Web Chat AI</h3>
+        <p class="rk-cap__body">Captures leads on your website 24/7. Answers inventory questions. Converts browsers before they bounce.</p>
+      </div>
+
+      <div class="rk-cap">
+        <div class="rk-cap__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <h3 class="rk-cap__title">Appointment Booking</h3>
+        <p class="rk-cap__body">Books directly into your calendar system. Sends confirmations. Sends reminders. Reduces no-shows.</p>
+      </div>
+
+      <div class="rk-cap">
+        <div class="rk-cap__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        </div>
+        <h3 class="rk-cap__title">CRM Integration</h3>
+        <p class="rk-cap__body">Every call, text, and conversation logs to your CRM automatically. Nothing falls through the cracks.</p>
+      </div>
+
+      <div class="rk-cap">
+        <div class="rk-cap__icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3 class="rk-cap__title">Lead Qualification</h3>
+        <p class="rk-cap__body">Asks the right questions. Scores and routes hot leads to your team. Spends time only where it counts.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     UNDER THE HOOD — DARK SECTION
+══════════════════════════════════════════════════════════ -->
+<section class="rk-hood" aria-label="Technical details">
+  <div class="rk-c">
+    <div class="rk-hood__inner">
+
+      <div class="rk-hood__copy">
+        <span class="rk-eyebrow rk-eyebrow--light">Under The Hood</span>
+        <h2 class="rk-big-headline rk-big-headline--light">Enterprise AI.<br><span class="rk-accent">Tuned for your store.</span></h2>
+        <p class="rk-hood__sub">Most AI tools are generic. Ours is trained on automotive data, real dealership conversation patterns, and the objections your buyers actually raise.</p>
+        <a href="https://app.rockstarinfo.com/widget/bookings/rockstarai" class="rk-btn rk-btn--light">See The Tech In Action</a>
+      </div>
+
+      <div class="rk-hood__list">
+
+        <div class="rk-hood-item">
+          <div class="rk-hood-item__check" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <p class="rk-hood-item__title">Enterprise LLM Foundation</p>
+            <p class="rk-hood-item__body">Powered by leading large language models with custom automotive fine-tuning layered on top.</p>
+          </div>
+        </div>
+
+        <div class="rk-hood-item">
+          <div class="rk-hood-item__check" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <p class="rk-hood-item__title">Real-Time Voice Synthesis</p>
+            <p class="rk-hood-item__body">Natural-sounding voice that responds in under a second. No robotic delays. No dead air. No frustration.</p>
+          </div>
+        </div>
+
+        <div class="rk-hood-item">
+          <div class="rk-hood-item__check" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <p class="rk-hood-item__title">Multi-Turn Memory</p>
+            <p class="rk-hood-item__body">Remembers context across the full conversation. Picks up exactly where the last message left off.</p>
+          </div>
+        </div>
+
+        <div class="rk-hood-item">
+          <div class="rk-hood-item__check" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <p class="rk-hood-item__title">Live Agent Escalation</p>
+            <p class="rk-hood-item__body">Knows when to hand off. Routes hot opportunities to your team with full conversation context attached.</p>
+          </div>
+        </div>
+
+        <div class="rk-hood-item">
+          <div class="rk-hood-item__check" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <p class="rk-hood-item__title">TCPA Compliant</p>
+            <p class="rk-hood-item__body">Built-in compliance guardrails. Opt-out handling. Consent management. Sleep easy.</p>
+          </div>
+        </div>
+
+        <div class="rk-hood-item">
+          <div class="rk-hood-item__check" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <p class="rk-hood-item__title">Custom Per Dealership</p>
+            <p class="rk-hood-item__body">Not a template. Every deployment is configured around your inventory, brand voice, and sales process.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     STAT
+══════════════════════════════════════════════════════════ -->
+<section class="rk-stat" aria-label="Key statistic">
+  <div class="rk-c--narrow">
+    <span class="rk-eyebrow">By The Numbers</span>
+    <div class="rk-stat__num">60<span class="rk-stat__unit">sec</span></div>
+    <p class="rk-stat__line">Average time from lead submission to first AI contact.</p>
+    <div class="rk-stat__quote">
+      <p>"Before RockstarAI we were calling leads two hours later. Now they're already qualified by the time we pick up the phone."</p>
+      <em>General Manager. Midwest Ford Dealer.</em>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     CTA
+══════════════════════════════════════════════════════════ -->
+<section class="rk-cta" aria-label="Get started">
+  <div class="rk-c--narrow">
+    <span class="rk-eyebrow">Get Started</span>
+    <h2 class="rk-big-headline">Your competitors are<br><span class="rk-accent">already asking about this.</span></h2>
+    <p class="rk-cta__sub">Every day you wait is leads worked by someone else. Get the AI workforce built for your store.</p>
+    <div class="rk-cta__btns">
+      <a href="https://app.rockstarinfo.com/widget/bookings/rockstarai" class="rk-btn rk-btn--red">Book a Call</a>
+      <a href="https://aifordealers.com/choose-your-ai-demo" class="rk-btn rk-btn--sec">See AI Demos</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════ -->
+<footer class="rk-footer" aria-label="Site footer">
+  <div class="rk-c">
+    <div class="rk-footer__main">
+      <a href="https://aifordealers.com/home" aria-label="RockstarAI Home">
+        <img src="https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/hrsRmtnUmvqCKm3d01tx/media/66d9d3e6ab806e5cdc34eb29.png" alt="RockstarAI" class="rk-footer__logo" width="170" />
+      </a>
+      <p class="rk-footer__addr">2222 W Grand River Ave, STE A, Okemos, MI 48864</p>
+      <p class="rk-footer__tag">RockstarAI belongs to Rockstar Designs LLC.</p>
+      <p class="rk-footer__copy">&copy; 2026 Rockstar Designs LLC</p>
+      <nav class="rk-footer__legal" aria-label="Legal links">
+        <a href="https://rockstarinfo.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="https://rockstarinfo.com/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        <a href="https://rockstarinfo.com/eula" target="_blank" rel="noopener noreferrer">EULA</a>
+        <a href="https://rockstarinfo.com/disclaimer" target="_blank" rel="noopener noreferrer">Disclaimer</a>
+        <a href="https://rockstarinfo.com/cookie-compliance-policy" target="_blank" rel="noopener noreferrer">Cookie Policy</a>
+        <a href="https://rockstarinfo.com/ai-qa-booking" target="_blank" rel="noopener noreferrer">Contact</a>
+      </nav>
+    </div>
+    <div class="rk-footer__disc">
+      <p>Standard messaging and data rates may apply when using SMS and voice services. Promotional pricing discounts are for new customers only and may be extended to returning customers at the sole discretion of Rockstar Designs LLC.</p>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /.rk-root -->
+
+<script>
+(function () {
+  var btn  = document.getElementById('rkBurger');
+  var menu = document.getElementById('rkMobileMenu');
+  if (!btn || !menu) return;
+
+  btn.addEventListener('click', function () {
+    var open = menu.classList.toggle('rk-nav__mobile--open');
+    btn.classList.toggle('rk-nav__burger--open', open);
+    btn.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+
+  window.rkClose = function () {
+    menu.classList.remove('rk-nav__mobile--open');
+    btn.classList.remove('rk-nav__burger--open');
+    btn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+
+  document.addEventListener('click', function (e) {
+    if (
+      menu.classList.contains('rk-nav__mobile--open') &&
+      !menu.contains(e.target) &&
+      !btn.contains(e.target)
+    ) {
+      window.rkClose();
+    }
+  });
+}());
+</script>
+
+</body>
+</html>

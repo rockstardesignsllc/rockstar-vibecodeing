@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Engagement Calculator | RockstarAI — The AI Built for Dealerships</title>
+  <meta name="description" content="Let customers work their own deal. The Customer Engagement Calculator shifts the conversation from price and fees to payment, down payment, and term — so deals close faster." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+<!-- ============================================================
+     CSS — PASTE THIS BLOCK INTO GOHIGHLEVEL'S CSS FIELD
+============================================================ -->
+  <style>
+
+/* ─── Reset & Root ──────────────────────────────────────── */
+.rk-root {
+  --bg:           #f5f5f7;
+  --bg-soft:      #fafafc;
+  --white:        #ffffff;
+  --text:         #0b0b0d;
+  --muted:        #6e6e73;
+  --line:         rgba(17,17,17,0.08);
+  --line-soft:    rgba(17,17,17,0.04);
+  --red:          #d70015;
+  --red-dark:     #b30012;
+  --red-soft:     rgba(215,0,21,0.08);
+  --green:        #1d8348;
+  --green-soft:   rgba(29,131,72,0.09);
+  --black:        #0b0c0f;
+  --shadow-soft:  0 20px 50px rgba(0,0,0,0.08);
+  --container:    1240px;
+  --container-narrow: 920px;
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+  background: var(--bg);
+}
+.rk-root *, .rk-root *::before, .rk-root *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+}
+.rk-root a  { text-decoration: none; color: inherit; }
+.rk-root ul { list-style: none; }
+.rk-root img { display: block; max-width: 100%; }
+
+/* ─── Containers ─────────────────────────────────────────── */
+.rk-c {
+  max-width: var(--container);
+  width: min(calc(100% - 40px), var(--container));
+  margin: 0 auto;
+}
+.rk-c--narrow {
+  max-width: var(--container-narrow);
+  width: min(calc(100% - 40px), var(--container-narrow));
+  margin: 0 auto;
+}
+
+/* ─── Typography Tokens ──────────────────────────────────── */
+.rk-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 18px;
+}
+.rk-eyebrow--light { color: rgba(215,0,21,0.9); }
+
+.rk-big-headline {
+  font-size: clamp(34px, 5.4vw, 64px);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  text-wrap: balance;
+}
+.rk-big-headline--light { color: var(--white); }
+.rk-accent { color: var(--red); }
+
+/* ─── Buttons ────────────────────────────────────────────── */
+.rk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  border: none;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.rk-btn--red {
+  background: var(--red);
+  color: var(--white);
+  box-shadow: 0 4px 20px rgba(215,0,21,0.3);
+}
+.rk-btn--red:hover {
+  background: var(--red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(215,0,21,0.4);
+}
+.rk-btn--sec {
+  background: rgba(17,17,17,0.06);
+  color: var(--text);
+}
+.rk-btn--sec:hover {
+  background: rgba(17,17,17,0.10);
+  transform: translateY(-2px);
+}
+.rk-btn--light {
+  background: var(--white);
+  color: var(--black);
+}
+.rk-btn--light:hover {
+  background: #e8e8ea;
+  transform: translateY(-2px);
+}
+
+/* ─── Navigation ─────────────────────────────────────────── */
+.rk-nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(245,245,247,0.78);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border-bottom: 1px solid var(--line);
+}
+.rk-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  gap: 24px;
+}
+.rk-nav__logo-link { display: flex; align-items: center; flex-shrink: 0; }
+.rk-nav__logo { width: 150px; height: auto; }
+.rk-nav__links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+.rk-nav__links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 7px 13px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+}
+.rk-nav__links a:hover,
+.rk-nav__links .rk-nav__active { color: var(--text); background: rgba(17,17,17,0.05); }
+.rk-nav__cta { height: 40px; font-size: 14px; padding: 0 20px; margin-left: 8px; }
+
+.rk-nav__burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px; height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.rk-nav__burger:hover { background: rgba(17,17,17,0.06); }
+.rk-nav__burger span {
+  display: block;
+  width: 22px; height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.rk-nav__burger--open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.rk-nav__burger--open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.rk-nav__burger--open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.rk-nav__mobile {
+  display: none;
+  position: fixed;
+  top: 80px; left: 16px; right: 16px;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.14), 0 4px 16px rgba(0,0,0,0.08);
+  padding: 12px;
+  flex-direction: column;
+  z-index: 199;
+  border: 1px solid var(--line);
+}
+.rk-nav__mobile--open { display: flex; }
+.rk-nav__mobile a {
+  font-size: 16px; font-weight: 500;
+  color: var(--text);
+  padding: 14px 16px;
+  border-radius: 10px;
+  transition: background 0.15s, color 0.15s;
+}
+.rk-nav__mobile a:hover { background: var(--bg); color: var(--red); }
+.rk-mobile-cta {
+  margin-top: 8px !important;
+  background: var(--red) !important;
+  color: var(--white) !important;
+  text-align: center;
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+}
+.rk-mobile-cta:hover { background: var(--red-dark) !important; color: var(--white) !important; }
+
+@media (max-width: 860px) {
+  .rk-nav__links { display: none; }
+  .rk-nav__cta.rk-btn { display: none; }
+  .rk-nav__burger { display: flex; }
+}
+
+/* ─── Footer ─────────────────────────────────────────────── */
+.rk-footer {
+  background: var(--black);
+  color: rgba(255,255,255,0.55);
+  padding: 60px 0 40px;
+}
+.rk-footer__main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 24px;
+}
+.rk-footer__logo { width: 140px; margin-bottom: 6px; }
+.rk-footer__addr { font-size: 13px; }
+.rk-footer__tag  { font-size: 12px; }
+.rk-footer__copy { font-size: 12px; }
+.rk-footer__legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 20px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.rk-footer__legal a { transition: color 0.15s; }
+.rk-footer__legal a:hover { color: rgba(255,255,255,0.85); }
+.rk-footer__disc { font-size: 11px; line-height: 1.6; text-align: center; max-width: 700px; margin: 0 auto; }
+
+/* ─── Hero ───────────────────────────────────────────────── */
+.rk-hero {
+  padding: 100px 0 80px;
+}
+.rk-hero__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.rk-hero__h1 {
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -0.045em;
+  color: var(--text);
+  text-wrap: balance;
+  margin-bottom: 22px;
+}
+.rk-hero__sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 36px;
+  max-width: 480px;
+}
+.rk-hero__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.rk-hero__tag {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ─── Calculator Preview Card ────────────────────────────── */
+.rk-calc-preview {
+  background: var(--white);
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 40px 90px rgba(0,0,0,0.13), 0 8px 24px rgba(0,0,0,0.07);
+  border: 1px solid var(--line);
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+}
+.rk-calc-preview__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--red-soft);
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+}
+.rk-calc-preview__badge span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: rk-ping 1.4s ease-in-out infinite;
+}
+.rk-calc-preview__vehicle {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.rk-calc-preview__trim {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+.rk-calc-slider {
+  margin-bottom: 22px;
+}
+.rk-calc-slider__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.rk-calc-slider__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.rk-calc-slider__val {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.rk-calc-slider__val--red { color: var(--red); }
+.rk-calc-slider__track {
+  height: 6px;
+  background: rgba(17,17,17,0.08);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+}
+.rk-calc-slider__fill {
+  height: 100%;
+  background: var(--red);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+.rk-calc-preview__divider {
+  height: 1px;
+  background: var(--line);
+  margin: 24px 0;
+}
+.rk-calc-preview__result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+.rk-calc-preview__result-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.rk-calc-preview__result-amount {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+.rk-calc-preview__result-amount span {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 2px;
+}
+.rk-calc-preview__disclaimer {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 14px;
+  line-height: 1.5;
+}
+
+/* ─── The Shift Section ──────────────────────────────────── */
+.rk-shift {
+  padding: 100px 0;
+  background: var(--white);
+}
+.rk-shift__head {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.rk-shift__sub {
+  font-size: clamp(16px, 1.8vw, 19px);
+  color: var(--muted);
+  max-width: 580px;
+  margin: 16px auto 0;
+  line-height: 1.6;
+}
+.rk-shift__grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0;
+  align-items: stretch;
+  max-width: 880px;
+  margin: 0 auto;
+}
+.rk-shift-col {
+  background: var(--bg);
+  border-radius: 24px;
+  padding: 40px 36px;
+  border: 1px solid var(--line);
+}
+.rk-shift-col--after {
+  background: var(--black);
+  border-color: transparent;
+}
+.rk-shift-col__label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.rk-shift-col--before .rk-shift-col__label { color: var(--muted); }
+.rk-shift-col--after  .rk-shift-col__label { color: var(--red); }
+
+.rk-shift-col__heading {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin-bottom: 20px;
+}
+.rk-shift-col--before .rk-shift-col__heading { color: var(--text); }
+.rk-shift-col--after  .rk-shift-col__heading { color: var(--white); }
+
+.rk-shift-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.rk-shift-item:last-child { margin-bottom: 0; }
+.rk-shift-item__icon {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.rk-shift-col--before .rk-shift-item__icon {
+  background: rgba(17,17,17,0.07);
+}
+.rk-shift-col--after .rk-shift-item__icon {
+  background: var(--red);
+}
+.rk-shift-item__text {
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+.rk-shift-col--before .rk-shift-item__text { color: var(--muted); }
+.rk-shift-col--after  .rk-shift-item__text { color: rgba(255,255,255,0.85); }
+
+.rk-shift__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+.rk-shift__arrow-inner {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(215,0,21,0.3);
+}
+
+/* ─── How It Works ───────────────────────────────────────── */
+.rk-how {
+  padding: 100px 0;
+}
+.rk-how__head {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.rk-how__sub {
+  font-size: clamp(16px, 1.8vw, 19px);
+  color: var(--muted);
+  max-width: 560px;
+  margin: 16px auto 0;
+  line-height: 1.6;
+}
+.rk-how__steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.rk-step {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 40px 32px 36px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  overflow: hidden;
+}
+.rk-step::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--red);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.rk-step:hover::before { opacity: 1; }
+.rk-step:hover { transform: translateY(-4px); transition: transform 0.25s ease; box-shadow: 0 32px 70px rgba(0,0,0,0.11); }
+.rk-step__num {
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  color: rgba(215,0,21,0.10);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+.rk-step__title {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.rk-step__body {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ─── Benefits Grid ──────────────────────────────────────── */
+.rk-benefits {
+  padding: 100px 0;
+  background: var(--white);
+}
+.rk-benefits__head {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.rk-benefits__sub {
+  font-size: clamp(16px, 1.8vw, 19px);
+  color: var(--muted);
+  max-width: 560px;
+  margin: 16px auto 0;
+  line-height: 1.6;
+}
+.rk-benefits__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.rk-ben {
+  background: var(--bg);
+  border-radius: 20px;
+  padding: 32px 28px;
+  border: 1px solid var(--line);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.rk-ben:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  background: var(--white);
+}
+.rk-ben__icon {
+  width: 48px; height: 48px;
+  border-radius: 14px;
+  background: var(--red-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  color: var(--red);
+}
+.rk-ben__title {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.rk-ben__body {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* ─── Stat Banner ────────────────────────────────────────── */
+.rk-stat {
+  padding: 100px 0;
+  text-align: center;
+}
+.rk-stat__num {
+  font-size: clamp(80px, 14vw, 160px);
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.rk-stat__unit {
+  font-size: clamp(36px, 5vw, 60px);
+  color: var(--red);
+  vertical-align: super;
+}
+.rk-stat__line {
+  font-size: clamp(18px, 2.2vw, 22px);
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.55;
+}
+.rk-stat__quote {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px 36px;
+  max-width: 640px;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  text-align: left;
+}
+.rk-stat__quote p {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text);
+  font-style: italic;
+  margin-bottom: 12px;
+}
+.rk-stat__quote em {
+  font-size: 13px;
+  color: var(--muted);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ─── CTA ────────────────────────────────────────────────── */
+.rk-cta {
+  padding: 120px 0;
+  text-align: center;
+  background: var(--white);
+  border-top: 1px solid var(--line);
+}
+.rk-cta__sub {
+  font-size: clamp(16px, 1.8vw, 19px);
+  color: var(--muted);
+  max-width: 520px;
+  margin: 20px auto 40px;
+  line-height: 1.6;
+}
+.rk-cta__btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes rk-ping {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.1); opacity: 0.8; }
+}
+@keyframes rk-slider-demo {
+  0%   { width: 45%; }
+  30%  { width: 72%; }
+  60%  { width: 58%; }
+  100% { width: 45%; }
+}
+.rk-calc-slider__fill--anim { animation: rk-slider-demo 4s ease-in-out infinite; }
+@keyframes rk-counter-payment {
+  0%   { content: "$499"; }
+  25%  { content: "$579"; }
+  50%  { content: "$529"; }
+  75%  { content: "$609"; }
+  100% { content: "$499"; }
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .rk-benefits__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 860px) {
+  .rk-hero__inner { grid-template-columns: 1fr; gap: 48px; }
+  .rk-calc-preview { max-width: 100%; margin: 0; }
+  .rk-how__steps { grid-template-columns: 1fr; max-width: 480px; }
+  .rk-shift__grid { grid-template-columns: 1fr; gap: 12px; }
+  .rk-shift__arrow { transform: rotate(90deg); padding: 16px 0; }
+}
+@media (max-width: 640px) {
+  .rk-hero { padding: 72px 0 60px; }
+  .rk-shift { padding: 72px 0; }
+  .rk-how { padding: 72px 0; }
+  .rk-benefits { padding: 72px 0; }
+  .rk-stat { padding: 72px 0; }
+  .rk-cta { padding: 80px 0; }
+  .rk-benefits__grid { grid-template-columns: 1fr; }
+  .rk-cta__btns .rk-btn { width: 100%; }
+  .rk-hero__btns .rk-btn { width: 100%; }
+  .rk-footer__legal { flex-direction: column; align-items: center; gap: 12px; }
+  .rk-shift-col { padding: 32px 24px; }
+  .rk-stat__quote { padding: 24px 20px; }
+}
+
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     HTML — PASTE THIS BLOCK INTO GOHIGHLEVEL'S HTML FIELD
+============================================================ -->
+
+<div class="rk-root">
+
+<!-- ══════════════════════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════════════════════ -->
+<header class="rk-nav-wrap">
+  <nav class="rk-nav rk-c" aria-label="Main navigation">
+    <a href="https://aifordealers.com/home" class="rk-nav__logo-link" aria-label="RockstarAI Home">
+      <img src="https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/hrsRmtnUmvqCKm3d01tx/media/66d9d3e6ab806e5cdc34eb29.png" alt="RockstarAI" class="rk-nav__logo" width="150" />
+    </a>
+    <ul class="rk-nav__links" role="list">
+      <li><a href="https://aifordealers.com/home">Home</a></li>
+      <li><a href="https://aifordealers.com/rockstar-tech-page">Rockstar Tech</a></li>
+      <li><a href="https://aifordealers.com/choose-your-ai-demo">AI Tools</a></li>
+      <li><a href="https://aifordealers.com/automotive-ai-comparison-page">Compare AI</a></li>
+      <li><a href="https://aifordealers.com/contact">Contact</a></li>
+    </ul>
+    <a href="https://app.rockstarinfo.com/widget/bookings/rockstarai" class="rk-btn rk-btn--red rk-nav__cta">Book a Call</a>
+    <button class="rk-nav__burger" id="rkBurger" aria-label="Open menu" aria-expanded="false" aria-controls="rkMobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <nav class="rk-nav__mobile" id="rkMobileMenu" aria-label="Mobile navigation">
+    <a href="https://aifordealers.com/home" onclick="rkClose()">Home</a>
+    <a href="https://aifordealers.com/rockstar-tech-page" onclick="rkClose()">Rockstar Tech</a>
+    <a href="https://aifordealers.com/choose-your-ai-demo" onclick="rkClose()">AI Tools</a>
+    <a href="https://aifordealers.com/automotive-ai-comparison-page" onclick="rkClose()">Compare AI</a>
+    <a href="https://aifordealers.com/contact" onclick="rkClose()">Contact</a>
+    <a href="https://app.rockstarinfo.com/widget/bookings/rockstarai" class="rk-mobile-cta" onclick="rkClose()">Book a Call</a>
+  </nav>
+</header>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════ -->
+<section class="rk-hero" aria-label="Hero">
+  <div class="rk-c">
+    <div class="rk-hero__inner">
+
+      <div class="rk-hero__copy">
+        <span class="rk-eyebrow">Customer Engagement Calculator</span>
+        <h1 class="rk-hero__h1">Let your customer<br>work their<br><span class="rk-accent">own deal.</span></h1>
+        <p class="rk-hero__sub">When buyers control the payment, down payment, and term themselves — price resistance drops, engagement spikes, and your team works from agreement instead of argument.</p>
+        <div class="rk-hero__btns">
+          <a href="https://app.rockstarinfo.com/widget/bookings/rockstarai" class="rk-btn rk-btn--red">Book a Demo</a>
+          <a href="https://aifordealers.com/choose-your-ai-demo" class="rk-btn rk-btn--sec">See AI Tools</a>
+        </div>
+        <p class="rk-hero__tag">No price objections. No fee fights. Just payments they picked themselves.</p>
+      </div>
+
+      <!-- Animated Calculator Preview -->
+      <div class="rk-calc-preview" role="img" aria-label="Customer Engagement Calculator preview">
+        <div class="rk-calc-preview__badge">
+          <span></span> Live Calculator
+        </div>
+        <p class="rk-calc-preview__vehicle">2025 Ford F-150 XLT</p>
+        <p class="rk-calc-preview__trim">SuperCrew · 4WD · Stock #F24891</p>
+
+        <div class="rk-calc-slider">
+          <div class="rk-calc-slider__label">
+            <span class="rk-calc-slider__name">Down Payment</span>
+            <span class="rk-calc-slider__val" id="rkDown">$3,500</span>
+          </div>
+          <div class="rk-calc-slider__track">
+            <div class="rk-calc-slider__fill" id="rkDownFill" style="width:35%"></div>
+          </div>
+        </div>
+
+        <div class="rk-calc-slider">
+          <div class="rk-calc-slider__label">
+            <span class="rk-calc-slider__name">Loan Term</span>
+            <span class="rk-calc-slider__val" id="rkTerm">72 months</span>
+          </div>
+          <div class="rk-calc-slider__track">
+            <div class="rk-calc-slider__fill" id="rkTermFill" style="width:60%"></div>
+          </div>
+        </div>
+
+        <div class="rk-calc-slider">
+          <div class="rk-calc-slider__label">
+            <span class="rk-calc-slider__name">Credit Score</span>
+            <span class="rk-calc-slider__val" id="rkCredit">720</span>
+          </div>
+          <div class="rk-calc-slider__track">
+            <div class="rk-calc-slider__fill" id="rkCreditFill" style="width:72%"></div>
+          </div>
+        </div>
+
+        <div class="rk-calc-preview__divider"></div>
+
+        <div class="rk-calc-preview__result">
+          <div>
+            <p class="rk-calc-preview__result-label">Estimated Monthly Payment</p>
+          </div>
+          <div class="rk-calc-preview__result-amount" id="rkPayment">$549<span>/mo</span></div>
+        </div>
+
+        <p class="rk-calc-preview__disclaimer">Estimate only. Final terms determined at financing. Taxes and fees not included.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     THE SHIFT
+══════════════════════════════════════════════════════════ -->
+<section class="rk-shift" aria-label="The conversation shift">
+  <div class="rk-c">
+    <div class="rk-shift__head">
+      <span class="rk-eyebrow">The Shift</span>
+      <h2 class="rk-big-headline">Stop talking price.<br><span class="rk-accent">Start talking payment.</span></h2>
+      <p class="rk-shift__sub">The old conversation kills deals. The new one closes them. Here's what changes when the customer controls the calculator.</p>
+    </div>
+
+    <div class="rk-shift__grid">
+
+      <!-- Before -->
+      <div class="rk-shift-col rk-shift-col--before">
+        <p class="rk-shift-col__label">Without the Calculator</p>
+        <p class="rk-shift-col__heading">The conversation your team dreads</p>
+
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <p class="rk-shift-item__text">"Why is the price $3,000 over MSRP?"</p>
+        </div>
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <p class="rk-shift-item__text">"What are all these fees on the back end?"</p>
+        </div>
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <p class="rk-shift-item__text">"I need to think about it and check with my spouse."</p>
+        </div>
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <p class="rk-shift-item__text">"The dealership down the road is cheaper."</p>
+        </div>
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6e6e73" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <p class="rk-shift-item__text">Customer leaves. Lead goes cold. Deal dies.</p>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="rk-shift__arrow" aria-hidden="true">
+        <div class="rk-shift__arrow-inner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+      </div>
+
+      <!-- After -->
+      <div class="rk-shift-col rk-shift-col--after">
+        <p class="rk-shift-col__label">With the Calculator</p>
+        <p class="rk-shift-col__heading" style="color:white;">The conversation that closes</p>
+
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="rk-shift-item__text">"I set my payment at $549. Can you make that work?"</p>
+        </div>
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="rk-shift-item__text">"I already played with the down payment — $4,000 feels right."</p>
+        </div>
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="rk-shift-item__text">"72 months works for my budget. Let's do it."</p>
+        </div>
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="rk-shift-item__text">Customer arrives pre-sold. Your team confirms, not convinces.</p>
+        </div>
+        <div class="rk-shift-item">
+          <div class="rk-shift-item__icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <p class="rk-shift-item__text">Deal closes faster. CSI goes up. Gross stays intact.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════════════════════════ -->
+<section class="rk-how" aria-label="How it works">
+  <div class="rk-c">
+    <div class="rk-how__head">
+      <span class="rk-eyebrow">How It Works</span>
+      <h2 class="rk-big-headline">Three steps.<br><span class="rk-accent">One shift in power.</span></h2>
+      <p class="rk-how__sub">The customer does the math themselves — so by the time they walk in, they've already decided yes.</p>
+    </div>
+
+    <div class="rk-how__steps">
+
+      <div class="rk-step">
+        <p class="rk-step__num">01</p>
+        <h3 class="rk-step__title">Customer sets their target payment</h3>
+        <p class="rk-step__body">They open the calculator on their phone, on your site, or in an AI text — and drag the sliders to a payment that feels right for their budget. No salesperson pressure. Just them and the numbers.</p>
+      </div>
+
+      <div class="rk-step">
+        <p class="rk-step__num">02</p>
+        <h3 class="rk-step__title">Down payment and term adjust in real time</h3>
+        <p class="rk-step__body">As they move the down payment up or extend the term, the monthly number shifts instantly. They see the trade-offs themselves. They make the choice themselves. That ownership matters.</p>
+      </div>
+
+      <div class="rk-step">
+        <p class="rk-step__num">03</p>
+        <h3 class="rk-step__title">Your team works from agreement</h3>
+        <p class="rk-step__body">When the customer arrives, they hand you a number they built. You confirm it, not argue against it. The negotiation is already over — you're just closing paperwork.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     BENEFITS
+══════════════════════════════════════════════════════════ -->
+<section class="rk-benefits" aria-label="Benefits for dealers">
+  <div class="rk-c">
+    <div class="rk-benefits__head">
+      <span class="rk-eyebrow">Built for Dealers</span>
+      <h2 class="rk-big-headline">Every benefit<br><span class="rk-accent">hits the bottom line.</span></h2>
+      <p class="rk-benefits__sub">This isn't just a customer experience tool. It's a gross-protection strategy with engagement built in.</p>
+    </div>
+
+    <div class="rk-benefits__grid">
+
+      <div class="rk-ben">
+        <div class="rk-ben__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3 class="rk-ben__title">Higher Lead Engagement</h3>
+        <p class="rk-ben__body">Customers who interact with a payment calculator are significantly more likely to request an appointment. Invested buyers show up ready to buy.</p>
+      </div>
+
+      <div class="rk-ben">
+        <div class="rk-ben__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h3 class="rk-ben__title">Fewer Price Objections</h3>
+        <p class="rk-ben__body">When the customer sets the payment themselves, the sticker price becomes irrelevant. The only number that matters is the one they chose.</p>
+      </div>
+
+      <div class="rk-ben">
+        <div class="rk-ben__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <h3 class="rk-ben__title">Faster Time to Close</h3>
+        <p class="rk-ben__body">Pre-sold customers spend less time in the F&amp;I office fighting numbers. You spend less time desk-managing. Everyone goes home earlier.</p>
+      </div>
+
+      <div class="rk-ben">
+        <div class="rk-ben__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <h3 class="rk-ben__title">Works Before the Visit</h3>
+        <p class="rk-ben__body">Embed the calculator in a landing page, text it via AI follow-up, or link it in an email. Customers work their deal from their couch at 9pm — and show up Monday morning ready.</p>
+      </div>
+
+      <div class="rk-ben">
+        <div class="rk-ben__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3 class="rk-ben__title">Better CSI Scores</h3>
+        <p class="rk-ben__body">Customers who felt in control of their deal rate the experience higher. Transparency builds trust. Trust builds reviews. Reviews build traffic.</p>
+      </div>
+
+      <div class="rk-ben">
+        <div class="rk-ben__icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+        </div>
+        <h3 class="rk-ben__title">Integrates with Your CRM</h3>
+        <p class="rk-ben__body">Calculator interactions and lead data flow directly into your CRM. Your AI follows up automatically. No manual work. No lost context. No cold leads.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     STAT
+══════════════════════════════════════════════════════════ -->
+<section class="rk-stat" aria-label="Key statistic">
+  <div class="rk-c--narrow">
+    <span class="rk-eyebrow">By The Numbers</span>
+    <div class="rk-stat__num">3<span class="rk-stat__unit">×</span></div>
+    <p class="rk-stat__line">Leads who interact with a payment calculator are 3× more likely to schedule a visit than those who only view a price.</p>
+    <div class="rk-stat__quote">
+      <p>"Once we let the customer set the payment themselves, the whole desk process changed. We stopped arguing about price and started confirming terms. Our closing rate jumped."</p>
+      <em>Finance Director. Southeast Honda Dealer Group.</em>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     CTA
+══════════════════════════════════════════════════════════ -->
+<section class="rk-cta" aria-label="Get started">
+  <div class="rk-c--narrow">
+    <span class="rk-eyebrow">Get Started</span>
+    <h2 class="rk-big-headline">Your next deal is<br><span class="rk-accent">waiting on a payment.</span></h2>
+    <p class="rk-cta__sub">Stop losing buyers in the price conversation. Give them the calculator and let them close themselves.</p>
+    <div class="rk-cta__btns">
+      <a href="https://app.rockstarinfo.com/widget/bookings/rockstarai" class="rk-btn rk-btn--red">Book a Demo</a>
+      <a href="https://aifordealers.com/choose-your-ai-demo" class="rk-btn rk-btn--sec">See All AI Tools</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════ -->
+<footer class="rk-footer" aria-label="Site footer">
+  <div class="rk-c">
+    <div class="rk-footer__main">
+      <a href="https://aifordealers.com/home" aria-label="RockstarAI Home">
+        <img src="https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/hrsRmtnUmvqCKm3d01tx/media/66d9d3e6ab806e5cdc34eb29.png" alt="RockstarAI" class="rk-footer__logo" width="170" />
+      </a>
+      <p class="rk-footer__addr">2222 W Grand River Ave, STE A, Okemos, MI 48864</p>
+      <p class="rk-footer__tag">RockstarAI belongs to Rockstar Designs LLC.</p>
+      <p class="rk-footer__copy">&copy; 2026 Rockstar Designs LLC</p>
+      <nav class="rk-footer__legal" aria-label="Legal links">
+        <a href="https://rockstarinfo.com/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+        <a href="https://rockstarinfo.com/tos" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+        <a href="https://rockstarinfo.com/eula" target="_blank" rel="noopener noreferrer">EULA</a>
+        <a href="https://rockstarinfo.com/disclaimer" target="_blank" rel="noopener noreferrer">Disclaimer</a>
+        <a href="https://rockstarinfo.com/cookie-compliance-policy" target="_blank" rel="noopener noreferrer">Cookie Policy</a>
+        <a href="https://rockstarinfo.com/ai-qa-booking" target="_blank" rel="noopener noreferrer">Contact</a>
+      </nav>
+    </div>
+    <div class="rk-footer__disc">
+      <p>Standard messaging and data rates may apply when using SMS and voice services. Promotional pricing discounts are for new customers only and may be extended to returning customers at the sole discretion of Rockstar Designs LLC.</p>
+    </div>
+  </div>
+</footer>
+
+</div><!-- /.rk-root -->
+
+<script>
+(function () {
+  /* ── Mobile nav ── */
+  var btn  = document.getElementById('rkBurger');
+  var menu = document.getElementById('rkMobileMenu');
+  if (btn && menu) {
+    btn.addEventListener('click', function () {
+      var open = menu.classList.toggle('rk-nav__mobile--open');
+      btn.classList.toggle('rk-nav__burger--open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    window.rkClose = function () {
+      menu.classList.remove('rk-nav__mobile--open');
+      btn.classList.remove('rk-nav__burger--open');
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    };
+    document.addEventListener('click', function (e) {
+      if (menu.classList.contains('rk-nav__mobile--open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+        window.rkClose();
+      }
+    });
+  }
+
+  /* ── Calculator demo animation ── */
+  var states = [
+    { down: '$2,000', downPct: 20, term: '60 months', termPct: 50, credit: '680', creditPct: 55, payment: '$612' },
+    { down: '$3,500', downPct: 35, term: '72 months', termPct: 65, credit: '720', creditPct: 72, payment: '$549' },
+    { down: '$5,000', downPct: 50, term: '84 months', termPct: 80, credit: '760', creditPct: 85, payment: '$489' },
+    { down: '$1,500', downPct: 15, term: '48 months', termPct: 35, credit: '640', creditPct: 42, payment: '$718' },
+  ];
+  var idx = 1;
+
+  function animateTo(state) {
+    var downEl       = document.getElementById('rkDown');
+    var downFill     = document.getElementById('rkDownFill');
+    var termEl       = document.getElementById('rkTerm');
+    var termFill     = document.getElementById('rkTermFill');
+    var creditEl     = document.getElementById('rkCredit');
+    var creditFill   = document.getElementById('rkCreditFill');
+    var paymentEl    = document.getElementById('rkPayment');
+
+    if (!downEl) return;
+
+    downEl.textContent    = state.down;
+    downFill.style.width  = state.downPct + '%';
+    termEl.textContent    = state.term;
+    termFill.style.width  = state.termPct + '%';
+    creditEl.textContent  = state.credit;
+    creditFill.style.width = state.creditPct + '%';
+    paymentEl.innerHTML   = state.payment + '<span>/mo</span>';
+  }
+
+  setInterval(function () {
+    idx = (idx + 1) % states.length;
+    animateTo(states[idx]);
+  }, 3200);
+}());
+</script>
+
+</body>
+</html>
