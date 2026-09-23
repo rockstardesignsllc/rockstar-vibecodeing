@@ -1,8 +1,9 @@
 <!--
   Rockstar Customer Engagement Calculator
-  Paste this entire file into a HighLevel "Custom HTML/JS" element.
-  - Without query parameters it renders the dealer workspace (proposal builder).
-  - With ?proposal=1&p=<data> it renders the customer-facing proposal.
+  Paste this entire file into a HighLevel "Custom HTML/JS" element on two pages:
+  - The dealer page renders the dealer workspace (proposal builder).
+  - The page at PROPOSAL_PAGE_PATH renders the customer-facing proposal from ?proposal=1&p=<data>.
+    Give that page customer-friendly SEO and social sharing settings; link previews read them.
 -->
 <div id="afp-tool"></div>
 
@@ -100,6 +101,7 @@
   const PROFILE_KEYS = ['dealer','email','logo'];
   const PROFILE_STORAGE_KEY = 'afp-dealer-profile';
   const MIN_FINANCED = 250;
+  const PROPOSAL_PAGE_PATH = '/quote';
   const TAX_PERCENT_SUSPECT_MAX = 100;
   const TAX_PERCENT_SUSPECT_MIN_PRICE = 5000;
 
@@ -180,6 +182,7 @@
 
   const q = new URLSearchParams(location.search);
   const isCustomer = q.get('proposal') === '1';
+  const isProposalPage = location.pathname.replace(/\/+$/,'') === PROPOSAL_PAGE_PATH;
 
   function readProposal() {
     if (!q.has('p')) return normalize(Object.fromEntries(q));
@@ -231,7 +234,7 @@
     return `<label class="afp-check"><input type="checkbox" data-flag="${flag}" ${d[flag] ? 'checked' : ''}>${label}</label>`;
   }
 
-  const proposalUrl = () => `${location.origin}${location.pathname}?proposal=1&p=${toBase64Url(JSON.stringify(d))}`;
+  const proposalUrl = () => `${location.origin}${PROPOSAL_PAGE_PATH}?proposal=1&p=${toBase64Url(JSON.stringify(d))}`;
 
   function builder() {
     root.innerHTML = `
@@ -552,8 +555,8 @@
       </div>`;
   }
 
-  if (!isCustomer) builder();
-  else if (d) customer();
-  else invalidLink();
+  if (isCustomer && d) customer();
+  else if (isCustomer || isProposalPage) invalidLink();
+  else builder();
 })();
 </script>
