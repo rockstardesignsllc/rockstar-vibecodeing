@@ -7,6 +7,16 @@
   DEALERS PASTING THIS ON THEIR OWN WEBSITE: fill in CONFIG (inside the script) the same way in BOTH files.
 -->
 <div id="rsec"></div>
+<script>
+/* Load check: if the calculator has not drawn itself after 4 seconds, the code below was cut off or failed. */
+setTimeout(function () {
+  var el = document.getElementById('rsec');
+  if (el && !el.children.length) {
+    el.innerHTML = '<div style="font:15px/1.5 Arial,sans-serif;max-width:640px;margin:40px auto;padding:20px 24px;border:2px solid #d70015;border-radius:14px;color:#0b0b0d">' +
+      '<b>This page did not finish loading.</b><br>Dealer: the calculator code on this page is incomplete. Copy the entire file again (it ends with &lt;/script&gt;) and paste it into the Custom HTML/JS element.</div>';
+  }
+}, 4000);
+</script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
@@ -371,7 +381,7 @@
         rebate: hasRebate() ? money(rebate()) : '', rebate_line: hasRebate() ? 'Rebate: ' + money(rebate()) : '',
         offer_url: location.href, timestamp: new Date().toISOString(), ...(extra || {})
       });
-      fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body });
+      fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body }).catch(() => { /* alerts are optional */ });
     } catch (e) { /* alerts are optional */ }
   }
 
@@ -763,8 +773,13 @@
       '<div class="ec-powered"><img src="' + LOGO + '" alt="">Powered by RockstarAI</div></div>';
   }
 
-  if (PAGE_MODE === 'builder') builder();
-  else if (d) offer();
-  else invalid();
+  try {
+    if (PAGE_MODE === 'builder') builder();
+    else if (d) offer();
+    else invalid();
+  } catch (e) {
+    root.innerHTML = '<div style="font:15px/1.5 Arial,sans-serif;max-width:640px;margin:40px auto;padding:20px 24px;border:2px solid #d70015;border-radius:14px">' +
+      '<b>The calculator hit an error.</b><br>Please send this message to Rockstar support: ' + esc(e && e.message) + '</div>';
+  }
 })();
 </script>
