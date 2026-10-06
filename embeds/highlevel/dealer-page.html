@@ -1,5 +1,5 @@
 <!--
-  RockstarAI Engagement Calculator v2.1  |  FILE 1 of 2: DEALER CALCULATOR PAGE
+  RockstarAI Engagement Calculator v2.2  |  FILE 1 of 2: DEALER CALCULATOR PAGE
   Paste this into a GHL "Custom HTML/JS" element on your dealer workspace page.
   This is where your team builds the deal and copies the customer link.
   Customer links open the RESULTS PAGE (file 2) at CONFIG.quotePagePath (default /quote).
@@ -161,6 +161,25 @@ setTimeout(function () {
 #rsec .ec-empty h1{font-size:30px;font-weight:900;letter-spacing:-.03em;margin-bottom:10px}
 #rsec .ec-empty p{color:var(--steel)}
 
+#rsec .ec-check{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;color:var(--ink);cursor:pointer;margin-bottom:8px}
+#rsec .ec-check input{width:20px;height:20px;margin:0;accent-color:var(--acc)}
+#rsec .ec-money{display:inline-flex;align-items:center;gap:2px;font-size:18px;font-weight:800}
+#rsec .ec-numin{width:116px;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:18px;font-weight:800;color:var(--ink);background:#fff;text-align:right;outline:none;-moz-appearance:textfield;appearance:textfield}
+#rsec .ec-numin:focus{border-color:var(--acc)}
+#rsec .ec-numin::-webkit-inner-spin-button,#rsec .ec-numin::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+#rsec .ec-lease{margin:22px 26px 0;padding:28px}
+#rsec .ec-lease-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+#rsec .ec-lease-head h3{font-size:22px;font-weight:900;letter-spacing:-.02em}
+#rsec .ec-lease-head span{font-size:14px;font-weight:700;color:var(--steel)}
+#rsec .ec-lease .ec-ctrl{margin:18px 0 0;padding:0;border:0}
+#rsec .ec-lterms{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:22px}
+#rsec .ec-lterm{border:1px solid var(--line);border-radius:18px;padding:22px;background:var(--paper)}
+#rsec .ec-lterm small{display:block;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--steel)}
+#rsec .ec-lterm strong{display:block;font-size:40px;font-weight:900;letter-spacing:-.04em;line-height:1.1;margin:8px 0 2px}
+#rsec .ec-lterm strong em{font-style:normal;font-size:15px;font-weight:600;letter-spacing:0;color:var(--steel)}
+#rsec .ec-lterm .ec-btn{margin-top:14px}
+#rsec .ec-desk .ec-lterm strong{font-size:52px}
+
 @media(max-width:980px){
   #rsec .ec-builder{grid-template-columns:1fr}
   #rsec .ec-side{position:static}
@@ -180,11 +199,11 @@ setTimeout(function () {
   #rsec .ec-hero{display:block;padding:28px 18px 24px}
   #rsec .ec-hero h1{font-size:34px}
   #rsec .ec-total{text-align:left;margin-top:18px}
-  #rsec .ec-main,#rsec .ec-below,#rsec .ec-fallback{margin-left:12px;margin-right:12px}
+  #rsec .ec-main,#rsec .ec-below,#rsec .ec-fallback,#rsec .ec-lease{margin-left:12px;margin-right:12px}
   #rsec .ec-alert{margin:16px 12px 0}
   #rsec .ec-paybox,#rsec .ec-controls{padding:26px 20px}
   #rsec .ec-big{font-size:52px}
-  #rsec .ec-breakdown,#rsec .ec-rep,#rsec .ec-fallback{padding:22px 20px}
+  #rsec .ec-breakdown,#rsec .ec-rep,#rsec .ec-fallback,#rsec .ec-lease{padding:22px 20px}
   #rsec .ec-disc{padding:20px 14px 0}
 }
 </style>
@@ -225,10 +244,13 @@ setTimeout(function () {
     cn: '', st: '', yr: '', mk: '', md: '', mi: '',
     pr: 30000, tx: 0, fe: 0, dp: 1000, ta: 0, tb: 0, rb: 0,
     rm: 't', ra: 7.49, rt: [5.49, 6.49, 8.99, 12.99, 17.99], cs: 720,
+    ls: '', ld: 0, lm: '', l1: 36, p1: 0, l2: 39, p2: 0,
     tm: TERMS.slice(), t: 60, id: ''
   };
-  const NUM = ['pr', 'tx', 'fe', 'dp', 'ta', 'tb', 'rb', 'ra', 'cs', 't'];
-  const BLANK_WHEN_ZERO = ['rb'];
+  const NUM = ['pr', 'tx', 'fe', 'dp', 'ta', 'tb', 'rb', 'ra', 'cs', 't', 'ld', 'l1', 'p1', 'l2', 'p2'];
+  const BLANK_WHEN_ZERO = ['rb', 'p1', 'p2'];
+  const LEASE_KEYS = ['ls', 'ld', 'lm', 'l1', 'p1', 'l2', 'p2'];
+  const LEASE_MAX_DOWN = 10000;
   const PROFILE = ['dn', 'de', 'dl', 'ac', 'wh', 'sp', 'sc', 'rm', 'rt'];
   const CFG_KEY = { dn: 'dealerName', de: 'dealerEmail', dl: 'dealerLogo', ac: 'accentColor', wh: 'webhookUrl' };
   const cfg = k => (CFG_KEY[k] && String(CONFIG[CFG_KEY[k]] || '').trim()) || '';
@@ -267,6 +289,7 @@ setTimeout(function () {
       else o[k] = String(v);
     });
     if (!['t', 'f', 'h'].includes(o.rm)) o.rm = 't';
+    if (o.ls !== '1') o.ls = '';
     o.cs = Math.min(850, Math.max(300, Math.round(o.cs)));
     o.t = closest(o.t, o.tm);
     Object.keys(CFG_KEY).forEach(k => { if (isLocked(k)) o[k] = cfg(k); });
@@ -327,6 +350,19 @@ setTimeout(function () {
     const f = r ? target * (1 - Math.pow(1 + r, -n)) / r : target * n;
     return Math.max(0, Math.min(maxDown(), baseFinanced() - f));
   };
+  /* lease: dealer payments are quoted at d.ld down; the customer's lease down shifts each payment by the difference spread over the term */
+  const leaseTerms = () => [[num(d.l1), num(d.p1)], [num(d.l2), num(d.p2)]].filter(([t, p]) => t > 0 && p > 0);
+  const hasLease = () => d.ls === '1' && leaseTerms().length > 0;
+  const leaseMaxDown = () => Math.max(LEASE_MAX_DOWN, num(d.ld));
+  let leaseDownNow = null;
+  const leaseDown = () => Math.max(0, Math.min(leaseMaxDown(), leaseDownNow === null ? num(d.ld) : leaseDownNow));
+  const leasePay = (term, basePay) => Math.max(0, basePay - (leaseDown() - num(d.ld)) / term);
+  const leaseMiles = () => {
+    const m = String(d.lm || '').trim(), n = Number(m.replace(/,/g, ''));
+    return m === '' ? '' : (Number.isFinite(n) ? n.toLocaleString('en-US') : m) + ' miles per year';
+  };
+  const leaseOffer = (t, p) => t + ' months at ' + money(leasePay(t, p)) + '/mo with ' + money(leaseDown()) + ' down' + (leaseMiles() ? ', ' + leaseMiles() : '');
+  const leaseDefaults = () => Object.fromEntries(LEASE_KEYS.map(k => [k, clone(DEF[k])]));
   const dealerName = () => d.dn || 'Your dealership';
   const vehicle = () => [d.yr, d.mk, d.md].filter(Boolean).join(' ');
   const miles = () => d.mi === '' ? '' : (Number.isFinite(+d.mi) ? Number(d.mi).toLocaleString('en-US') : d.mi) + ' miles';
@@ -351,6 +387,15 @@ setTimeout(function () {
     return r;
   }
 
+  function leaseRows() {
+    const r = [['Lease down payment', money(leaseDown())]];
+    if (leaseMiles()) r.push(['Annual mileage', leaseMiles()]);
+    leaseTerms().forEach(([t, p]) => r.push([t + '-month lease payment', money(leasePay(t, p)) + '/mo']));
+    return r;
+  }
+
+  const rowsHtml = list => list.map(([a, b, c]) => '<tr class="' + (c || '') + '"><td>' + esc(a) + '</td><td>' + esc(b) + '</td></tr>').join('');
+
   function summaryText() {
     return [
       'Vehicle offer' + (d.id ? ' #' + d.id : ''),
@@ -361,6 +406,7 @@ setTimeout(function () {
       d.st ? 'Stock #: ' + d.st : '',
       '',
       ...rows().map(([a, b]) => a + ': ' + b),
+      ...(hasLease() ? ['', 'Lease option', ...leaseRows().map(([a, b]) => a + ': ' + b)] : []),
       '',
       'Offer link: ' + location.href
     ].filter((x, i, a) => x !== '' || a[i - 1] !== '').join('\n');
@@ -397,10 +443,10 @@ setTimeout(function () {
   /* ================= DEALER BUILDER ================= */
   let lastSig = '';
   function linkFor(mode) {
-    const base = compact({ ...d, id: '' });
-    const sig = canon(base);
+    const src = hasLease() ? d : { ...d, ...leaseDefaults() };
+    const sig = canon(compact({ ...src, id: '' }));
     if (!d.id || sig !== lastSig) { d.id = newId(); lastSig = sig; }
-    const payload = compact(d);
+    const payload = compact({ ...src, id: d.id });
     payload.k = sign(payload);
     const extra = mode === 'preview' ? '&pv=1' : mode === 'desk' ? '&desk=1' : '';
     return location.origin + path() + '?proposal=1' + extra + '&p=' + b64(JSON.stringify(payload));
@@ -468,6 +514,19 @@ setTimeout(function () {
               '<div class="ec-chips">' + TERMS.map(t => '<label class="ec-chip"><input type="checkbox" data-term="' + t + '" ' + (d.tm.includes(t) ? 'checked' : '') + '>' + t + '</label>').join('') + '</div>' +
               '<div class="ec-grid"><label class="ec-field">Starting term<select id="ec-term"></select></label></div>' +
             '</div>' +
+            '<div class="ec-sec"><h3>Lease</h3>' +
+              '<label class="ec-check"><input type="checkbox" id="ec-ls" ' + (d.ls === '1' ? 'checked' : '') + '>Present Lease</label>' +
+              '<p>Shows a lease option under the purchase. The lease and the purchase never change each other.</p>' +
+              '<div id="ec-lease-fields"><div class="ec-grid">' +
+                field('ld', 'Lease down payment', 'number', 'example: 3000', 'min="0"') +
+                field('lm', 'Annual mileage', 'text', 'example: 10000') +
+                field('l1', 'Term 1 (months)', 'number', '36', 'min="1"') +
+                field('p1', 'Term 1 monthly payment', 'number', 'example: 1427', 'min="0"') +
+                field('l2', 'Term 2 (months)', 'number', '39', 'min="1"') +
+                field('p2', 'Term 2 monthly payment', 'number', 'example: 1411', 'min="0"') +
+              '</div><p class="ec-fine" style="margin-top:10px">Enter each payment at the lease down payment above. When the customer moves the lease down payment, each payment changes by the difference divided by the months. Leave a payment blank to show only one term.</p>' +
+              '<div class="ec-warn" id="ec-leasewarn" hidden>Enter at least one term and monthly payment to show the lease.</div></div>' +
+            '</div>' +
           '</div>' +
           '<aside class="ec-card ec-side">' +
             '<div class="ec-kicker">Estimated payment</div>' +
@@ -479,6 +538,7 @@ setTimeout(function () {
               '<dt>Amount financed</dt><dd id="ec-s-fin"></dd>' +
               '<dt>Rate</dt><dd id="ec-s-rate"></dd>' +
               '<dt>Term</dt><dd id="ec-s-term"></dd>' +
+              '<dt id="ec-s-lsl">Lease</dt><dd id="ec-s-ls"></dd>' +
             '</dl>' +
             '<button type="button" class="ec-btn ec-btn--acc ec-btn--block" id="ec-copy">Copy customer link</button>' +
             '<button type="button" class="ec-btn ec-btn--light ec-btn--block" id="ec-desk">Copy desking link</button>' +
@@ -505,6 +565,10 @@ setTimeout(function () {
       $('#ec-s-fin').textContent = money(financed());
       $('#ec-s-rate').textContent = pct(rate()) + (d.rm === 't' ? ' at ' + d.cs : d.rm === 'h' ? ' (hidden)' : '');
       $('#ec-s-term').textContent = d.t + ' months';
+      $('#ec-lease-fields').hidden = d.ls !== '1';
+      $('#ec-leasewarn').hidden = d.ls !== '1' || leaseTerms().length > 0;
+      $('#ec-s-lsl').hidden = $('#ec-s-ls').hidden = !hasLease();
+      $('#ec-s-ls').innerHTML = leaseTerms().map(([t, p]) => money(leasePay(t, p)) + '/mo &middot; ' + t + ' mo').join('<br>');
       const nt = netTrade();
       $('#ec-s-tradel').textContent = nt >= 0 ? 'Trade equity' : 'Negative equity';
       $('#ec-s-trade').textContent = (nt < 0 ? '+' : '') + money(Math.abs(nt));
@@ -558,6 +622,7 @@ setTimeout(function () {
       });
     });
     termSel.addEventListener('change', () => { d.t = num(termSel.value, d.tm[0]); refresh(); });
+    $('#ec-ls').addEventListener('change', e => { d.ls = e.target.checked ? '1' : ''; refresh(); });
     const forget = $('#ec-forget');
     if (forget) forget.onclick = () => { store.clear(); PROFILE.forEach(k => { d[k] = clone(DEF[k]); }); Object.keys(CFG_KEY).forEach(k => { if (isLocked(k)) d[k] = cfg(k); }); builder(); };
     function copyLinkButton(btn, mode) {
@@ -597,16 +662,17 @@ setTimeout(function () {
   function printable() {
     const logo = d.dl ? '<img src="' + esc(d.dl) + '" alt="" onerror="this.remove()">' : '';
     const acc = validColor(d.ac) ? d.ac : '#d70015';
-    const r = rows().map(([a, b, c]) => '<tr class="' + (c || '') + '"><td>' + esc(a) + '</td><td>' + esc(b) + '</td></tr>').join('');
+    const r = rowsHtml(rows());
     const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     const det = [d.st ? 'Stock #' + d.st : '', miles(), d.id ? 'Quote #' + d.id : ''].filter(Boolean).join('  |  ');
     return '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(dealerName() + ' offer ' + (vehicle() || '') + (d.cn ? ' for ' + d.cn : '')) + '</title>' +
       '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">' +
-      '<style>body{font-family:Inter,Arial,sans-serif;color:#0b0b0d;margin:40px;max-width:720px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #0b0b0d;padding-bottom:16px}header img{max-height:84px;max-width:270px;object-fit:contain}h1{font-size:22px;margin:0}header p{margin:2px 0 0;color:#6e6e73;font-size:13px}h2{font-size:30px;letter-spacing:-.03em;margin:28px 0 4px}.sub{color:#6e6e73;margin:0 0 22px}table{width:100%;border-collapse:collapse;font-size:15px}td{padding:10px 0;border-bottom:1px solid #e3e3e8}td:last-child{text-align:right;font-weight:700}tr.ec-strong td{font-weight:800}tr.ec-final td{font-size:22px;font-weight:900;color:' + acc + ';border-bottom:3px solid ' + acc + '}.rep{margin-top:22px;font-size:15px}.flag{background:#fdecee;color:#a1000f;padding:10px 14px;border-radius:10px;font-weight:600;font-size:13px;margin-top:16px}.disc{font-size:10px;line-height:1.6;color:#6e6e73;margin-top:26px}@page{margin:14mm}</style></head><body>' +
+      '<style>body{font-family:Inter,Arial,sans-serif;color:#0b0b0d;margin:40px;max-width:720px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #0b0b0d;padding-bottom:16px}header img{max-height:84px;max-width:270px;object-fit:contain}h1{font-size:22px;margin:0}header p{margin:2px 0 0;color:#6e6e73;font-size:13px}h2{font-size:30px;letter-spacing:-.03em;margin:28px 0 4px}.sub{color:#6e6e73;margin:0 0 22px}table{width:100%;border-collapse:collapse;font-size:15px}td{padding:10px 0;border-bottom:1px solid #e3e3e8}td:last-child{text-align:right;font-weight:700}tr.ec-strong td{font-weight:800}tr.ec-final td{font-size:22px;font-weight:900;color:' + acc + ';border-bottom:3px solid ' + acc + '}.rep{margin-top:22px;font-size:15px}.flag{background:#fdecee;color:#a1000f;padding:10px 14px;border-radius:10px;font-weight:600;font-size:13px;margin-top:16px}.disc{font-size:10px;line-height:1.6;color:#6e6e73;margin-top:26px}h3{font-size:20px;margin:28px 0 6px}@page{margin:14mm}</style></head><body>' +
       '<header>' + logo + '<div><h1>' + esc(dealerName()) + '</h1><p>Personalized vehicle offer &middot; ' + esc(date) + '</p></div></header>' +
       (MODIFIED ? '<div class="flag">This offer link was changed after it was sent. The dealer will confirm all numbers.</div>' : '') +
       '<h2>' + esc(d.cn ? d.cn + '\'s ' : 'Your ') + esc(vehicle() || 'vehicle') + '</h2><p class="sub">' + esc(det) + '</p>' +
       '<table>' + r + '</table>' +
+      (hasLease() ? '<h3>Lease option</h3><table>' + rowsHtml(leaseRows()) + '</table>' : '') +
       ((d.sp || d.de) ? '<p class="rep">Questions? Contact ' + esc(d.sp || dealerName()) + (d.sc ? ' at ' + esc(d.sc) : d.de ? ' at ' + esc(d.de) : '') + '.</p>' : '') +
       '<p class="disc"><strong>Important financing estimate disclosure</strong><br>' + esc(disclaimer()) + '</p></body></html>';
   }
@@ -615,7 +681,9 @@ setTimeout(function () {
     return 'This estimate is for informational purposes only and is not an offer to finance, a credit decision, or a guarantee of financing. ' +
       'It is based on the APR, term, down payment, rebates, vehicle price, trade values, taxes and fees shown. Actual payment, APR, amount financed, required down payment, ' +
       'rebate eligibility, trade values, taxes, fees, lender terms, vehicle price and availability may change based on credit approval, lender requirements, verification, final contract terms and prior sale. ' +
-      'Contact ' + dealerName() + ' to confirm all details before making a purchase decision.';
+      (hasLease() ? 'Lease payments are estimates based on the lease down payment, term and annual mileage shown and are subject to credit approval and lender terms. ' +
+        'Taxes, fees, and charges for excess mileage and wear may apply. Changing the lease down payment adjusts each estimate by the difference divided by the number of months. ' : '') +
+      'Contact ' + dealerName() + ' to confirm all details before making a purchase or lease decision.';
   }
 
   function savePdf() {
@@ -645,6 +713,17 @@ setTimeout(function () {
     const tradeCtrl = hasTrade()
       ? '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Your trade</span><b id="ec-trade-head"></b></div><div class="ec-tradebox">' +
         '<span>Trade allowance</span><b>' + money(d.ta) + '</b><span>Balance owed</span><b>' + money(d.tb) + '</b></div></div>'
+      : '';
+
+    const moneyInput = (id, label) => '<label class="ec-money">$<input id="' + id + '" class="ec-numin" type="number" inputmode="numeric" min="0" step="100" aria-label="' + label + '"></label>';
+    const leaseCard = hasLease()
+      ? '<div class="ec-card ec-lease"><div class="ec-lease-head"><h3>Lease option</h3>' + (leaseMiles() ? '<span>' + esc(leaseMiles()) + '</span>' : '') + '</div>' +
+        '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Lease down payment</span>' + moneyInput('ec-ldv', 'Lease down payment') + '</div>' +
+        '<input id="ec-ld-r" type="range" min="0" step="100"></div>' +
+        '<div class="ec-lterms">' + leaseTerms().map(([t], i) => '<div class="ec-lterm"><small>' + t + ' months</small><strong id="ec-lp' + i + '"></strong>' +
+          '<div class="ec-fine">Estimated monthly lease payment</div>' +
+          (DESK ? '' : '<button type="button" class="ec-btn ec-btn--acc ec-btn--block" data-lease="' + i + '">I want this lease</button>') + '</div>').join('') +
+        '</div></div>'
       : '';
 
     const rep = (d.sp || d.sc || d.de)
@@ -679,10 +758,11 @@ setTimeout(function () {
             '<button type="button" class="ec-btn ec-btn--light ec-btn--block" id="ec-pdf">Save this offer as a PDF</button>' +
           '</div>' +
           '<div class="ec-controls">' + rateCtrl + termCtrl +
-            '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Down payment</span><b id="ec-dv"></b></div><input id="ec-down-r" type="range" min="0" step="100"></div>' +
+            '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Down payment</span>' + moneyInput('ec-dv', 'Down payment') + '</div><input id="ec-down-r" type="range" min="0" step="100"></div>' +
             tradeCtrl +
           '</div>' +
         '</div>' +
+        leaseCard +
         '<div id="ec-fallback-slot"></div>' +
         '<div class="ec-below">' +
           '<div class="ec-card ec-breakdown"><h3>Deal breakdown</h3><table id="ec-table"></table></div>' +
@@ -693,7 +773,10 @@ setTimeout(function () {
       '</div>';
 
     const $ = s => root.querySelector(s);
-    const payR = $('#ec-pay-r'), downR = $('#ec-down-r'), csR = $('#ec-cs-r');
+    const payR = $('#ec-pay-r'), downR = $('#ec-down-r'), csR = $('#ec-cs-r'), dvIn = $('#ec-dv');
+    const ldR = $('#ec-ld-r'), ldIn = $('#ec-ldv');
+    /* typed amounts are left alone while the box has focus and normalized when it loses focus */
+    const syncInput = (el, v) => { if (el && document.activeElement !== el) el.value = Math.round(v); };
 
     function update() {
       d.dp = down();
@@ -705,7 +788,7 @@ setTimeout(function () {
       payR.value = Math.min(maxP, Math.max(minP, p));
       $('#ec-pay-lbl').textContent = money(p);
       downR.max = Math.max(0, Math.floor(maxDown())); downR.value = d.dp;
-      $('#ec-dv').textContent = money(d.dp);
+      syncInput(dvIn, d.dp);
       $('#ec-m-down').textContent = money(d.dp);
       $('#ec-m-fin').textContent = money(financed());
       if ($('#ec-m-apr')) $('#ec-m-apr').textContent = pct(rate());
@@ -721,7 +804,7 @@ setTimeout(function () {
         const nt = netTrade();
         $('#ec-trade-head').textContent = nt >= 0 ? money(nt) + ' equity' : money(-nt) + ' owed over value';
       }
-      $('#ec-table').innerHTML = rows().map(([a, b, c]) => '<tr class="' + (c || '') + '"><td>' + esc(a) + '</td><td>' + esc(b) + '</td></tr>').join('');
+      $('#ec-table').innerHTML = rowsHtml(rows());
       const t1 = $('#ec-text'); if (t1) t1.href = smsHref();
       const t2 = $('#ec-text2'); if (t2) t2.href = smsHref();
       [payR, downR, csR].forEach(fill);
@@ -729,6 +812,37 @@ setTimeout(function () {
 
     payR.oninput = () => { d.dp = downFor(num(payR.value)); update(); };
     downR.oninput = () => { d.dp = num(downR.value); update(); };
+    dvIn.addEventListener('input', () => { d.dp = num(dvIn.value, 0); update(); });
+    dvIn.addEventListener('change', () => { dvIn.value = Math.round(d.dp); });
+
+    function leaseUpdate() {
+      leaseDownNow = leaseDown();
+      ldR.max = leaseMaxDown(); ldR.value = leaseDownNow;
+      syncInput(ldIn, leaseDownNow);
+      leaseTerms().forEach(([t, p], i) => { $('#ec-lp' + i).innerHTML = money(leasePay(t, p)) + '<em> /mo</em>'; });
+      fill(ldR);
+    }
+
+    function requestLease([t, p]) {
+      const text = 'I want this lease: ' + leaseOffer(t, p) + '.\n\n' + summaryText();
+      hook('lease_requested', {
+        lease_term: t + ' months', lease_payment: money(leasePay(t, p)), lease_down: money(leaseDown()),
+        lease_miles: leaseMiles(), lease_line: 'Lease: ' + leaseOffer(t, p)
+      });
+      if (d.de) {
+        const subj = encodeURIComponent('I want to lease: ' + (vehicle() || 'vehicle') + ', ' + t + ' months' + (d.id ? ' (Quote #' + d.id + ')' : ''));
+        location.href = 'mailto:' + encodeURIComponent(d.de) + '?subject=' + subj + '&body=' + encodeURIComponent(text + '\n\nPlease contact me to finalize this lease.');
+      }
+      setTimeout(() => showFallback(text), 900);
+    }
+
+    if (ldR) {
+      ldR.oninput = () => { leaseDownNow = num(ldR.value); leaseUpdate(); };
+      ldIn.addEventListener('input', () => { leaseDownNow = num(ldIn.value, 0); leaseUpdate(); });
+      ldIn.addEventListener('change', () => { ldIn.value = Math.round(leaseDown()); });
+      root.querySelectorAll('[data-lease]').forEach(b => { b.onclick = () => requestLease(leaseTerms()[+b.dataset.lease]); });
+      leaseUpdate();
+    }
     if (csR) csR.oninput = () => { d.cs = num(csR.value, 720); update(); };
     root.querySelectorAll('[data-t]').forEach(b => { b.onclick = () => { d.t = num(b.dataset.t); update(); }; });
     $('#ec-pdf').onclick = savePdf;
@@ -741,11 +855,11 @@ setTimeout(function () {
         const body = encodeURIComponent(summaryText() + '\n\nPlease contact me to finalize this deal.');
         location.href = 'mailto:' + encodeURIComponent(d.de) + '?subject=' + subj + '&body=' + body;
       }
-      setTimeout(showFallback, 900);
+      setTimeout(() => showFallback(summaryText()), 900);
     };
     root.querySelectorAll('#ec-text,#ec-text2').forEach(a => a.addEventListener('click', () => hook('text_clicked')));
 
-    function showFallback() {
+    function showFallback(text) {
       const slot = $('#ec-fallback-slot');
       slot.innerHTML = '<div class="ec-card ec-fallback"><h3>' + (d.de ? 'Did your email open?' : 'Send your offer to the dealer') + '</h3>' +
         '<p>' + (d.de ? 'If your email app did not open, copy your offer and send it to <b style="color:#0b0b0d">' + esc(d.de) + '</b>' : 'Copy your offer and send it to ' + esc(dealerName())) +
@@ -754,7 +868,7 @@ setTimeout(function () {
         (d.sc ? '<a class="ec-btn ec-btn--ghost" href="' + smsHref() + '">Text ' + esc(d.sp ? d.sp.split(' ')[0] : 'my salesperson') + '</a>' : '') +
         (d.de ? '<a class="ec-btn ec-btn--ghost" href="mailto:' + esc(d.de) + '">Email ' + esc(dealerName()) + '</a>' : '') + '</div></div>';
       const c = $('#ec-copyq');
-      c.onclick = () => copyText(summaryText(), c, 'Copy my offer');
+      c.onclick = () => copyText(text, c, 'Copy my offer');
       slot.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
