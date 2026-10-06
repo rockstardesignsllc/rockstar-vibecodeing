@@ -538,6 +538,7 @@ setTimeout(function () {
               '<dt>Total price</dt><dd id="ec-s-total"></dd>' +
               '<dt id="ec-s-tradel">Net trade</dt><dd id="ec-s-trade"></dd>' +
               '<dt id="ec-s-rebl">Rebate</dt><dd id="ec-s-reb"></dd>' +
+              '<dt>Down payment</dt><dd id="ec-s-down"></dd>' +
               '<dt>Amount financed</dt><dd id="ec-s-fin"></dd>' +
               '<dt>Rate</dt><dd id="ec-s-rate"></dd>' +
               '<dt>Term</dt><dd id="ec-s-term"></dd>' +
@@ -574,7 +575,9 @@ setTimeout(function () {
       $('#ec-s-ls').innerHTML = leaseTerms().map(([t, p]) => money(leasePay(t, p)) + '/mo &middot; ' + t + ' mo').join('<br>');
       const nt = netTrade();
       $('#ec-s-tradel').textContent = nt >= 0 ? 'Trade equity' : 'Negative equity';
-      $('#ec-s-trade').textContent = (nt < 0 ? '+' : '') + money(Math.abs(nt));
+      $('#ec-s-trade').textContent = (nt < 0 ? '+' : '-') + money(Math.abs(nt));
+      $('#ec-s-tradel').hidden = $('#ec-s-trade').hidden = !hasTrade();
+      $('#ec-s-down').textContent = '-' + money(down());
       const call = $('#ec-tradecall');
       call.hidden = !hasTrade();
       call.className = 'ec-callout ' + (nt > 0 ? 'pos' : nt < 0 ? 'neg' : '');
