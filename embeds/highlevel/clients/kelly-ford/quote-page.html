@@ -364,6 +364,8 @@ setTimeout(function () {
     return m === '' ? '' : (Number.isFinite(n) ? n.toLocaleString('en-US') : m) + ' miles per year';
   };
   const leaseOffer = (t, p) => t + ' months at ' + money(leasePay(t, p)) + '/mo with ' + money(leaseDown()) + ' down' + (leaseMiles() ? ', ' + leaseMiles() : '');
+  const leaseQuote = () => 'Lease: ' + leaseTerms().map(([t, p]) => t + ' months at ' + money(leasePay(t, p)) + '/mo').join(' or ') +
+    ' with ' + money(leaseDown()) + ' down' + (leaseMiles() ? ', ' + leaseMiles() : '');
   const leaseDefaults = () => Object.fromEntries(LEASE_KEYS.map(k => [k, clone(DEF[k])]));
   const dealerName = () => d.dn || 'Your dealership';
   const vehicle = () => [d.yr, d.mk, d.md].filter(Boolean).join(' ');
@@ -427,6 +429,7 @@ setTimeout(function () {
         term_months: String(d.t), apr: d.rm === 'h' ? 'hidden' : pct(rate()), credit_score: d.rm === 't' ? String(d.cs) : '',
         trade_allowance: money(d.ta), trade_balance_owed: money(d.tb),
         rebate: hasRebate() ? money(rebate()) : '', rebate_line: hasRebate() ? 'Rebate: ' + money(rebate()) : '',
+        lease_quote: hasLease() ? leaseQuote() : '',
         offer_url: location.href, timestamp: new Date().toISOString(), ...(extra || {})
       });
       fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body }).catch(() => { /* alerts are optional */ });
