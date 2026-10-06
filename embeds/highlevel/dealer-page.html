@@ -1,5 +1,5 @@
 <!--
-  RockstarAI Engagement Calculator v2.0  |  FILE 1 of 2: DEALER CALCULATOR PAGE
+  RockstarAI Engagement Calculator v2.1  |  FILE 1 of 2: DEALER CALCULATOR PAGE
   Paste this into a GHL "Custom HTML/JS" element on your dealer workspace page.
   This is where your team builds the deal and copies the customer link.
   Customer links open the RESULTS PAGE (file 2) at CONFIG.quotePagePath (default /quote).
@@ -70,6 +70,7 @@
 #rsec .ec-chip{display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);border-radius:12px;padding:11px 4px;font-size:14px;font-weight:700;cursor:pointer;background:#fff}
 #rsec .ec-chip:has(input:checked){border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
 #rsec .ec-chip input{margin:0;accent-color:var(--acc)}
+#rsec .ec-saved{margin-left:8px;font-size:12px;font-weight:700;color:#1d6b3a}
 #rsec .ec-textbtn{background:none;border:0;padding:0;color:var(--acc);font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline}
 #rsec .ec-side{position:sticky;top:20px;padding:26px;background:var(--ink);color:#fff}
 #rsec .ec-side .ec-kicker{color:#ff4d5e}
@@ -84,7 +85,7 @@
 /* ---------- CUSTOMER OFFER ---------- */
 #rsec .ec-offer{background:var(--paper);border-radius:22px;overflow:hidden}
 #rsec .ec-bar{display:flex;align-items:center;gap:14px;background:#fff;padding:16px 26px;border-bottom:1px solid var(--line)}
-#rsec .ec-bar img{height:44px;max-width:170px;object-fit:contain}
+#rsec .ec-bar img{height:66px;max-width:255px;object-fit:contain}
 #rsec .ec-mark{width:42px;height:42px;border-radius:12px;background:var(--acc);color:#fff;display:grid;place-items:center;font-weight:900;font-size:18px}
 #rsec .ec-bar b{font-size:17px}
 #rsec .ec-bar span{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--steel);text-transform:uppercase;text-align:right}
@@ -212,11 +213,12 @@
   const DEF = {
     dn: '', de: '', dl: '', ac: '', wh: '', sp: '', sc: '',
     cn: '', st: '', yr: '', mk: '', md: '', mi: '',
-    pr: 30000, tx: 0, fe: 0, dp: 1000, ta: 0, tb: 0,
+    pr: 30000, tx: 0, fe: 0, dp: 1000, ta: 0, tb: 0, rb: 0,
     rm: 't', ra: 7.49, rt: [5.49, 6.49, 8.99, 12.99, 17.99], cs: 720,
     tm: TERMS.slice(), t: 60, id: ''
   };
-  const NUM = ['pr', 'tx', 'fe', 'dp', 'ta', 'tb', 'ra', 'cs', 't'];
+  const NUM = ['pr', 'tx', 'fe', 'dp', 'ta', 'tb', 'rb', 'ra', 'cs', 't'];
+  const BLANK_WHEN_ZERO = ['rb'];
   const PROFILE = ['dn', 'de', 'dl', 'ac', 'wh', 'sp', 'sc', 'rm', 'rt'];
   const CFG_KEY = { dn: 'dealerName', de: 'dealerEmail', dl: 'dealerLogo', ac: 'accentColor', wh: 'webhookUrl' };
   const cfg = k => (CFG_KEY[k] && String(CONFIG[CFG_KEY[k]] || '').trim()) || '';
@@ -300,7 +302,9 @@
   const total = () => num(d.pr) + num(d.tx) + num(d.fe);
   const netTrade = () => num(d.ta) - num(d.tb);
   const hasTrade = () => num(d.ta) > 0 || num(d.tb) > 0;
-  const baseFinanced = () => total() - netTrade();
+  const rebate = () => Math.max(0, num(d.rb));
+  const hasRebate = () => rebate() > 0;
+  const baseFinanced = () => total() - netTrade() - rebate();
   const maxDown = () => Math.max(0, baseFinanced() - MIN_FINANCED);
   const down = () => Math.max(0, Math.min(maxDown(), num(d.dp)));
   const financed = () => Math.max(0, baseFinanced() - down());
@@ -328,7 +332,9 @@
       ['Total price', money(total()), 'ec-strong']
     ];
     if (hasTrade()) r.push(['Trade allowance', money(d.ta)], ['Trade balance owed', money(d.tb)], tradeLine());
-    r.push(['Down payment', money(down())], ['Amount financed', money(financed()), 'ec-strong']);
+    r.push(['Down payment', money(down())]);
+    if (hasRebate()) r.push(['Rebate', '-' + money(rebate())]);
+    r.push(['Amount financed', money(financed()), 'ec-strong']);
     if (d.rm === 't') r.push(['Credit score', d.cs + ' (' + TIERS[tierIdx()].label + ')']);
     if (d.rm !== 'h') r.push(['APR', pct(rate())]);
     r.push(['Term', d.t + ' months'], ['Estimated monthly payment', money(monthly()), 'ec-final']);
@@ -362,6 +368,7 @@
         monthly_payment: money(monthly()), down_payment: money(down()), amount_financed: money(financed()),
         term_months: String(d.t), apr: d.rm === 'h' ? 'hidden' : pct(rate()), credit_score: d.rm === 't' ? String(d.cs) : '',
         trade_allowance: money(d.ta), trade_balance_owed: money(d.tb),
+        rebate: hasRebate() ? money(rebate()) : '', rebate_line: hasRebate() ? 'Rebate: ' + money(rebate()) : '',
         offer_url: location.href, timestamp: new Date().toISOString(), ...(extra || {})
       });
       fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body });
@@ -395,7 +402,8 @@
 
   function field(k, label, type, ph, attrs) {
     if (isLocked(k)) return '<div class="ec-field">' + label + '<div class="ec-lockedval">' + esc(cfg(k)) + ' <span class="ec-fine">(set in code settings)</span></div></div>';
-    return '<label class="ec-field">' + label + '<input data-k="' + k + '" type="' + (type || 'text') + '" value="' + esc(d[k]) + '" placeholder="' + esc(ph || '') + '" ' + (attrs || '') + '></label>';
+    const value = BLANK_WHEN_ZERO.includes(k) && !num(d[k]) ? '' : d[k];
+    return '<label class="ec-field">' + label + '<input data-k="' + k + '" type="' + (type || 'text') + '" value="' + esc(value) + '" placeholder="' + esc(ph || '') + '" ' + (attrs || '') + '></label>';
   }
 
   function builder() {
@@ -409,7 +417,7 @@
         '<div class="ec-builder">' +
           '<div class="ec-card ec-form">' +
             (allDealerLocked ? '' :
-            '<div class="ec-sec"><h3>Dealership</h3><p>Saved on this device so you only enter it once. <button type="button" class="ec-textbtn" id="ec-forget">Forget saved info</button></p>' +
+            '<div class="ec-sec"><h3>Dealership</h3><p>Saved on this device as you type, so you only enter it once.<span class="ec-saved" id="ec-saved" hidden>Saved</span> <button type="button" class="ec-textbtn" id="ec-forget">Forget saved info</button></p>' +
               '<div class="ec-grid">' +
                 field('dn', 'Dealer name', 'text', 'Your dealership') +
                 field('de', 'Dealer notification email', 'email', 'sales@yourstore.com') +
@@ -430,6 +438,7 @@
               '<div>' + field('tx', 'Total sales tax in dollars', 'number', 'example: 2150', 'min="0"') + '<div class="ec-warn" id="ec-taxwarn" hidden>That looks like a percentage. Enter the total tax in dollars.</div></div>' +
               field('fe', 'Title, registration and dealer fees in dollars', 'number', 'example: 899', 'min="0"') +
               field('dp', 'Starting down payment', 'number', '', 'min="0"') +
+              field('rb', 'Rebate (leave blank if none)', 'number', 'example: 1500', 'min="0"') +
             '</div></div>' +
             '<div class="ec-sec"><h3>Trade</h3><p>Leave both at 0 if there is no trade.</p><div class="ec-grid">' +
               field('ta', 'Trade allowance (what it is worth)', 'number', '', 'min="0"') + field('tb', 'Trade balance owed (what the customer owes)', 'number', '', 'min="0"') +
@@ -456,12 +465,13 @@
             '<dl>' +
               '<dt>Total price</dt><dd id="ec-s-total"></dd>' +
               '<dt id="ec-s-tradel">Net trade</dt><dd id="ec-s-trade"></dd>' +
+              '<dt id="ec-s-rebl">Rebate</dt><dd id="ec-s-reb"></dd>' +
               '<dt>Amount financed</dt><dd id="ec-s-fin"></dd>' +
               '<dt>Rate</dt><dd id="ec-s-rate"></dd>' +
               '<dt>Term</dt><dd id="ec-s-term"></dd>' +
             '</dl>' +
             '<button type="button" class="ec-btn ec-btn--acc ec-btn--block" id="ec-copy">Copy customer link</button>' +
-            '<a class="ec-btn ec-btn--light ec-btn--block" id="ec-desk" target="_blank" rel="noopener">Open at the desk</a>' +
+            '<button type="button" class="ec-btn ec-btn--light ec-btn--block" id="ec-desk">Copy desking link</button>' +
             '<a class="ec-btn ec-btn--light ec-btn--block" id="ec-prev" target="_blank" rel="noopener">Preview customer view</a>' +
             '<p class="ec-fine">Preview and desk views never send alerts. Each copied link gets its own quote ID.</p>' +
             '<p class="ec-fine" id="ec-idline"></p>' +
@@ -480,6 +490,8 @@
       $('#ec-ralabel').textContent = d.rm === 'h' ? 'APR % used for the payment (not shown to customer)' : 'APR % shown to the customer';
       $('#ec-s-pay').innerHTML = money(monthly()) + '<small>/mo</small>';
       $('#ec-s-total').textContent = money(total());
+      $('#ec-s-rebl').hidden = $('#ec-s-reb').hidden = !hasRebate();
+      $('#ec-s-reb').textContent = '-' + money(rebate());
       $('#ec-s-fin').textContent = money(financed());
       $('#ec-s-rate').textContent = pct(rate()) + (d.rm === 't' ? ' at ' + d.cs : d.rm === 'h' ? ' (hidden)' : '');
       $('#ec-s-term').textContent = d.t + ' months';
@@ -497,19 +509,30 @@
       $('#ec-taxwarn').hidden = !taxPct;
       if (tax) tax.classList.toggle('ec-bad', taxPct);
       $('#ec-prev').href = linkFor('preview');
-      $('#ec-desk').href = linkFor('desk');
       $('#ec-idline').textContent = 'Current quote ID: ' + d.id;
       root.style.setProperty('--acc', validColor(d.ac) ? d.ac : '#d70015');
     }
 
+    const saved = $('#ec-saved');
+    let savedTimer = 0;
+    function flashSaved() {
+      if (!saved) return;
+      saved.hidden = false;
+      clearTimeout(savedTimer);
+      savedTimer = setTimeout(() => { saved.hidden = true; }, 1500);
+    }
+
+    /* 'change' covers browser autofill and password managers that skip 'input' */
     root.querySelectorAll('input[data-k]').forEach(el => {
-      el.addEventListener('input', () => {
+      const onEdit = () => {
         const k = el.dataset.k;
         d[k] = NUM.includes(k) ? num(el.value, 0) : el.value;
         if (k === 'cs') d.cs = Math.min(850, Math.max(300, num(el.value, 720)));
-        if (PROFILE.includes(k)) saveProfile();
+        if (PROFILE.includes(k)) { saveProfile(); flashSaved(); }
         refresh();
-      });
+      };
+      el.addEventListener('input', onEdit);
+      el.addEventListener('change', onEdit);
     });
     root.querySelectorAll('input[data-tier]').forEach(el => {
       el.addEventListener('input', () => { d.rt[+el.dataset.tier] = num(el.value, 0); saveProfile(); refresh(); });
@@ -527,13 +550,17 @@
     termSel.addEventListener('change', () => { d.t = num(termSel.value, d.tm[0]); refresh(); });
     const forget = $('#ec-forget');
     if (forget) forget.onclick = () => { store.clear(); PROFILE.forEach(k => { d[k] = clone(DEF[k]); }); Object.keys(CFG_KEY).forEach(k => { if (isLocked(k)) d[k] = cfg(k); }); builder(); };
-    const copy = $('#ec-copy');
-    copy.onclick = () => {
-      const url = linkFor('send');
-      const done = () => { copy.textContent = 'Link copied'; setTimeout(() => { copy.textContent = 'Copy customer link'; }, 2000); };
-      (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(done).catch(() => { window.prompt('Copy this link:', url); });
-      refresh();
-    };
+    function copyLinkButton(btn, mode) {
+      const label = btn.textContent;
+      btn.onclick = () => {
+        const url = linkFor(mode);
+        const done = () => { btn.textContent = 'Link copied'; setTimeout(() => { btn.textContent = label; }, 2000); };
+        (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(done).catch(() => { window.prompt('Copy this link:', url); });
+        refresh();
+      };
+    }
+    copyLinkButton($('#ec-copy'), 'send');
+    copyLinkButton($('#ec-desk'), 'desk');
     refresh();
   }
 
@@ -565,7 +592,7 @@
     const det = [d.st ? 'Stock #' + d.st : '', miles(), d.id ? 'Quote #' + d.id : ''].filter(Boolean).join('  |  ');
     return '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(dealerName() + ' offer ' + (vehicle() || '') + (d.cn ? ' for ' + d.cn : '')) + '</title>' +
       '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">' +
-      '<style>body{font-family:Inter,Arial,sans-serif;color:#0b0b0d;margin:40px;max-width:720px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #0b0b0d;padding-bottom:16px}header img{max-height:56px;max-width:180px;object-fit:contain}h1{font-size:22px;margin:0}header p{margin:2px 0 0;color:#6e6e73;font-size:13px}h2{font-size:30px;letter-spacing:-.03em;margin:28px 0 4px}.sub{color:#6e6e73;margin:0 0 22px}table{width:100%;border-collapse:collapse;font-size:15px}td{padding:10px 0;border-bottom:1px solid #e3e3e8}td:last-child{text-align:right;font-weight:700}tr.ec-strong td{font-weight:800}tr.ec-final td{font-size:22px;font-weight:900;color:' + acc + ';border-bottom:3px solid ' + acc + '}.rep{margin-top:22px;font-size:15px}.flag{background:#fdecee;color:#a1000f;padding:10px 14px;border-radius:10px;font-weight:600;font-size:13px;margin-top:16px}.disc{font-size:10px;line-height:1.6;color:#6e6e73;margin-top:26px}@page{margin:14mm}</style></head><body>' +
+      '<style>body{font-family:Inter,Arial,sans-serif;color:#0b0b0d;margin:40px;max-width:720px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #0b0b0d;padding-bottom:16px}header img{max-height:84px;max-width:270px;object-fit:contain}h1{font-size:22px;margin:0}header p{margin:2px 0 0;color:#6e6e73;font-size:13px}h2{font-size:30px;letter-spacing:-.03em;margin:28px 0 4px}.sub{color:#6e6e73;margin:0 0 22px}table{width:100%;border-collapse:collapse;font-size:15px}td{padding:10px 0;border-bottom:1px solid #e3e3e8}td:last-child{text-align:right;font-weight:700}tr.ec-strong td{font-weight:800}tr.ec-final td{font-size:22px;font-weight:900;color:' + acc + ';border-bottom:3px solid ' + acc + '}.rep{margin-top:22px;font-size:15px}.flag{background:#fdecee;color:#a1000f;padding:10px 14px;border-radius:10px;font-weight:600;font-size:13px;margin-top:16px}.disc{font-size:10px;line-height:1.6;color:#6e6e73;margin-top:26px}@page{margin:14mm}</style></head><body>' +
       '<header>' + logo + '<div><h1>' + esc(dealerName()) + '</h1><p>Personalized vehicle offer &middot; ' + esc(date) + '</p></div></header>' +
       (MODIFIED ? '<div class="flag">This offer link was changed after it was sent. The dealer will confirm all numbers.</div>' : '') +
       '<h2>' + esc(d.cn ? d.cn + '\'s ' : 'Your ') + esc(vehicle() || 'vehicle') + '</h2><p class="sub">' + esc(det) + '</p>' +
@@ -576,8 +603,8 @@
 
   function disclaimer() {
     return 'This estimate is for informational purposes only and is not an offer to finance, a credit decision, or a guarantee of financing. ' +
-      'It is based on the APR, term, down payment, vehicle price, trade values, taxes and fees shown. Actual payment, APR, amount financed, required down payment, ' +
-      'trade values, taxes, fees, lender terms, vehicle price and availability may change based on credit approval, lender requirements, verification, final contract terms and prior sale. ' +
+      'It is based on the APR, term, down payment, rebates, vehicle price, trade values, taxes and fees shown. Actual payment, APR, amount financed, required down payment, ' +
+      'rebate eligibility, trade values, taxes, fees, lender terms, vehicle price and availability may change based on credit approval, lender requirements, verification, final contract terms and prior sale. ' +
       'Contact ' + dealerName() + ' to confirm all details before making a purchase decision.';
   }
 
@@ -632,7 +659,9 @@
             '<p>Slide to the payment that works for you. Your down payment updates automatically.</p>' +
             '<label for="ec-pay-r"><span>Target monthly payment</span><span id="ec-pay-lbl"></span></label>' +
             '<input id="ec-pay-r" type="range" step="5">' +
-            '<div class="ec-mini"><span>Down payment</span><b id="ec-m-down"></b><span>Amount financed</span><b id="ec-m-fin"></b>' +
+            '<div class="ec-mini"><span>Down payment</span><b id="ec-m-down"></b>' +
+              (hasRebate() ? '<span>Rebate</span><b>-' + money(rebate()) + '</b>' : '') +
+              '<span>Amount financed</span><b id="ec-m-fin"></b>' +
               (d.rm !== 'h' ? '<span>APR</span><b id="ec-m-apr"></b>' : '') + '<span>Term</span><b id="ec-m-term"></b></div>' +
             (DESK ? '' :
               '<button type="button" class="ec-btn ec-btn--acc ec-btn--block" id="ec-lock">Lock in this payment</button>' +
