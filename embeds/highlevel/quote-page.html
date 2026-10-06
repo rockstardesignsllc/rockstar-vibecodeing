@@ -191,7 +191,7 @@
     dealerEmail: '',   /* where "Lock in this payment" emails go */
     dealerLogo:  '',   /* full URL to the dealer logo image */
     accentColor: '',   /* example: '#0055a5' (blank uses Rockstar red) */
-    webhookUrl:  '',   /* optional GHL inbound webhook or Zapier URL for quote alerts */
+    webhookUrl:  'https://services.leadconnectorhq.com/hooks/hrsRmtnUmvqCKm3d01tx/webhook-trigger/f8871865-32b0-4dd6-8cba-cf263ce8873f',   /* GHL inbound webhook for quote alerts; blank adds a webhook field to the dealer page */
     quotePagePath: '/quote'
   };
   /* =============================================================== */
@@ -426,7 +426,7 @@
                 field('dl', 'Dealer logo image URL (optional)', 'url', 'https://') +
                 (isLocked('ac') ? field('ac', 'Brand color') : '<label class="ec-field">Brand color (buttons and sliders)<input data-k="ac" type="color" value="' + (validColor(d.ac) ? esc(d.ac) : '#d70015') + '"></label>') +
               '</div>' +
-              '<div class="ec-grid" style="margin-top:14px">' + field('wh', 'Quote alert webhook URL (optional)', 'url', 'GHL inbound webhook or Zapier URL') + '<div class="ec-fine" style="align-self:end">Get a ping when a customer opens or requests a quote. Leave blank to turn alerts off.</div></div>' +
+              (isLocked('wh') ? '' : '<div class="ec-grid" style="margin-top:14px">' + field('wh', 'Quote alert webhook URL (optional)', 'url', 'GHL inbound webhook or Zapier URL') + '<div class="ec-fine" style="align-self:end">Get a ping when a customer opens or requests a quote. Leave blank to turn alerts off.</div></div>') +
             '</div>') +
             '<div class="ec-sec"><h3>Salesperson</h3><p>Shows on the quote so the customer knows who to reach.</p><div class="ec-grid">' +
               field('sp', 'Salesperson name', 'text', 'Mike Smith') + field('sc', 'Salesperson cell (adds a Text button)', 'tel', '(555) 555 5555') +
