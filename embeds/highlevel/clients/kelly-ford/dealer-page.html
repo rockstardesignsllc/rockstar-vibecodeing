@@ -658,12 +658,14 @@ setTimeout(function () {
     t.remove();
   }
 
-  function smsHref() {
-    const cell = String(d.sc || '').replace(/[^0-9+]/g, '');
-    const msg = 'Hi ' + (d.sp || 'there') + ', this is ' + (d.cn || 'your customer') + '. I would like to move forward on the ' + (vehicle() || 'vehicle') +
-      ' at ' + money(monthly()) + '/mo with ' + money(down()) + ' down for ' + d.t + ' months. Quote #' + d.id + '.';
-    return 'sms:' + cell + '?&body=' + encodeURIComponent(msg);
-  }
+  /* sms: links only work on phones and tablets, so text buttons are shown there only */
+  const IS_MOBILE = /Android|iPhone|iPad|iPod|Mobile|Silk|Kindle|BlackBerry|Opera Mini|IEMobile/i.test(navigator.userAgent) ||
+    (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  const canText = () => !!d.sc && !DESK && IS_MOBILE;
+  const smsTo = deal => 'sms:' + String(d.sc || '').replace(/[^0-9+]/g, '') + '?&body=' + encodeURIComponent(
+    'Hi ' + (d.sp || 'there') + ', this is ' + (d.cn || 'your customer') + '. I would like to move forward on the ' + (vehicle() || 'vehicle') + ' ' + deal + '. Quote #' + d.id + '.');
+  const smsHref = () => smsTo('at ' + money(monthly()) + '/mo with ' + money(down()) + ' down for ' + d.t + ' months');
+  const leaseSmsHref = (t, p) => smsTo('lease: ' + leaseOffer(t, p));
 
   function printable() {
     const logo = d.dl ? '<img src="' + esc(d.dl) + '" alt="" onerror="this.remove()">' : '';
@@ -728,7 +730,8 @@ setTimeout(function () {
         '<input id="ec-ld-r" type="range" min="0" step="100"></div>' +
         '<div class="ec-lterms">' + leaseTerms().map(([t], i) => '<div class="ec-lterm"><small>' + t + ' months</small><strong id="ec-lp' + i + '"></strong>' +
           '<div class="ec-fine">Estimated monthly lease payment</div>' +
-          (DESK ? '' : '<button type="button" class="ec-btn ec-btn--acc ec-btn--block" data-lease="' + i + '">I want this lease</button>') + '</div>').join('') +
+          (DESK ? '' : '<button type="button" class="ec-btn ec-btn--acc ec-btn--block" data-lease="' + i + '">I want this lease</button>') +
+          (canText() ? '<a class="ec-btn ec-btn--ghost ec-btn--block" data-lease-text="' + i + '" href="#">Text this lease to my salesperson</a>' : '') + '</div>').join('') +
         '</div></div>'
       : '';
 
@@ -736,7 +739,7 @@ setTimeout(function () {
       ? '<div class="ec-card ec-rep"><h3>' + (d.sp ? 'Your salesperson' : 'Questions?') + '</h3><p>' +
         (d.sp ? '<b style="color:#0b0b0d">' + esc(d.sp) + '</b><br>' : '') + esc(dealerName()) +
         (d.sc ? '<br>' + esc(d.sc) : '') + (d.de ? '<br>' + esc(d.de) : '') + '</p>' +
-        (d.sc && !DESK ? '<a class="ec-btn ec-btn--acc ec-btn--block" id="ec-text2" href="' + smsHref() + '">Text ' + esc(d.sp ? d.sp.split(' ')[0] : 'my salesperson') + '</a>' : '') +
+        (canText() ? '<a class="ec-btn ec-btn--acc ec-btn--block" id="ec-text2" href="' + smsHref() + '">Text ' + esc(d.sp ? d.sp.split(' ')[0] : 'my salesperson') + '</a>' : '') +
         '</div>'
       : '';
 
@@ -760,7 +763,7 @@ setTimeout(function () {
               (d.rm !== 'h' ? '<span>APR</span><b id="ec-m-apr"></b>' : '') + '<span>Term</span><b id="ec-m-term"></b></div>' +
             (DESK ? '' :
               '<button type="button" class="ec-btn ec-btn--acc ec-btn--block" id="ec-lock">Lock in this payment</button>' +
-              (d.sc ? '<a class="ec-btn ec-btn--light ec-btn--block" id="ec-text" href="#">Text my salesperson</a>' : '')) +
+              (canText() ? '<a class="ec-btn ec-btn--light ec-btn--block" id="ec-text" href="#">Text this deal to my salesperson</a>' : '')) +
             '<button type="button" class="ec-btn ec-btn--light ec-btn--block" id="ec-pdf">Save this offer as a PDF</button>' +
           '</div>' +
           '<div class="ec-controls">' + rateCtrl + termCtrl +
@@ -825,21 +828,26 @@ setTimeout(function () {
       leaseDownNow = leaseDown();
       ldR.max = leaseMaxDown(); ldR.value = leaseDownNow;
       syncInput(ldIn, leaseDownNow);
-      leaseTerms().forEach(([t, p], i) => { $('#ec-lp' + i).innerHTML = money(leasePay(t, p)) + '<em> /mo</em>'; });
+      leaseTerms().forEach(([t, p], i) => {
+        $('#ec-lp' + i).innerHTML = money(leasePay(t, p)) + '<em> /mo</em>';
+        const tx = root.querySelector('[data-lease-text="' + i + '"]'); if (tx) tx.href = leaseSmsHref(t, p);
+      });
       fill(ldR);
     }
 
+    const leaseFields = (t, p) => ({
+      lease_term: t + ' months', lease_payment: money(leasePay(t, p)), lease_down: money(leaseDown()),
+      lease_miles: leaseMiles(), lease_line: 'Lease: ' + leaseOffer(t, p)
+    });
+
     function requestLease([t, p]) {
       const text = 'I want this lease: ' + leaseOffer(t, p) + '.\n\n' + summaryText();
-      hook('lease_requested', {
-        lease_term: t + ' months', lease_payment: money(leasePay(t, p)), lease_down: money(leaseDown()),
-        lease_miles: leaseMiles(), lease_line: 'Lease: ' + leaseOffer(t, p)
-      });
+      hook('lease_requested', leaseFields(t, p));
       if (d.de) {
         const subj = encodeURIComponent('I want to lease: ' + (vehicle() || 'vehicle') + ', ' + t + ' months' + (d.id ? ' (Quote #' + d.id + ')' : ''));
         location.href = 'mailto:' + encodeURIComponent(d.de) + '?subject=' + subj + '&body=' + encodeURIComponent(text + '\n\nPlease contact me to finalize this lease.');
       }
-      setTimeout(() => showFallback(text), 900);
+      setTimeout(() => showFallback(text, ''), 900);
     }
 
     if (ldR) {
@@ -847,6 +855,7 @@ setTimeout(function () {
       ldIn.addEventListener('input', () => { leaseDownNow = num(ldIn.value, 0); leaseUpdate(); });
       ldIn.addEventListener('change', () => { ldIn.value = Math.round(leaseDown()); });
       root.querySelectorAll('[data-lease]').forEach(b => { b.onclick = () => requestLease(leaseTerms()[+b.dataset.lease]); });
+      root.querySelectorAll('[data-lease-text]').forEach(a => a.addEventListener('click', () => hook('text_clicked', leaseFields(...leaseTerms()[+a.dataset.leaseText]))));
       leaseUpdate();
     }
     if (csR) csR.oninput = () => { d.cs = num(csR.value, 720); update(); };
@@ -861,17 +870,18 @@ setTimeout(function () {
         const body = encodeURIComponent(summaryText() + '\n\nPlease contact me to finalize this deal.');
         location.href = 'mailto:' + encodeURIComponent(d.de) + '?subject=' + subj + '&body=' + body;
       }
-      setTimeout(() => showFallback(summaryText()), 900);
+      setTimeout(() => showFallback(summaryText(), canText() ? smsHref() : ''), 900);
     };
     root.querySelectorAll('#ec-text,#ec-text2').forEach(a => a.addEventListener('click', () => hook('text_clicked')));
 
-    function showFallback(text) {
+    /* sms is the pre-filled text link for this request, or '' to offer copy and email only */
+    function showFallback(text, sms) {
       const slot = $('#ec-fallback-slot');
       slot.innerHTML = '<div class="ec-card ec-fallback"><h3>' + (d.de ? 'Did your email open?' : 'Send your offer to the dealer') + '</h3>' +
         '<p>' + (d.de ? 'If your email app did not open, copy your offer and send it to <b style="color:#0b0b0d">' + esc(d.de) + '</b>' : 'Copy your offer and send it to ' + esc(dealerName())) +
-        (d.sc ? ', or text it straight to ' + esc(d.sp || 'your salesperson') + '.' : '.') + '</p>' +
+        (sms ? ', or text it straight to ' + esc(d.sp || 'your salesperson') + '.' : '.') + '</p>' +
         '<div class="ec-actions"><button type="button" class="ec-btn ec-btn--acc" id="ec-copyq">Copy my offer</button>' +
-        (d.sc ? '<a class="ec-btn ec-btn--ghost" href="' + smsHref() + '">Text ' + esc(d.sp ? d.sp.split(' ')[0] : 'my salesperson') + '</a>' : '') +
+        (sms ? '<a class="ec-btn ec-btn--ghost" href="' + sms + '">Text ' + esc(d.sp ? d.sp.split(' ')[0] : 'my salesperson') + '</a>' : '') +
         (d.de ? '<a class="ec-btn ec-btn--ghost" href="mailto:' + esc(d.de) + '">Email ' + esc(dealerName()) + '</a>' : '') + '</div></div>';
       const c = $('#ec-copyq');
       c.onclick = () => copyText(text, c, 'Copy my offer');
