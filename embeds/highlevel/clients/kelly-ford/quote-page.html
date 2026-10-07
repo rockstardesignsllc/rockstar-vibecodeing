@@ -1,5 +1,5 @@
 <!--
-  RockstarAI Engagement Calculator v2.5 (Kelly Ford)  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
+  RockstarAI Engagement Calculator v2.6 (Kelly Ford)  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
   Paste this into a GHL "Custom HTML/JS" element on your /quote page
   (must match CONFIG.quotePagePath in file 1).
   This is the "Here's your personalized vehicle offer" page your customer sees,
@@ -63,6 +63,8 @@ setTimeout(function () {
 #rsec .ec-sec>p{font-size:14px;color:var(--steel);margin-bottom:16px}
 #rsec .ec-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 #rsec .ec-grid--5{grid-template-columns:repeat(5,minmax(0,1fr))}
+#rsec .ec-grid--5 .ec-field{display:flex;flex-direction:column;gap:6px}
+#rsec .ec-grid--5 .ec-field input{margin-top:auto}
 #rsec .ec-field{display:block;font-size:12px;font-weight:700;color:var(--steel)}
 #rsec .ec-field input,#rsec .ec-field select{display:block;width:100%;margin-top:6px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--ink);background:#fff;outline:none;transition:border-color .15s}
 #rsec .ec-field input:focus,#rsec .ec-field select:focus{border-color:var(--acc)}
@@ -225,7 +227,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '2.5';
+  const VERSION = '2.6';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -483,14 +485,14 @@ setTimeout(function () {
             '<div class="ec-sec"><h3>Dealership</h3><p>Saved on this device as you type, so you only enter it once.<span class="ec-saved" id="ec-saved" hidden>Saved</span> <button type="button" class="ec-textbtn" id="ec-forget">Forget saved info</button></p>' +
               '<div class="ec-grid">' +
                 field('dn', 'Dealer name', 'text', 'Your dealership') +
-                field('de', 'Dealer notification email', 'email', 'sales@yourstore.com') +
                 field('dl', 'Dealer logo image URL (optional)', 'url', 'https://') +
                 (isLocked('ac') ? field('ac', 'Brand color') : '<label class="ec-field">Brand color (buttons and sliders)<input data-k="ac" type="color" value="' + (validColor(d.ac) ? esc(d.ac) : '#d70015') + '"></label>') +
               '</div>' +
               (isLocked('wh') ? '' : '<div class="ec-grid" style="margin-top:14px">' + field('wh', 'Quote alert webhook URL (optional)', 'url', 'GHL inbound webhook or Zapier URL') + '<div class="ec-fine" style="align-self:end">Get a ping when a customer opens or requests a quote. Leave blank to turn alerts off.</div></div>') +
             '</div>') +
-            '<div class="ec-sec"><h3>Salesperson</h3><p>Shows on the quote so the customer knows who to reach.</p><div class="ec-grid">' +
+            '<div class="ec-sec"><h3>Salesperson</h3><p>Shows on the quote so the customer knows who to reach. Quote alerts go to the notification email.</p><div class="ec-grid">' +
               field('sp', 'Salesperson name', 'text', 'Mike Smith') + field('sc', 'Salesperson cell (adds a Text button)', 'tel', '(555) 555 5555') +
+              field('de', 'Salesperson notification email', 'email', 'mike@yourstore.com') +
             '</div></div>' +
             '<div class="ec-sec"><h3>Customer and vehicle</h3><div class="ec-grid">' +
               field('cn', 'Customer full name') + field('st', 'Stock number') + field('yr', 'Year', 'text', '2025') +

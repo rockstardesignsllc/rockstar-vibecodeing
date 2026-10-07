@@ -3,6 +3,10 @@
 `build.py` reads the version from the first `## v` heading below. To ship a change: add a
 heading for the new version, describe what changed, then run `python3 build.py`.
 
+## v2.6
+- The five credit tier rate boxes line up, even when a tier label wraps to two lines.
+- "Dealer notification email" is now "Salesperson notification email" and sits in the Salesperson section. It is still saved on the device, and alerts and customer emails still go to it.
+
 ## v2.5
 - Text buttons appear only on phones and tablets.
 - The purchase button reads "Text this deal to my salesperson".
