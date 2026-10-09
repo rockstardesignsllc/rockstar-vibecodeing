@@ -12,7 +12,7 @@ import pathlib
 import re
 
 HERE = pathlib.Path(__file__).resolve().parent
-CONFIG_KEYS = ['dealerName', 'dealerEmail', 'dealerLogo', 'accentColor', 'webhookUrl', 'quotePagePath']
+CONFIG_KEYS = ['dealerName', 'dealerEmail', 'dealerLogo', 'accentColor', 'webhookUrl', 'calculatorType', 'headerColor', 'quotePagePath']
 QUOTE_HEADER = '''<!--
   RockstarAI Engagement Calculator v{version}  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
   Paste this into a GHL "Custom HTML/JS" element on your /quote page

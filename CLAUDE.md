@@ -138,3 +138,7 @@ Required in `.dev.vars` for local development:
 - Provides runtime error feedback
 - Returns preview URLs for generated apps
 - Configuration in `wrangler.jsonc`
+
+## HighLevel Engagement Calculator builds (`embeds/highlevel/`)
+- When the user asks to build a new calculator, follow `embeds/highlevel/NEW-CALCULATOR.md`. Ask its questions first, starting with "Is this a standard calculator or subprime?", and wait for the answers before building.
+- `dealer-page.html` is the single source. Version every change in `CHANGELOG.md`, then run `python3 embeds/highlevel/build.py`.

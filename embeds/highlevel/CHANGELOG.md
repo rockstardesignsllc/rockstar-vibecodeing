@@ -3,6 +3,12 @@
 `build.py` reads the version from the first `## v` heading below. To ship a change: add a
 heading for the new version, describe what changed, then run `python3 build.py`.
 
+## v2.7
+- New subprime calculator type (`calculatorType: 'subprime'` in CONFIG). It removes the lease option and the credit score slider from both pages, offers Fixed or Hidden rate with Hidden as the default, and adds "All payments are subject to lender approval." to the disclaimer.
+- New optional `headerColor` in CONFIG sets the customer page header bar color. Text turns light on dark colors, so logos with a dark background blend in.
+- A logo set in the code now shows as an image on the dealer page instead of its URL.
+- New client build: Redemption Auto Sales (subprime).
+
 ## v2.6
 - The five credit tier rate boxes line up, even when a tier label wraps to two lines.
 - "Dealer notification email" is now "Salesperson notification email" and sits in the Salesperson section. It is still saved on the device, and alerts and customer emails still go to it.
