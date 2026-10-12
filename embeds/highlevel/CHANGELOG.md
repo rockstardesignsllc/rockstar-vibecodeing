@@ -3,6 +3,9 @@
 `build.py` reads the version from the first `## v` heading below. To ship a change: add a
 heading for the new version, describe what changed, then run `python3 build.py`.
 
+## v2.8
+- New client build: Wildcat Used Cars (subprime).
+
 ## v2.7
 - New subprime calculator type (`calculatorType: 'subprime'` in CONFIG). It removes the lease option and the credit score slider from both pages, offers Fixed or Hidden rate with Hidden as the default, and adds "All payments are subject to lender approval." to the disclaimer.
 - New optional `headerColor` in CONFIG sets the customer page header bar color. Text turns light on dark colors, so logos with a dark background blend in.
