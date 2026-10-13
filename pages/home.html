@@ -738,6 +738,15 @@ window.RSD_CONFIG = {
   PHONE DEMO CSS + ENGINE
 ============================================================ -->
 <style>
+  /* ── stat counter override: rs-count is a small label in master CSS ── */
+  .rs-stat strong { display:flex; align-items:baseline; line-height:1; }
+  .rs-stat strong .rs-count { font-size:inherit; color:inherit; font-weight:inherit; display:inline; }
+
+  /* ── timeline win card: text was inheriting white from dark section ── */
+  .rs-vs__col--win .rs-tl li > div,
+  .rs-vs__col--win .rs-tl li > div strong,
+  .rs-vs__col--win .rs-tl li > div p { color:var(--rs-ink,#0b0b0d); }
+
   .rsd-wrap{ width:100%; max-width:330px; margin:0 auto; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; }
   .rsd-wrap:empty{ aspect-ratio:10/21; }
   .rsd-stage{ position:relative; width:100%; }
