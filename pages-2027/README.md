@@ -37,6 +37,30 @@ Paste-ready HTML for GoHighLevel. Each file goes into the GHL page at the slug l
 | 13-voicedemo.html | `voicedemo` |
 | 14-about.html | `about` |
 
+## aiforpowersports.com
+
+| File | Slug |
+|---|---|
+| 01-home.html | `/` |
+| 02-ai-tools.html | `rockstar-tech-page` |
+| 03-compare-ai.html | `powersports-ai-comparison-page` |
+| 04-ai-demos.html | `choose-your-ai-demo` |
+| 05-payment-calculator.html | `customer-engagement-calculator` |
+| 06-contact.html | `contact` |
+| 07-rockstarai-sales.html | `rockstarai-sales` |
+| 08-rockstarai-bdc.html | `rockstarai-bdc` |
+| 09-rockstarai-service.html | `rockstarai-service` |
+| 10-rockstarai-reception.html | `rockstarai-reception` |
+| 11-rockstar-ai-text-message-demo.html | `rockstar-ai-text-message-demo` |
+| 12-rockstar-ai-text-message-demo-thanks.html | `rockstar-ai-text-message-demo-thanks` |
+| 13-voicedemo.html | `voicedemo` |
+| 14-about.html | `about` |
+| 15-motorcycle.html | `motorcycle` |
+| 16-atv-utv.html | `atv-utv` |
+| 17-marine.html | `marine` |
+| 18-rv.html | `rv` |
+| 19-multi-line.html | `multi-line` |
+
 ## managemychurch.org
 
 | File | Slug |
