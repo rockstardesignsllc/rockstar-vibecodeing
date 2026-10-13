@@ -61,6 +61,24 @@ Paste-ready HTML for GoHighLevel. Each file goes into the GHL page at the slug l
 | 18-rv.html | `rv` |
 | 19-multi-line.html | `multi-line` |
 
+## getrockstarai.com
+
+| File | Slug |
+|---|---|
+| 01-home.html | `/` |
+| 02-ai-tools.html | `rockstar-tech-page` |
+| 03-ai-demos.html | `choose-your-ai-demo` |
+| 04-voicedemo.html | `voicedemo` |
+| 05-about.html | `about` |
+| 06-contact.html | `contact` |
+| 07-rockstarai-reception.html | `rockstarai-reception` |
+| 08-rockstarai-lead-response.html | `rockstarai-lead-response` |
+| 09-rockstarai-booking.html | `rockstarai-booking` |
+| 10-rockstarai-follow-up.html | `rockstarai-follow-up` |
+| 11-home-services.html | `home-services` |
+| 12-tattoo-piercing.html | `tattoo-piercing` |
+| 13-missed-call-calculator.html | `missed-call-calculator` |
+
 ## managemychurch.org
 
 | File | Slug |
