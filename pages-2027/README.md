@@ -36,6 +36,12 @@ Paste-ready HTML for GoHighLevel. Each file goes into the GHL page at the slug l
 | 12-rockstar-ai-text-message-demo-thanks.html | `rockstar-ai-text-message-demo-thanks` |
 | 13-voicedemo.html | `voicedemo` |
 | 14-about.html | `about` |
+| 15-vs-podium.html | `rockstarai-vs-podium` |
+| 16-vs-fullpath.html | `rockstarai-vs-fullpath` |
+| 17-vs-callrevu.html | `rockstarai-vs-callrevu` |
+| 18-vs-pam.html | `rockstarai-vs-pam` |
+| 19-vs-dealership-accelerator.html | `rockstarai-vs-dealership-accelerator` |
+| 20-vs-matador.html | `rockstarai-vs-matador` |
 
 ## aiforpowersports.com
 

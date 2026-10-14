@@ -1,9 +1,35 @@
 <!-- =========================================================
-     AIFORDEALERS.COM COMPARE AI (replaces /automotive-ai-comparison-page)
+     AIFORDEALERS.COM COMPARE AI (/automotive-ai-comparison-page)
      Built on the Rockstar Designs Master Template v1.1
      Paste into one GHL Custom HTML/JS element (full width, no padding)
      Requires rockstar-master.css in the site's Custom CSS
      ========================================================= -->
+<style>
+.rs-page .rs-cmp { min-width: 980px; font-size: 15px; }
+.rs-page .rs-cmp th, .rs-page .rs-cmp td { padding: 16px 14px; text-align: center; vertical-align: middle; }
+.rs-page .rs-cmp thead th { white-space: nowrap; }
+.rs-page .rs-cmp thead th:last-child { color: var(--rs-steel); background: var(--rs-paper); }
+.rs-page .rs-cmp thead th:nth-child(2) { color: var(--rs-white); background: var(--rs-red); }
+.rs-page .rs-cmp th:first-child, .rs-page .rs-cmp td:first-child { text-align: left; position: sticky; left: 0; background: var(--rs-white); z-index: 1; min-width: 210px; }
+.rs-page .rs-cmp thead th:first-child { background: var(--rs-paper); }
+.rs-page .rs-cmp td:nth-child(2) { color: var(--rs-ink); font-weight: 700; background: rgba(215,0,21,.06); }
+.rs-page .rs-cmp td:last-child { font-weight: 400; background: none; }
+.rs-page .rs-cmp td small { display: block; font-size: 12px; line-height: 1.35; color: var(--rs-steel); margin-top: 6px; font-weight: 500; }
+.rs-page .rs-cmp td:nth-child(2) small { color: var(--rs-ink); }
+.rs-page .rs-mk { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: 15px; font-weight: 800; line-height: 1; }
+.rs-page .rs-mk--y { background: var(--rs-ink); color: var(--rs-white); }
+.rs-page .rs-cmp td:nth-child(2) .rs-mk--y { background: var(--rs-red); }
+.rs-page .rs-cmp-swipe { display: none; text-align: center; font-size: 13px; font-weight: 700; color: var(--rs-steel); margin: 0 0 12px; }
+@media (max-width: 760px) { .rs-page .rs-cmp-swipe { display: block; } }
+.rs-page .rs-mk--p { background: #ececf0; color: var(--rs-ink); }
+.rs-page .rs-mk--n { background: none; color: #b6b6bb; font-size: 16px; }
+.rs-page .rs-cmp-key { display: flex; flex-wrap: wrap; gap: 18px; justify-content: center; margin-top: 22px; font-size: 14px; color: var(--rs-steel); }
+.rs-page .rs-cmp-key span { display: inline-flex; align-items: center; gap: 8px; }
+.rs-page .rs-cmp-key .rs-mk { width: 22px; height: 22px; font-size: 12px; }
+.rs-page a.rs-match { color: inherit; text-decoration: none; transition: transform .2s; }
+.rs-page a.rs-match:hover { transform: translateY(-3px); }
+.rs-page .rs-match .rs-link { margin-top: 4px; }
+</style>
 <div class="rs-page">
   <nav class="rs-nav" aria-label="Main">
     <div class="rs-wrap rs-nav__inner">
@@ -40,7 +66,7 @@
         <span class="h-line">AI that sells.</span>
         <span class="h-line rs-red-text">Not software that sits.</span>
       </h1>
-      <p class="rs-lead">RockstarAI is the custom AI workforce dealers actually use. Voice. Text. Chat. Booked. Custom pricing, built around your dealership.</p>
+      <p class="rs-lead">See how RockstarAI stacks up against Podium, Fullpath, CallRevu, Pam, Dealership Accelerator and Matador. Voice. Text. Chat. Booked. Custom built around your dealership.</p>
       <div class="rs-btn-row">
         <a class="rs-btn rs-btn--red" href="https://app.rockstarinfo.com/widget/bookings/rockstarai">Get My Free AI Audit</a>
         <a class="rs-btn rs-btn--ghost" href="https://aifordealers.com/choose-your-ai-demo">See the Demos</a>
@@ -64,32 +90,36 @@
     </div>
   </section>
 
-  <!-- FEATURED MATCHUP -->
+  <!-- THE GRID -->
   <section class="rs-section">
     <div class="rs-wrap">
       <div class="rs-head">
-        <span class="rs-eyebrow">Featured matchup</span>
-        <h2 class="rs-h2">RockstarAI vs Spyne</h2>
+        <span class="rs-eyebrow">The grid</span>
+        <h2 class="rs-h2">RockstarAI vs the big names in dealer AI.</h2>
+        <p class="rs-lead">Six popular dealer AI tools. One grid. Checked against each company's own website.</p>
       </div>
-      <div class="rs-lanes">
-        <div class="rs-lane">
-          <h3 class="rs-h3">Spyne: their lane</h3>
-          <ul>
-            <li>Merchandising platform first: photos, tours and videos</li>
-            <li>Vini AI runs on 20+ prebuilt agent templates</li>
-            <li>Big platform pricing with gated demos</li>
-          </ul>
-        </div>
-        <div class="rs-lane rs-lane--us">
-          <h3 class="rs-h3">RockstarAI: our lane</h3>
-          <ul>
-            <li>Conversation first: voice, SMS and web chat are the core product</li>
-            <li>Custom built around your inventory, process and team</li>
-            <li>Custom pricing. Pay only for the tools you need</li>
-          </ul>
-        </div>
+      <p class="rs-cmp-swipe">Swipe the grid to see all six &#8594;</p>
+      <div class="rs-table-wrap">
+        <table class="rs-table rs-cmp">
+          <thead><tr><th>What you get</th><th>RockstarAI</th><th>Podium</th><th>Fullpath</th><th>CallRevu</th><th>Pam</th><th>Dealership Accelerator</th><th>Matador</th></tr></thead>
+          <tbody>
+            <tr><td>AI answers your phone calls</td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span><small>First ring, 24/7</small></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span><small>Click to call only</small></td><td><span class="rs-mk rs-mk--p" aria-label="Partly">&#189;</span><small>Your team answers. AI is backup</small></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td></tr>
+            <tr><td>Text conversations with shoppers</td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--p" aria-label="Partly">&#189;</span><small>Marketing texts, separate product</small></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td></tr>
+            <tr><td>Website chat</td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td></tr>
+            <tr><td>Works AutoTrader, Cars.com and Facebook leads</td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span><small>Website visitors</small></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td></tr>
+            <tr><td>Books service appointments</td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--p" aria-label="Partly">&#189;</span><small>Website service module</small></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td></tr>
+            <tr><td>AI receptionist routes to every department</td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span><small>Sales, service, parts, finance</small></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--p" aria-label="Partly">&#189;</span><small>Phone routing, not AI</small></td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td></tr>
+            <tr><td>Payment tool your team texts to buyers</td><td><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span><small>Engagement Calculator</small></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--p" aria-label="Partly">&#189;</span><small>Website deal calculator</small></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td><td><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span></td></tr>
+            <tr><td>Advertised lead response</td><td>12 sec<small>average</small></td><td>36 sec<small>average</small></td><td><span class="rs-mk rs-mk--n">&#10005;</span><small>Not a lead responder</small></td><td>Under 30 sec</td><td><span class="rs-mk rs-mk--n">&#10005;</span><small>Not stated</small></td><td>30 to 40 sec</td><td>30 sec</td></tr>
+          </tbody>
+        </table>
       </div>
-      <p class="rs-lead rs-center" style="margin-top:44px">Spyne makes your cars look good online. <b style="color:#0b0b0d">RockstarAI makes your phone ring, your texts convert and your calendar fill.</b> One of those cashes checks.</p>
+      <div class="rs-cmp-key">
+        <span><span class="rs-mk rs-mk--y" aria-label="Yes">&#10003;</span> On their product page</span>
+        <span><span class="rs-mk rs-mk--p" aria-label="Partly">&#189;</span> Partly</span>
+        <span><span class="rs-mk rs-mk--n" aria-label="Not on their page">&#10005;</span> Not on their product page</span>
+      </div>
+      <p class="rs-fine rs-center">Based on each company's public product page, reviewed October 2026: <a href="https://automotive.podium.com/accelerate" target="_blank" rel="noopener">Podium</a>, <a href="https://www.fullpath.com/dealership-ai-website-engagement/" target="_blank" rel="noopener">Fullpath</a>, <a href="https://www.callrevu.com/connect/" target="_blank" rel="noopener">CallRevu</a>, <a href="https://www.pam.ai/" target="_blank" rel="noopener">Pam</a>, <a href="https://dealershipaccelerator.io" target="_blank" rel="noopener">Dealership Accelerator</a>, <a href="https://matador.ai" target="_blank" rel="noopener">Matador</a>. Response times are each company's own advertised numbers. Products change, so ask every vendor for a live test.</p>
     </div>
   </section>
 
@@ -98,58 +128,52 @@
     <div class="rs-wrap">
       <div class="rs-head">
         <span class="rs-eyebrow">Head to head</span>
-        <h2 class="rs-h2">RockstarAI vs the usual suspects.</h2>
-        <p class="rs-lead">Eight comparisons. One clear winner.</p>
+        <h2 class="rs-h2">Pick your matchup.</h2>
+        <p class="rs-lead">Six comparisons. One clear winner.</p>
       </div>
-      <div class="rs-grid rs-grid--4">
-        <div class="rs-match">
+      <div class="rs-grid rs-grid--3">
+        <a class="rs-match" href="https://aifordealers.com/rockstarai-vs-podium">
+          <div class="rs-match__vs"><b>RockstarAI</b> vs Podium</div>
+          <div class="rs-match__row"><span>Their lane</span>Jerry, a sales lead AI for independent dealers</div>
+          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>One workforce for sales, BDC, service and the main phone line</div>
+          <div class="rs-match__claim">They advertise 36 seconds. We average 12.</div>
+          <span class="rs-link">See the full comparison</span>
+        </a>
+        <a class="rs-match" href="https://aifordealers.com/rockstarai-vs-fullpath">
+          <div class="rs-match__vs"><b>RockstarAI</b> vs Fullpath</div>
+          <div class="rs-match__row"><span>Their lane</span>Website engagement driven by a customer data platform</div>
+          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Works every call, text and lead, not just site visitors</div>
+          <div class="rs-match__claim">A captured lead isn't a booked appointment.</div>
+          <span class="rs-link">See the full comparison</span>
+        </a>
+        <a class="rs-match" href="https://aifordealers.com/rockstarai-vs-callrevu">
+          <div class="rs-match__vs"><b>RockstarAI</b> vs CallRevu</div>
+          <div class="rs-match__row"><span>Their lane</span>Phone system, call tracking and lead routing to your reps</div>
+          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>AI that answers every call and works every lead first</div>
+          <div class="rs-match__claim">Reports don't book appointments. Answers do.</div>
+          <span class="rs-link">See the full comparison</span>
+        </a>
+        <a class="rs-match" href="https://aifordealers.com/rockstarai-vs-pam">
           <div class="rs-match__vs"><b>RockstarAI</b> vs Pam</div>
-          <div class="rs-match__row"><span>Their lane</span>Phone bot only</div>
-          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Voice plus SMS plus web chat plus appointments</div>
-          <div class="rs-match__claim">You get a workforce, not a phone bot.</div>
-        </div>
-        <div class="rs-match">
-          <div class="rs-match__vs"><b>RockstarAI</b> vs FullPath</div>
-          <div class="rs-match__row"><span>Their lane</span>Big platform shift</div>
-          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Practical AI tools that drop into your stack</div>
-          <div class="rs-match__claim">Less bloat. More execution.</div>
-        </div>
-        <div class="rs-match">
-          <div class="rs-match__vs"><b>RockstarAI</b> vs Kenect</div>
-          <div class="rs-match__row"><span>Their lane</span>Broad communication suite</div>
-          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Focused AI workforce for customer conversations</div>
-          <div class="rs-match__claim">Customers handled. Not another tool menu.</div>
-        </div>
-        <div class="rs-match">
-          <div class="rs-match__vs"><b>RockstarAI</b> vs Numa</div>
-          <div class="rs-match__row"><span>Their lane</span>Service department first</div>
-          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Sales, BDC, service and reception</div>
-          <div class="rs-match__claim">Works across the entire customer journey.</div>
-        </div>
-        <div class="rs-match">
+          <div class="rs-match__row"><span>Their lane</span>AI receptionist and outbound calls, strongest in service</div>
+          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Voice, text, web chat and internet leads in one workforce</div>
+          <div class="rs-match__claim">You get a full workforce, not just a front desk.</div>
+          <span class="rs-link">See the full comparison</span>
+        </a>
+        <a class="rs-match" href="https://aifordealers.com/rockstarai-vs-dealership-accelerator">
+          <div class="rs-match__vs"><b>RockstarAI</b> vs Dealership Accelerator</div>
+          <div class="rs-match__row"><span>Their lane</span>AI BDC built around text follow up</div>
+          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Text, phone and web chat, plus service and reception</div>
+          <div class="rs-match__claim">Your leads call too. We pick up.</div>
+          <span class="rs-link">See the full comparison</span>
+        </a>
+        <a class="rs-match" href="https://aifordealers.com/rockstarai-vs-matador">
           <div class="rs-match__vs"><b>RockstarAI</b> vs Matador</div>
-          <div class="rs-match__row"><span>Their lane</span>Multi channel platform</div>
-          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Conversations engineered to become appointments</div>
-          <div class="rs-match__claim">We measure butts in seats, not chats sent.</div>
-        </div>
-        <div class="rs-match">
-          <div class="rs-match__vs"><b>RockstarAI</b> vs Siro</div>
-          <div class="rs-match__row"><span>Their lane</span>Coaching humans</div>
-          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Handling the customer in real time</div>
-          <div class="rs-match__claim">Coaching matters. Closing matters more.</div>
-        </div>
-        <div class="rs-match">
-          <div class="rs-match__vs"><b>RockstarAI</b> vs Mia</div>
-          <div class="rs-match__row"><span>Their lane</span>Broad phone agent</div>
-          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Custom voice, text, web and appointment automation</div>
-          <div class="rs-match__claim">Built to fit your store. Not the other way around.</div>
-        </div>
-        <div class="rs-match">
-          <div class="rs-match__vs"><b>RockstarAI</b> vs DriveCentric</div>
-          <div class="rs-match__row"><span>Their lane</span>Locked to one CRM</div>
-          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>Flexible AI workforce that plays nice with your stack</div>
-          <div class="rs-match__claim">No vendor lock in. Just results.</div>
-        </div>
+          <div class="rs-match__row"><span>Their lane</span>A platform of AI agents plus inbox, broadcast and video tools</div>
+          <div class="rs-match__row rs-match__row--us"><span>Our lane</span>A custom AI workforce built and set up around your store</div>
+          <div class="rs-match__claim">They advertise 30 seconds. We average 12.</div>
+          <span class="rs-link">See the full comparison</span>
+        </a>
       </div>
     </div>
   </section>
