@@ -45,6 +45,8 @@ Paste-ready HTML for GoHighLevel. Each file goes into the GHL page at the slug l
 
 SEO for the Compare AI pages (03 and 15 to 20) lives in `aifordealers/seo/`: `aifordealers-compare-seo.md` has the title, description, keywords and JSON-LD schema for each page, and `social-images/` has the matching 1200 x 630 social images.
 
+Schema for pages 01, 02 and 04 to 14 is in `aifordealers/seo/aifordealers-schema.md`. Paste each block into that page's Header Tracking Code.
+
 ## aiforpowersports.com
 
 | File | Slug |
