@@ -43,7 +43,7 @@ Paste-ready HTML for GoHighLevel. Each file goes into the GHL page at the slug l
 | 19-vs-dealership-accelerator.html | `rockstarai-vs-dealership-accelerator` |
 | 20-vs-matador.html | `rockstarai-vs-matador` |
 
-SEO for the Compare AI pages (03 and 15 to 20) lives in `aifordealers/seo/`: `aifordealers-compare-seo.md` has the title, description, keywords and JSON-LD schema for each page, and `social-images/` has the matching 1200 x 630 social images.
+SEO for the Compare AI pages (03 and 15 to 20) lives in `aifordealers/seo/`: `aifordealers-compare-seo.md` has the title, description, keywords and JSON-LD schema for each page, and `social-images/` has the matching 1200 x 630 social images. The home page title, description, keywords and social image are in `aifordealers-home-seo.md`.
 
 Schema for all 20 pages is in `aifordealers/seo/aifordealers-schema.md`. Paste each block into that page's Header Tracking Code.
 
