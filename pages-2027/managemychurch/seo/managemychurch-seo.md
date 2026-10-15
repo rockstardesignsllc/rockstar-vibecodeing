@@ -215,6 +215,32 @@ contact managemychurch, managemychurch support, church software support, church 
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://rockstarinfo.com/#organization","name":"Rockstar Designs LLC","alternateName":["Rockstar Designs","ManageMyChurch"],"url":"https://rockstarinfo.com","slogan":"Communicate Better.","founder":{"@type":"Person","@id":"https://rockstarinfo.com/about#mat","name":"Mat Koenig"},"address":{"@type":"PostalAddress","streetAddress":"2222 W Grand River Ave, STE A","addressLocality":"Okemos","addressRegion":"MI","postalCode":"48864","addressCountry":"US"}},{"@type":"WebSite","@id":"https://managemychurch.org/#website","url":"https://managemychurch.org/","name":"ManageMyChurch","description":"Online community, video courses, social media and text and email follow up for churches.","publisher":{"@id":"https://rockstarinfo.com/#organization"}},{"@type":"ContactPage","@id":"https://managemychurch.org/contact#webpage","url":"https://managemychurch.org/contact","name":"Contact ManageMyChurch | Questions, Support, Church Plants","description":"Have a question about ManageMyChurch? Send us a note and a real person will get back to you soon. Walkthroughs, plans, support and church plants.","isPartOf":{"@id":"https://managemychurch.org/#website"},"publisher":{"@id":"https://rockstarinfo.com/#organization"},"inLanguage":"en-US","breadcrumb":{"@id":"https://managemychurch.org/contact#breadcrumb"}},{"@type":"BreadcrumbList","@id":"https://managemychurch.org/contact#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://managemychurch.org/"},{"@type":"ListItem","position":2,"name":"Contact","item":"https://managemychurch.org/contact"}]}]}</script>
 ```
 
+## 09. Donation: https://managemychurch.org/donation
+
+**File:** `09-donation.html`  
+**Social image:** `social-09-donation.png`  
+**Schema includes:** WebPage, DonateAction, FAQ (4)
+
+**Title**
+```
+Sponsor a Church | Give to ManageMyChurch
+```
+
+**Description**
+```
+Help make the Gospel go viral. Your gift helps small churches, church plants and rural congregations get ManageMyChurch so they can stay connected all week.
+```
+
+**Keywords**
+```
+sponsor a church, donate to churches, church giving, help small churches, church plant support, give to church ministry, managemychurch donation
+```
+
+**Schema**
+```html
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://rockstarinfo.com/#organization","name":"Rockstar Designs LLC","alternateName":["Rockstar Designs","ManageMyChurch"],"url":"https://rockstarinfo.com","slogan":"Communicate Better.","founder":{"@type":"Person","@id":"https://rockstarinfo.com/about#mat","name":"Mat Koenig"},"address":{"@type":"PostalAddress","streetAddress":"2222 W Grand River Ave, STE A","addressLocality":"Okemos","addressRegion":"MI","postalCode":"48864","addressCountry":"US"}},{"@type":"WebSite","@id":"https://managemychurch.org/#website","url":"https://managemychurch.org/","name":"ManageMyChurch","description":"Online community, video courses, social media and text and email follow up for churches.","publisher":{"@id":"https://rockstarinfo.com/#organization"}},{"@type":"WebPage","@id":"https://managemychurch.org/donation#webpage","url":"https://managemychurch.org/donation","name":"Sponsor a Church | Give to ManageMyChurch","description":"Help make the Gospel go viral. Your gift helps small churches, church plants and rural congregations get ManageMyChurch so they can stay connected all week.","isPartOf":{"@id":"https://managemychurch.org/#website"},"publisher":{"@id":"https://rockstarinfo.com/#organization"},"inLanguage":"en-US","breadcrumb":{"@id":"https://managemychurch.org/donation#breadcrumb"},"potentialAction":{"@type":"DonateAction","name":"Sponsor a Church","target":"https://managemychurch.org/donation#give","recipient":{"@id":"https://rockstarinfo.com/#organization"}}},{"@type":"BreadcrumbList","@id":"https://managemychurch.org/donation#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://managemychurch.org/"},{"@type":"ListItem","position":2,"name":"Sponsor a Church","item":"https://managemychurch.org/donation"}]},{"@type":"FAQPage","@id":"https://managemychurch.org/donation#faq","url":"https://managemychurch.org/donation","mainEntity":[{"@type":"Question","name":"Where does my gift go?","acceptedAnswer":{"@type":"Answer","text":"Your gift helps provide ManageMyChurch to churches that couldn't afford it otherwise, so they can keep their people connected all week."}},{"@type":"Question","name":"Can I bless a specific church?","acceptedAnswer":{"@type":"Answer","text":"We'd love that. After you give, contact us with the church's name, city and state and we'll talk about how to bless them."}},{"@type":"Question","name":"Is my payment secure?","acceptedAnswer":{"@type":"Answer","text":"Yes. Gifts are processed through Tithely, a secure giving platform built for churches."}},{"@type":"Question","name":"My church needs help. Can we be sponsored?","acceptedAnswer":{"@type":"Answer","text":"Reach out on our contact page and tell us about your church. We'd love to hear from you."}}]}]}</script>
+```
+
 ## Slug and page table
 
 | # | Page | File | GHL slug | Live URL | Social image |
@@ -227,3 +253,4 @@ contact managemychurch, managemychurch support, church software support, church 
 | 06 | About | `06-about.html` | `about` | https://managemychurch.org/about | `social-06-about.png` |
 | 07 | Book a Walkthrough | `07-walkthrough.html` | `walkthrough` | https://managemychurch.org/walkthrough | `social-07-walkthrough.png` |
 | 08 | Contact | `08-contact.html` | `contact` | https://managemychurch.org/contact | `social-08-contact.png` |
+| 09 | Donation | `09-donation.html` | `donation` | https://managemychurch.org/donation | `social-09-donation.png` |
