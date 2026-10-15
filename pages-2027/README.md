@@ -17,8 +17,9 @@ Paste-ready HTML for GoHighLevel. Each file goes into the GHL page at the slug l
 | 09-eula.html | `eula` |
 | 10-disclaimer.html | `disclaimer` |
 | 11-cookie-compliance-policy.html | `cookie-compliance-policy` |
+| 12-isp.html | `isp` |
 
-SEO for all 11 pages lives in `rockstarinfo/seo/rockstarinfo-seo.md`: the title, description, keywords, social image and JSON-LD schema for each page. The social images are in `rockstarinfo/social-images/`.
+SEO for all 12 pages lives in `rockstarinfo/seo/rockstarinfo-seo.md`: the title, description, keywords, social image and JSON-LD schema for each page. The social images are in `rockstarinfo/social-images/`.
 
 ## aifordealers.com
 
