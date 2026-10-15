@@ -107,4 +107,6 @@ SEO for all 13 pages lives in `getrockstarai/seo/getrockstarai-seo.md`: the titl
 | 07-walkthrough.html | `walkthrough` |
 | 08-contact.html | `contact` |
 
+SEO for all 8 pages lives in `managemychurch/seo/managemychurch-seo.md`: the title, description, keywords, social image and JSON-LD schema for each page. The social images are in `managemychurch/social-images/`.
+
 Each site folder has `rockstar-master.css`. rockstarinfo, getrockstarai and managemychurch also have `social-images/` (one share image per page), and managemychurch has `logo/`.
