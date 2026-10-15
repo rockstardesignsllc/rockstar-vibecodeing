@@ -92,6 +92,8 @@ Schema for all 20 pages is in `aifordealers/seo/aifordealers-schema.md`. Paste e
 | 12-tattoo-piercing.html | `tattoo-piercing` |
 | 13-missed-call-calculator.html | `missed-call-calculator` |
 
+SEO for all 13 pages lives in `getrockstarai/seo/getrockstarai-seo.md`: the title, description, keywords, social image and JSON-LD schema for each page. The social images are in `getrockstarai/social-images/`.
+
 ## managemychurch.org
 
 | File | Slug |
@@ -105,4 +107,4 @@ Schema for all 20 pages is in `aifordealers/seo/aifordealers-schema.md`. Paste e
 | 07-walkthrough.html | `walkthrough` |
 | 08-contact.html | `contact` |
 
-Each site folder has `rockstar-master.css`. rockstarinfo and managemychurch also have `social-images/` (one share image per page), and managemychurch has `logo/`.
+Each site folder has `rockstar-master.css`. rockstarinfo, getrockstarai and managemychurch also have `social-images/` (one share image per page), and managemychurch has `logo/`.
