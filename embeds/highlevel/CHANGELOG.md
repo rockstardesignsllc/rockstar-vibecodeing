@@ -3,6 +3,14 @@
 `build.py` reads the version from the first `## v` heading below. To ship a change: add a
 heading for the new version, describe what changed, then run `python3 build.py`.
 
+## v2.9
+- New "Payment layout" choice on the dealer page: **Adjustable** (the sliders, as before) or **Multi-Payment grid**. Works on standard and subprime.
+- Multi-Payment grid: the dealer sets one fixed rate (shown or hidden), 3 terms and 3 down payments. The customer page shows all 9 monthly payments in a grid. The customer taps one to choose it, and that payment drives the breakdown, "Lock in this payment", the text and the PDF.
+- In grid mode the credit score slider is not offered, and lease still works below the grid.
+- The layout, grid terms and grid down payments are saved on the dealer's device.
+- Webhook alerts carry `payment_layout` (`adjustable` or `grid`) and `payment_grid`, which lists all 9 payments. It is blank in adjustable mode. `payment_grid_line` is the same list, ready to drop into an email. The three notification emails now show it. Customer emails and the PDF list every grid payment too.
+- New optional CONFIG keys for client builds set the starting values: `paymentLayout`, `gridTerms`, `gridDownPayments`, `fixedRate`, `rateDisplay`.
+
 ## v2.8
 - New client build: Wildcat Used Cars (subprime).
 

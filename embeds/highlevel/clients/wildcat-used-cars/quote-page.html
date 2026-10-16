@@ -1,5 +1,5 @@
 <!--
-  RockstarAI Engagement Calculator v2.8 (Wildcat Used Cars · Subprime)  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
+  RockstarAI Engagement Calculator v2.9 (Wildcat Used Cars · Subprime)  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
   Paste this into a GHL "Custom HTML/JS" element on your /quote page
   (must match CONFIG.quotePagePath in file 1).
   This is the "Here's your personalized vehicle offer" page your customer sees,
@@ -187,6 +187,22 @@ setTimeout(function () {
 #rsec .ec-lterm strong em{font-style:normal;font-size:15px;font-weight:600;letter-spacing:0;color:var(--steel)}
 #rsec .ec-lterm .ec-btn{margin-top:14px}
 #rsec .ec-desk .ec-lterm strong{font-size:52px}
+#rsec .ec-grid--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+#rsec .ec-grid--3 .ec-field{display:flex;flex-direction:column;gap:6px}
+#rsec .ec-grid--3 .ec-field input,#rsec .ec-grid--3 .ec-field select{margin-top:auto}
+#rsec .ec-gtab{width:100%;border-collapse:separate;border-spacing:6px;table-layout:fixed;margin-top:8px}
+#rsec .ec-gtab th{font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--steel);text-align:center;padding:2px}
+#rsec .ec-gtab tbody th{text-align:left;font-size:14px;letter-spacing:0;text-transform:none;color:var(--ink)}
+#rsec .ec-gtab td{padding:0;text-align:center}
+#rsec .ec-gtab td button{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:14px 2px;font-weight:800;font-size:17px;color:var(--ink);cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+#rsec .ec-gtab td button:hover{border-color:var(--acc)}
+#rsec .ec-gtab td.on button{background:var(--acc);border-color:var(--acc);color:#fff;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+#rsec .ec-desk .ec-gtab td button{padding:22px 2px;font-size:22px}
+#rsec .ec-side .ec-gtab{margin:4px 0 0}
+#rsec .ec-side .ec-gtab th{color:#a1a1a6}
+#rsec .ec-side .ec-gtab tbody th{color:#fff;font-size:13px}
+#rsec .ec-side .ec-gtab td{background:#1d1d1f;border-radius:10px;padding:10px 2px;font-weight:800;font-size:15px}
+#rsec .ec-side .ec-gtab td.on{background:var(--acc)}
 
 @media(max-width:980px){
   #rsec .ec-builder{grid-template-columns:1fr}
@@ -203,6 +219,9 @@ setTimeout(function () {
   #rsec .ec-grid--5{grid-template-columns:repeat(2,minmax(0,1fr))}
   #rsec .ec-seg{grid-template-columns:1fr}
   #rsec .ec-chips{grid-template-columns:repeat(3,1fr)}
+  #rsec .ec-grid--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #rsec .ec-gtab{border-spacing:4px}
+  #rsec .ec-gtab td button{font-size:15px;padding:12px 1px}
   #rsec .ec-top span,#rsec .ec-bar span{display:none}
   #rsec .ec-hero{display:block;padding:28px 18px 24px}
   #rsec .ec-hero h1{font-size:34px}
@@ -229,11 +248,16 @@ setTimeout(function () {
     webhookUrl:  'https://services.leadconnectorhq.com/hooks/hrsRmtnUmvqCKm3d01tx/webhook-trigger/H0XYx4qdp2S9ZVMHF745',   /* GHL inbound webhook for quote alerts; blank adds a webhook field to the dealer page */
     calculatorType: 'subprime',   /* 'standard' or 'subprime' (subprime: no lease, no credit score slider, hidden rate by default) */
     headerColor: '',   /* customer page header bar color, example: '#0a0b09' (blank is white); use the logo background color for dark logos */
+    paymentLayout: '',   /* starting payment layout: 'adjustable' (blank) or 'grid' (3 terms by 3 down payments) */
+    gridTerms: '',   /* starting grid terms in months, example: '48,60,72' (each one of 24, 36, 48, 60, 72, 84) */
+    gridDownPayments: '',   /* starting grid down payments in dollars, example: '1000,2000,3000' */
+    fixedRate: '',   /* starting APR % for the Fixed and Hidden rate options, example: '14.99' */
+    rateDisplay: '',   /* starting rate option: 'shown' (Fixed rate) or 'hidden' (Hidden rate); blank keeps the usual default */
     quotePagePath: '/quote'
   };
   /* =============================================================== */
 
-  const VERSION = '2.8';
+  const VERSION = '2.9';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -253,19 +277,36 @@ setTimeout(function () {
   const MIN_FINANCED = 250;
   const STORE = 'rsec-dealer-profile-v2';
   const SALT = 'rockstar-engagement-v2';
+  /* payment layouts: 'a' adjustable sliders, 'g' multi-payment grid (rows are down payments, columns are terms) */
+  const PAY_MODES = ['a', 'g'];
+  const okTerm = t => TERMS.includes(t);
+  const okDown = n => Number.isFinite(n) && n >= 0;
+  /* exactly three values that all pass ok, from an array or a comma list, otherwise null */
+  const listOf = (v, ok) => {
+    const a = (Array.isArray(v) ? v : String(v ?? '').split(',')).map(s => String(s).trim() === '' ? NaN : Number(s));
+    return a.length === 3 && a.every(ok) ? a : null;
+  };
+  const CFG_RATE = String(CONFIG.fixedRate || '').trim();
+  const CFG_RM = { shown: 'f', hidden: 'h' }[String(CONFIG.rateDisplay || '').trim().toLowerCase()];
+  const CFG_GRID = String(CONFIG.paymentLayout || '').trim().toLowerCase() === 'grid';
   const DEF = {
     dn: '', de: '', dl: '', ac: '', wh: '', sp: '', sc: '',
     cn: '', st: '', yr: '', mk: '', md: '', mi: '',
     pr: 30000, tx: 0, fe: 0, dp: 1000, ta: 0, tb: 0, rb: 0,
-    rm: SUBPRIME ? 'h' : 't', ra: 7.49, rt: [5.49, 6.49, 8.99, 12.99, 17.99], cs: 720,
+    rm: CFG_RM || (SUBPRIME ? 'h' : CFG_GRID ? 'f' : 't'),
+    ra: CFG_RATE !== '' && okDown(+CFG_RATE) ? +CFG_RATE : 7.49,
+    rt: [5.49, 6.49, 8.99, 12.99, 17.99], cs: 720,
     ls: '', ld: 0, lm: '', l1: 36, p1: 0, l2: 39, p2: 0,
-    tm: TERMS.slice(), t: 60, id: ''
+    tm: TERMS.slice(), t: 60, id: '',
+    pm: CFG_GRID ? 'g' : 'a',
+    gt: listOf(CONFIG.gridTerms, okTerm) || [48, 60, 72],
+    gd: listOf(CONFIG.gridDownPayments, okDown) || [1000, 2000, 3000]
   };
   const NUM = ['pr', 'tx', 'fe', 'dp', 'ta', 'tb', 'rb', 'ra', 'cs', 't', 'ld', 'l1', 'p1', 'l2', 'p2'];
   const BLANK_WHEN_ZERO = ['rb', 'p1', 'p2'];
   const LEASE_KEYS = ['ls', 'ld', 'lm', 'l1', 'p1', 'l2', 'p2'];
   const LEASE_MAX_DOWN = 10000;
-  const PROFILE = ['dn', 'de', 'dl', 'ac', 'wh', 'sp', 'sc', 'rm', 'rt'];
+  const PROFILE = ['dn', 'de', 'dl', 'ac', 'wh', 'sp', 'sc', 'rm', 'rt', 'pm', 'gt', 'gd'];
   const CFG_KEY = { dn: 'dealerName', de: 'dealerEmail', dl: 'dealerLogo', ac: 'accentColor', wh: 'webhookUrl' };
   const cfg = k => (CFG_KEY[k] && String(CONFIG[CFG_KEY[k]] || '').trim()) || '';
   const isLocked = k => !!cfg(k);
@@ -300,9 +341,13 @@ setTimeout(function () {
       if (NUM.includes(k)) o[k] = num(v, DEF[k]);
       else if (k === 'rt') { const a = (Array.isArray(v) ? v : String(v).split(',')).map(Number); if (a.length === 5 && a.every(Number.isFinite)) o.rt = a; }
       else if (k === 'tm') { const a = (Array.isArray(v) ? v : String(v).split(',')).map(Number); const al = TERMS.filter(t => a.includes(t)); if (al.length) o.tm = al; }
+      else if (k === 'gt' || k === 'gd') { const a = listOf(v, k === 'gt' ? okTerm : okDown); if (a) o[k] = a; }
       else o[k] = String(v);
     });
+    if (!PAY_MODES.includes(o.pm)) o.pm = DEF.pm;
     if (!RATE_MODES.includes(o.rm)) o.rm = DEF.rm;
+    /* the grid uses one fixed rate, shown or hidden; the credit score slider is adjustable only */
+    if (o.pm === 'g' && o.rm === 't') o.rm = 'f';
     if (o.ls !== '1' || SUBPRIME) o.ls = '';
     o.cs = Math.min(850, Math.max(300, Math.round(o.cs)));
     o.t = closest(o.t, o.tm);
@@ -353,12 +398,27 @@ setTimeout(function () {
   const hasRebate = () => rebate() > 0;
   const baseFinanced = () => total() - netTrade() - rebate();
   const maxDown = () => Math.max(0, baseFinanced() - MIN_FINANCED);
-  const down = () => Math.max(0, Math.min(maxDown(), num(d.dp)));
+  const clampDown = v => Math.max(0, Math.min(maxDown(), num(v)));
+  const down = () => clampDown(d.dp);
   const financed = () => Math.max(0, baseFinanced() - down());
   const tierIdx = () => { const i = TIERS.findIndex(t => d.cs >= t.min); return i < 0 ? TIERS.length - 1 : i; };
   const rate = () => d.rm === 't' ? num(d.rt[tierIdx()], 0) : num(d.ra);
   const pay = (p, apr, n) => { if (p <= 0) return 0; const r = apr / 100 / 12; return r ? p * r / (1 - Math.pow(1 + r, -n)) : p / n; };
   const monthly = () => pay(financed(), rate(), d.t);
+  /* multi-payment grid: rows are d.gd down payments, columns are d.gt terms; the customer's pick is [row, column] */
+  const isGrid = () => d.pm === 'g';
+  const GRID_START = [1, 1];
+  let gridSel = GRID_START.slice();
+  const gridPay = (t, dp) => pay(Math.max(0, baseFinanced() - clampDown(dp)), rate(), t);
+  const gridLines = () => d.gd.map(dp => money(clampDown(dp)) + ' down: ' + d.gt.map(t => t + ' months ' + money(gridPay(t, dp)) + '/mo').join(', '));
+  function gridHtml(sel, tap) {
+    return '<table class="ec-gtab"><thead><tr><th>Down</th>' + d.gt.map(t => '<th>' + t + ' mo</th>').join('') + '</tr></thead><tbody>' +
+      d.gd.map((dp, r) => '<tr><th>' + money(clampDown(dp)) + '</th>' + d.gt.map((t, c) => {
+        const p = money(gridPay(t, dp));
+        return '<td' + (sel && sel[0] === r && sel[1] === c ? ' class="on"' : '') + '>' +
+          (tap ? '<button type="button" data-g="' + r + ',' + c + '" aria-label="' + t + ' months with ' + money(clampDown(dp)) + ' down, ' + p + ' a month">' + p + '</button>' : p) + '</td>';
+      }).join('') + '</tr>').join('') + '</tbody></table>';
+  }
   const downFor = target => {
     const r = rate() / 100 / 12, n = d.t;
     const f = r ? target * (1 - Math.pow(1 + r, -n)) / r : target * n;
@@ -422,6 +482,7 @@ setTimeout(function () {
       d.st ? 'Stock #: ' + d.st : '',
       '',
       ...rows().map(([a, b]) => a + ': ' + b),
+      ...(isGrid() ? ['', 'All payment options' + (d.rm === 'h' ? '' : ' at ' + pct(rate()) + ' APR'), ...gridLines()] : []),
       ...(hasLease() ? ['', 'Lease option', ...leaseRows().map(([a, b]) => a + ': ' + b)] : []),
       '',
       'Offer link: ' + location.href
@@ -442,6 +503,8 @@ setTimeout(function () {
         trade_allowance: money(d.ta), trade_balance_owed: money(d.tb),
         rebate: hasRebate() ? money(rebate()) : '', rebate_line: hasRebate() ? 'Rebate: ' + money(rebate()) : '',
         lease_quote: hasLease() ? leaseQuote() : '',
+        payment_layout: isGrid() ? 'grid' : 'adjustable', payment_grid: isGrid() ? gridLines().join(' | ') : '',
+        payment_grid_line: isGrid() ? 'All payment options' + (d.rm === 'h' ? '' : ' at ' + pct(rate()) + ' APR') + ': ' + gridLines().join(' | ') : '',
         offer_url: location.href, timestamp: new Date().toISOString(), ...(extra || {})
       });
       fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body }).catch(() => { /* alerts are optional */ });
@@ -513,14 +576,20 @@ setTimeout(function () {
               field('pr', 'Purchase price', 'number', '', 'min="0"') +
               '<div>' + field('tx', 'Total sales tax in dollars', 'number', 'example: 2150', 'min="0"') + '<div class="ec-warn" id="ec-taxwarn" hidden>That looks like a percentage. Enter the total tax in dollars.</div></div>' +
               field('fe', 'Title, registration and dealer fees in dollars', 'number', 'example: 899', 'min="0"') +
-              field('dp', 'Starting down payment', 'number', '', 'min="0"') +
+              '<div id="ec-dp-wrap">' + field('dp', 'Starting down payment', 'number', '', 'min="0"') + '</div>' +
               field('rb', 'Rebate (leave blank if none)', 'number', 'example: 1500', 'min="0"') +
             '</div></div>' +
             '<div class="ec-sec"><h3>Trade</h3><p>Leave both at 0 if there is no trade.</p><div class="ec-grid">' +
               field('ta', 'Trade allowance (what it is worth)', 'number', '', 'min="0"') + field('tb', 'Trade balance owed (what the customer owes)', 'number', '', 'min="0"') +
             '</div><div class="ec-callout" id="ec-tradecall" hidden></div></div>' +
-            '<div class="ec-sec"><h3>Interest rate</h3><p>Choose how the rate works on the customer\'s quote.</p>' +
-              '<div class="ec-seg' + (SUBPRIME ? ' ec-seg--2' : '') + '">' +
+            '<div class="ec-sec"><h3>Payment layout</h3><p>Choose how payments are presented to the customer.</p>' +
+              '<div class="ec-seg ec-seg--2">' +
+                '<button type="button" data-pm="a"><b>Adjustable</b><small>Customer slides the payment, down payment and term.</small></button>' +
+                '<button type="button" data-pm="g"><b>Multi-Payment grid</b><small>Customer picks from 9 payments: 3 terms by 3 down payments.</small></button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="ec-sec"><h3>Interest rate</h3><p id="ec-rm-p">Choose how the rate works on the customer\'s quote.</p>' +
+              '<div class="ec-seg' + (SUBPRIME ? ' ec-seg--2' : '') + '" id="ec-rmseg">' +
                 (SUBPRIME ? '' : '<button type="button" data-rm="t"><b>Credit score slider</b><small>Customer slides their score. You set the rate for each tier.</small></button>') +
                 '<button type="button" data-rm="f"><b>Fixed rate</b><small>Rate is shown but the customer cannot change it.</small></button>' +
                 '<button type="button" data-rm="h"><b>Hidden rate</b><small>Payment uses your rate. No rate is shown.</small></button>' +
@@ -530,9 +599,18 @@ setTimeout(function () {
               '</div><div class="ec-grid" style="margin-top:14px">' + field('cs', 'Starting credit score', 'number', '720', 'min="300" max="850"') + '<div class="ec-fine" style="align-self:end">Tier rates are saved on this device.</div></div></div>') +
               '<div id="ec-rm-f">' + '<div class="ec-grid"><label class="ec-field"><span id="ec-ralabel">APR %</span><input data-k="ra" type="number" step="0.01" min="0" value="' + esc(d.ra) + '"></label></div></div>' +
             '</div>' +
-            '<div class="ec-sec"><h3>Finance term</h3><p>Check the terms your customer can choose. Check only one to lock the term.</p>' +
-              '<div class="ec-chips">' + TERMS.map(t => '<label class="ec-chip"><input type="checkbox" data-term="' + t + '" ' + (d.tm.includes(t) ? 'checked' : '') + '>' + t + '</label>').join('') + '</div>' +
-              '<div class="ec-grid"><label class="ec-field">Starting term<select id="ec-term"></select></label></div>' +
+            '<div class="ec-sec"><h3 id="ec-term-h">Finance term</h3><p id="ec-term-p"></p>' +
+              '<div id="ec-pm-a">' +
+                '<div class="ec-chips">' + TERMS.map(t => '<label class="ec-chip"><input type="checkbox" data-term="' + t + '" ' + (d.tm.includes(t) ? 'checked' : '') + '>' + t + '</label>').join('') + '</div>' +
+                '<div class="ec-grid"><label class="ec-field">Starting term<select id="ec-term"></select></label></div>' +
+              '</div>' +
+              '<div id="ec-pm-g">' +
+                '<div class="ec-grid ec-grid--3">' + d.gt.map((g, i) => '<label class="ec-field">Term ' + (i + 1) + '<select data-gt="' + i + '">' +
+                  TERMS.map(t => '<option value="' + t + '" ' + (t === g ? 'selected' : '') + '>' + t + ' months</option>').join('') + '</select></label>').join('') + '</div>' +
+                '<div class="ec-grid ec-grid--3" style="margin-top:14px">' + d.gd.map((g, i) => '<label class="ec-field">Down payment ' + (i + 1) +
+                  '<input data-gd="' + i + '" type="number" min="0" step="100" value="' + esc(g) + '"></label>').join('') + '</div>' +
+                '<div class="ec-warn" id="ec-gridwarn" hidden></div>' +
+              '</div>' +
             '</div>' +
             (SUBPRIME ? '' : '<div class="ec-sec"><h3>Lease</h3>' +
               '<label class="ec-check"><input type="checkbox" id="ec-ls" ' + (d.ls === '1' ? 'checked' : '') + '>Present Lease</label>' +
@@ -549,16 +627,17 @@ setTimeout(function () {
             '</div>') +
           '</div>' +
           '<aside class="ec-card ec-side">' +
-            '<div class="ec-kicker">Estimated payment</div>' +
+            '<div class="ec-kicker" id="ec-s-kick"></div>' +
             '<div class="ec-side-pay" id="ec-s-pay"></div>' +
+            '<div id="ec-s-grid"></div>' +
             '<dl>' +
               '<dt>Total price</dt><dd id="ec-s-total"></dd>' +
               '<dt id="ec-s-tradel">Net trade</dt><dd id="ec-s-trade"></dd>' +
               '<dt id="ec-s-rebl">Rebate</dt><dd id="ec-s-reb"></dd>' +
-              '<dt>Down payment</dt><dd id="ec-s-down"></dd>' +
-              '<dt>Amount financed</dt><dd id="ec-s-fin"></dd>' +
+              '<dt id="ec-s-downl">Down payment</dt><dd id="ec-s-down"></dd>' +
+              '<dt id="ec-s-finl">Amount financed</dt><dd id="ec-s-fin"></dd>' +
               '<dt>Rate</dt><dd id="ec-s-rate"></dd>' +
-              '<dt>Term</dt><dd id="ec-s-term"></dd>' +
+              '<dt id="ec-s-terml">Term</dt><dd id="ec-s-term"></dd>' +
               '<dt id="ec-s-lsl">Lease</dt><dd id="ec-s-ls"></dd>' +
             '</dl>' +
             '<button type="button" class="ec-btn ec-btn--acc ec-btn--block" id="ec-copy">Copy customer link</button>' +
@@ -575,6 +654,30 @@ setTimeout(function () {
 
     function refresh() {
       termSel.innerHTML = d.tm.map(t => '<option value="' + t + '" ' + (t === d.t ? 'selected' : '') + '>' + t + ' months</option>').join('');
+      const grid = isGrid();
+      root.querySelectorAll('[data-pm]').forEach(b => b.classList.toggle('on', b.dataset.pm === d.pm));
+      const sliderBtn = root.querySelector('[data-rm="t"]');
+      if (sliderBtn) sliderBtn.hidden = grid;
+      $('#ec-rmseg').classList.toggle('ec-seg--2', SUBPRIME || grid);
+      $('#ec-rm-p').textContent = grid ? 'The grid uses one fixed rate. Choose whether the customer sees it.' : 'Choose how the rate works on the customer\'s quote.';
+      $('#ec-term-h').textContent = grid ? 'Payment grid' : 'Finance term';
+      $('#ec-term-p').textContent = grid ? 'Pick 3 terms and 3 down payments. The calculator fills in all 9 payments at your rate.'
+        : 'Check the terms your customer can choose. Check only one to lock the term.';
+      $('#ec-pm-a').hidden = grid;
+      $('#ec-pm-g').hidden = !grid;
+      $('#ec-dp-wrap').hidden = grid;
+      const gridWarn = [
+        new Set(d.gt).size < 3 ? 'Two terms are the same.' : '',
+        new Set(d.gd).size < 3 ? 'Two down payments are the same.' : '',
+        d.gd.some(v => v > maxDown()) ? 'A down payment is more than the amount being financed, so it is capped at ' + money(maxDown()) + '.' : ''
+      ].filter(Boolean).join(' ');
+      $('#ec-gridwarn').hidden = !grid || !gridWarn;
+      $('#ec-gridwarn').textContent = gridWarn;
+      $('#ec-s-kick').textContent = grid ? 'Payment grid' : 'Estimated payment';
+      $('#ec-s-pay').hidden = grid;
+      $('#ec-s-grid').hidden = !grid;
+      $('#ec-s-grid').innerHTML = grid ? gridHtml(GRID_START, false) + '<p class="ec-fine">Monthly payments. The customer starts on the highlighted one.</p>' : '';
+      ['down', 'fin', 'term'].forEach(k => { $('#ec-s-' + k + 'l').hidden = $('#ec-s-' + k).hidden = grid; });
       root.querySelectorAll('[data-rm]').forEach(b => b.classList.toggle('on', b.dataset.rm === d.rm));
       if ($('#ec-rm-t')) $('#ec-rm-t').hidden = d.rm !== 't';
       $('#ec-rm-f').hidden = d.rm === 't';
@@ -639,6 +742,17 @@ setTimeout(function () {
     root.querySelectorAll('[data-rm]').forEach(b => {
       b.addEventListener('click', () => { d.rm = b.dataset.rm; saveProfile(); refresh(); });
     });
+    root.querySelectorAll('[data-pm]').forEach(b => {
+      b.addEventListener('click', () => { d.pm = b.dataset.pm; if (isGrid() && d.rm === 't') d.rm = 'f'; saveProfile(); refresh(); });
+    });
+    root.querySelectorAll('select[data-gt]').forEach(el => {
+      el.addEventListener('change', () => { d.gt[+el.dataset.gt] = num(el.value, d.gt[+el.dataset.gt]); saveProfile(); refresh(); });
+    });
+    root.querySelectorAll('input[data-gd]').forEach(el => {
+      const onEdit = () => { d.gd[+el.dataset.gd] = Math.max(0, num(el.value, 0)); saveProfile(); refresh(); };
+      el.addEventListener('input', onEdit);
+      el.addEventListener('change', onEdit);
+    });
     root.querySelectorAll('input[data-term]').forEach(el => {
       el.addEventListener('change', () => {
         const al = TERMS.filter(t => root.querySelector('[data-term="' + t + '"]').checked);
@@ -694,11 +808,12 @@ setTimeout(function () {
     const det = [d.st ? 'Stock #' + d.st : '', miles(), d.id ? 'Quote #' + d.id : ''].filter(Boolean).join('  |  ');
     return '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(dealerName() + ' offer ' + (vehicle() || '') + (d.cn ? ' for ' + d.cn : '')) + '</title>' +
       '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">' +
-      '<style>body{font-family:Inter,Arial,sans-serif;color:#0b0b0d;margin:40px;max-width:720px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #0b0b0d;padding-bottom:16px}header img{max-height:84px;max-width:270px;object-fit:contain}h1{font-size:22px;margin:0}header p{margin:2px 0 0;color:#6e6e73;font-size:13px}h2{font-size:30px;letter-spacing:-.03em;margin:28px 0 4px}.sub{color:#6e6e73;margin:0 0 22px}table{width:100%;border-collapse:collapse;font-size:15px}td{padding:10px 0;border-bottom:1px solid #e3e3e8}td:last-child{text-align:right;font-weight:700}tr.ec-strong td{font-weight:800}tr.ec-final td{font-size:22px;font-weight:900;color:' + acc + ';border-bottom:3px solid ' + acc + '}.rep{margin-top:22px;font-size:15px}.flag{background:#fdecee;color:#a1000f;padding:10px 14px;border-radius:10px;font-weight:600;font-size:13px;margin-top:16px}.disc{font-size:10px;line-height:1.6;color:#6e6e73;margin-top:26px}h3{font-size:20px;margin:28px 0 6px}@page{margin:14mm}</style></head><body>' +
+      '<style>body{font-family:Inter,Arial,sans-serif;color:#0b0b0d;margin:40px;max-width:720px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #0b0b0d;padding-bottom:16px}header img{max-height:84px;max-width:270px;object-fit:contain}h1{font-size:22px;margin:0}header p{margin:2px 0 0;color:#6e6e73;font-size:13px}h2{font-size:30px;letter-spacing:-.03em;margin:28px 0 4px}.sub{color:#6e6e73;margin:0 0 22px}table{width:100%;border-collapse:collapse;font-size:15px}td{padding:10px 0;border-bottom:1px solid #e3e3e8}td:last-child{text-align:right;font-weight:700}tr.ec-strong td{font-weight:800}tr.ec-final td{font-size:22px;font-weight:900;color:' + acc + ';border-bottom:3px solid ' + acc + '}.rep{margin-top:22px;font-size:15px}.flag{background:#fdecee;color:#a1000f;padding:10px 14px;border-radius:10px;font-weight:600;font-size:13px;margin-top:16px}.disc{font-size:10px;line-height:1.6;color:#6e6e73;margin-top:26px}h3{font-size:20px;margin:28px 0 6px}.ec-gtab th,.ec-gtab td{text-align:center;padding:8px 4px;border-bottom:1px solid #e3e3e8;font-weight:700}.ec-gtab tbody th{text-align:left}.ec-gtab td.on{color:' + acc + ';font-weight:900;font-size:17px}@page{margin:14mm}</style></head><body>' +
       '<header>' + logo + '<div><h1>' + esc(dealerName()) + '</h1><p>Personalized vehicle offer &middot; ' + esc(date) + '</p></div></header>' +
       (MODIFIED ? '<div class="flag">This offer link was changed after it was sent. The dealer will confirm all numbers.</div>' : '') +
       '<h2>' + esc(d.cn ? d.cn + '\'s ' : 'Your ') + esc(vehicle() || 'vehicle') + '</h2><p class="sub">' + esc(det) + '</p>' +
       '<table>' + r + '</table>' +
+      (isGrid() ? '<h3>All payment options</h3>' + gridHtml(gridSel, false) + '<p class="sub" style="margin-top:8px">Estimated monthly payments' + (d.rm === 'h' ? '' : ' at ' + pct(rate()) + ' APR') + '. Your choice is highlighted.</p>' : '') +
       (hasLease() ? '<h3>Lease option</h3><table>' + rowsHtml(leaseRows()) + '</table>' : '') +
       ((d.sp || d.de) ? '<p class="rep">Questions? Contact ' + esc(d.sp || dealerName()) + (d.sc ? ' at ' + esc(d.sc) : d.de ? ' at ' + esc(d.de) : '') + '.</p>' : '') +
       '<p class="disc"><strong>Important financing estimate disclosure</strong><br>' + esc(disclaimer()) + '</p></body></html>';
@@ -747,6 +862,10 @@ setTimeout(function () {
       ? '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Finance term</span><b>' + d.t + ' months</b></div><div class="ec-fine">Term set by ' + esc(dealerName()) + '</div></div>'
       : '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Finance term</span><b id="ec-tv"></b></div><div class="ec-terms">' + d.tm.map(t => '<button type="button" data-t="' + t + '">' + t + '</button>').join('') + '</div></div>';
 
+    const gridCtrl = '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Choose your payment</span><b id="ec-gsel"></b></div>' +
+      '<div id="ec-grid">' + gridHtml(gridSel, true) + '</div>' +
+      '<div class="ec-fine">Estimated monthly payments. Each row is a down payment and each column is a term in months.</div></div>';
+
     const tradeCtrl = hasTrade()
       ? '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Your trade</span><b id="ec-trade-head"></b></div><div class="ec-tradebox">' +
         '<span>Trade allowance</span><b>' + money(d.ta) + '</b><span>Balance owed</span><b>' + money(d.tb) + '</b></div></div>'
@@ -783,9 +902,10 @@ setTimeout(function () {
           '<div class="ec-paybox">' +
             '<div class="ec-kicker">Your estimated payment</div>' +
             '<div class="ec-big" id="ec-pay"></div>' +
-            '<p>Slide to the payment that works for you. Your down payment updates automatically.</p>' +
-            '<label for="ec-pay-r"><span>Target monthly payment</span><span id="ec-pay-lbl"></span></label>' +
-            '<input id="ec-pay-r" type="range" step="5">' +
+            (isGrid() ? '<p>Tap any payment in the grid to choose it.</p>' :
+              '<p>Slide to the payment that works for you. Your down payment updates automatically.</p>' +
+              '<label for="ec-pay-r"><span>Target monthly payment</span><span id="ec-pay-lbl"></span></label>' +
+              '<input id="ec-pay-r" type="range" step="5">') +
             '<div class="ec-mini"><span>Down payment</span><b id="ec-m-down"></b>' +
               (hasRebate() ? '<span>Rebate</span><b>-' + money(rebate()) + '</b>' : '') +
               '<span>Amount financed</span><b id="ec-m-fin"></b>' +
@@ -795,8 +915,8 @@ setTimeout(function () {
               (canText() ? '<a class="ec-btn ec-btn--light ec-btn--block" id="ec-text" href="#">Text this deal to my salesperson</a>' : '')) +
             '<button type="button" class="ec-btn ec-btn--light ec-btn--block" id="ec-pdf">Save this offer as a PDF</button>' +
           '</div>' +
-          '<div class="ec-controls">' + rateCtrl + termCtrl +
-            '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Down payment</span>' + moneyInput('ec-dv', 'Down payment') + '</div><input id="ec-down-r" type="range" min="0" step="100"></div>' +
+          '<div class="ec-controls">' + rateCtrl + (isGrid() ? gridCtrl : termCtrl +
+            '<div class="ec-ctrl"><div class="ec-ctrl-head"><span>Down payment</span>' + moneyInput('ec-dv', 'Down payment') + '</div><input id="ec-down-r" type="range" min="0" step="100"></div>') +
             tradeCtrl +
           '</div>' +
         '</div>' +
@@ -817,16 +937,25 @@ setTimeout(function () {
     const syncInput = (el, v) => { if (el && document.activeElement !== el) el.value = Math.round(v); };
 
     function update() {
+      if (isGrid()) { d.t = d.gt[gridSel[1]]; d.dp = d.gd[gridSel[0]]; }
       d.dp = down();
       const p = monthly();
-      const minP = pay(baseFinanced() - maxDown(), rate(), d.t);
-      const maxP = pay(baseFinanced(), rate(), d.t);
       $('#ec-pay').innerHTML = money(p) + '<small> /mo</small>';
-      payR.min = Math.floor(minP / 5) * 5; payR.max = Math.max(+payR.min + 5, Math.ceil(maxP / 5) * 5);
-      payR.value = Math.min(maxP, Math.max(minP, p));
-      $('#ec-pay-lbl').textContent = money(p);
-      downR.max = Math.max(0, Math.floor(maxDown())); downR.value = d.dp;
-      syncInput(dvIn, d.dp);
+      if (payR) {
+        const minP = pay(baseFinanced() - maxDown(), rate(), d.t);
+        const maxP = pay(baseFinanced(), rate(), d.t);
+        payR.min = Math.floor(minP / 5) * 5; payR.max = Math.max(+payR.min + 5, Math.ceil(maxP / 5) * 5);
+        payR.value = Math.min(maxP, Math.max(minP, p));
+        $('#ec-pay-lbl').textContent = money(p);
+      }
+      if (downR) {
+        downR.max = Math.max(0, Math.floor(maxDown())); downR.value = d.dp;
+        syncInput(dvIn, d.dp);
+      }
+      if (isGrid()) {
+        root.querySelectorAll('[data-g]').forEach(b => b.parentElement.classList.toggle('on', b.dataset.g === gridSel.join(',')));
+        $('#ec-gsel').textContent = d.t + ' mo, ' + money(d.dp) + ' down';
+      }
       $('#ec-m-down').textContent = money(d.dp);
       $('#ec-m-fin').textContent = money(financed());
       if ($('#ec-m-apr')) $('#ec-m-apr').textContent = pct(rate());
@@ -848,10 +977,13 @@ setTimeout(function () {
       [payR, downR, csR].forEach(fill);
     }
 
-    payR.oninput = () => { d.dp = downFor(num(payR.value)); update(); };
-    downR.oninput = () => { d.dp = num(downR.value); update(); };
-    dvIn.addEventListener('input', () => { d.dp = num(dvIn.value, 0); update(); });
-    dvIn.addEventListener('change', () => { dvIn.value = Math.round(d.dp); });
+    if (payR) payR.oninput = () => { d.dp = downFor(num(payR.value)); update(); };
+    if (downR) {
+      downR.oninput = () => { d.dp = num(downR.value); update(); };
+      dvIn.addEventListener('input', () => { d.dp = num(dvIn.value, 0); update(); });
+      dvIn.addEventListener('change', () => { dvIn.value = Math.round(d.dp); });
+    }
+    root.querySelectorAll('[data-g]').forEach(b => { b.onclick = () => { gridSel = b.dataset.g.split(',').map(Number); update(); }; });
 
     function leaseUpdate() {
       leaseDownNow = leaseDown();

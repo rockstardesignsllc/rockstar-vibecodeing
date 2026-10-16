@@ -8,6 +8,12 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
 2. **What is the HighLevel webhook URL?**
 3. **Did you attach the logo?** It is used on the pages and in the social sharing images.
 4. **What is the dealer's website URL?** Use it to match their colors. If the site cannot be reached from the session, take the colors from the logo and say so.
+5. **Adjustable or Multi-Payment grid?**
+   - Adjustable: the customer slides the payment, down payment and term.
+   - Multi-Payment grid: the customer picks from 9 payments. If they choose grid, also ask:
+     - the fixed rate, and whether it is shown or hidden
+     - the 3 terms (each one of 24, 36, 48, 60, 72, 84)
+     - the 3 down payments
 
 ## Already decided (do not ask again)
 
@@ -38,6 +44,14 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
    - `accentColor`
    - `headerColor` (optional; set it to the logo's background color when the logo is on a dark background)
    - `webhookUrl`
+   - Grid builds only:
+     - `paymentLayout: "grid"`
+     - `gridTerms` (example `"48,60,72"`)
+     - `gridDownPayments` (example `"1000,2000,3000"`)
+     - `fixedRate` (example `"14.99"`)
+     - `rateDisplay` (`"shown"` or `"hidden"`)
+
+     These keys are starting values only. The dealer can still change them on the dealer page.
 
    Locked keys are hidden on the dealer page and never travel in links.
 2. Add a `## vX.Y` entry to `CHANGELOG.md`, then run `python3 embeds/highlevel/build.py`.
