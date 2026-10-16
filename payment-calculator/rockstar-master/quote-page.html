@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.3  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
+  Rockstar Deal Desk v3.4  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
   Paste this into a GHL "Custom HTML/JS" element on your /quote page
   (must match CONFIG.quotePagePath in file 1).
   This is the "Here's your personalized vehicle offer" page your customer sees,
@@ -277,7 +277,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '3.3';
+  const VERSION = '3.4';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -498,7 +498,8 @@ setTimeout(function () {
     ? ['Trade equity (lowers amount financed)', money(netTrade())]
     : ['Negative trade equity (added to amount financed)', money(-netTrade())];
 
-  function rows() {
+  /* worksheet leaves out the lines that depend on one chosen payment, for the printed grid worksheet */
+  function rows(worksheet) {
     const r = [
       ['Purchase price', money(d.pr)],
       ['Sales tax', money(d.tx)],
@@ -506,12 +507,12 @@ setTimeout(function () {
       ['Total price', money(total()), 'ec-strong']
     ];
     if (hasTrade()) r.push(['Trade allowance', money(d.ta)], ['Trade balance owed', money(d.tb)], tradeLine());
-    r.push(['Down payment', money(down())]);
+    if (!worksheet) r.push(['Down payment', money(down())]);
     if (hasRebate()) r.push(['Rebate', '-' + money(rebate())]);
-    r.push(['Amount financed', money(financed()), 'ec-strong']);
+    if (!worksheet) r.push(['Amount financed', money(financed()), 'ec-strong']);
     if (d.rm === 't') r.push(['Credit score', d.cs + ' (' + TIERS[tierIdx()].label + ')']);
     if (d.rm !== 'h') r.push(['APR', pct(rate())]);
-    r.push(['Term', term() + ' months'], ['Estimated monthly payment', money(monthly()), 'ec-final']);
+    if (!worksheet) r.push(['Term', term() + ' months'], ['Estimated monthly payment', money(monthly()), 'ec-final']);
     return r;
   }
 
@@ -884,7 +885,7 @@ setTimeout(function () {
       if (!nameReady()) return;
       linkFor('send');
       created('quote_printed', 'print');
-      savePdf(true);
+      savePdf(true, isGrid());
       refresh();
     };
     root.querySelectorAll('[data-k="fn"],[data-k="ln"]').forEach(el => el.addEventListener('input', () => {
@@ -915,17 +916,19 @@ setTimeout(function () {
   const smsHref = () => smsTo('at ' + money(monthly()) + '/mo with ' + money(down()) + ' down for ' + term() + ' months');
   const leaseSmsHref = (t, p) => smsTo('lease: ' + leaseOffer(t, p));
 
-  /* sign adds the "Lock in Your Deal" signature block for offers printed at the dealership */
-  function printable(sign) {
+  /* sign adds the "Lock in Your Deal" signature block for offers printed at the dealership.
+     worksheet prints every grid payment with none chosen, so the salesperson can walk the customer through all of them. */
+  function printable(sign, worksheet) {
     const logo = d.dl ? '<img src="' + esc(d.dl) + '" alt="" onerror="this.remove()">' : '';
     const acc = validColor(d.ac) ? d.ac : '#d70015';
-    const r = rowsHtml(rows());
+    const r = rowsHtml(rows(worksheet));
     const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     const det = [d.st ? 'Stock #' + d.st : '', miles(), d.id ? 'Quote #' + d.id : ''].filter(Boolean).join('  |  ');
     const details = detailSections().map(([h, list]) => '<div><h4>' + esc(h) + '</h4><table>' + rowsHtml(list) + '</table></div>').join('');
     const signBlock = sign
       ? '<section class="sign"><h3>Lock in Your Deal</h3><p>By signing, I confirm I reviewed this preliminary offer and want ' + esc(dealerName()) +
         ' to work toward final terms. This is not a contract, a credit application, or a commitment to finance or sell.</p>' +
+        (worksheet ? '<div class="lines"><div><span></span>Down payment chosen</div><div><span></span>Term chosen</div><div class="date"><span></span>Monthly payment</div></div>' : '') +
         '<div class="lines"><div><span></span>Customer printed name</div><div><span></span>Customer signature</div><div class="date"><span></span>Date</div></div></section>'
       : '';
     return '<!doctype html><html><head><meta charset="utf-8"><title>' + esc(dealerName() + ' offer ' + (vehicle() || '') + (customerName() ? ' for ' + customerName() : '')) + '</title>' +
@@ -933,13 +936,16 @@ setTimeout(function () {
       '<style>body{font-family:Inter,Arial,sans-serif;color:#0b0b0d;margin:40px;max-width:720px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #0b0b0d;padding-bottom:16px}header img{max-height:84px;max-width:270px;object-fit:contain}h1{font-size:22px;margin:0}header p{margin:2px 0 0;color:#6e6e73;font-size:13px}h2{font-size:30px;letter-spacing:-.03em;margin:28px 0 4px}.sub{color:#6e6e73;margin:0 0 22px}table{width:100%;border-collapse:collapse;font-size:15px}td{padding:10px 0;border-bottom:1px solid #e3e3e8}td:last-child{text-align:right;font-weight:700}tr.ec-strong td{font-weight:800}tr.ec-final td{font-size:22px;font-weight:900;color:' + acc + ';border-bottom:3px solid ' + acc + '}.rep{margin-top:22px;font-size:15px}.flag{background:#fdecee;color:#a1000f;padding:10px 14px;border-radius:10px;font-weight:600;font-size:13px;margin-top:16px}.disc{font-size:10px;line-height:1.6;color:#6e6e73;margin-top:26px}h3{font-size:20px;margin:28px 0 6px}.ec-gtab th,.ec-gtab td{text-align:center;padding:8px 4px;border-bottom:1px solid #e3e3e8;font-weight:700}.ec-gtab tbody th{text-align:left}.ec-gtab td.on{color:' + acc + ';font-weight:900;font-size:17px}' +
       '.details{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 24px;margin:0 0 18px}h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#6e6e73;margin:10px 0 0}.details td{padding:5px 0;font-size:13px}.details td:first-child{color:#6e6e73;padding-right:10px}' +
       '.sign{margin-top:26px;border:2px solid #0b0b0d;border-radius:12px;padding:16px 20px;break-inside:avoid}.sign h3{margin:0 0 6px}.sign p{font-size:12px;color:#3a3a3c;margin:0}.lines{display:grid;grid-template-columns:1fr 1fr 150px;gap:22px;margin-top:34px;font-size:11px;color:#6e6e73}.lines span{display:block;border-bottom:1px solid #0b0b0d;height:26px;margin-bottom:4px}' +
+      '.opts{break-before:page}.opts .ec-gtab{break-inside:avoid}.opts h3{margin-top:0}' +
       '@page{margin:14mm}</style></head><body>' +
       '<header>' + logo + '<div><h1>' + esc(dealerName()) + '</h1><p>' + (sign ? 'Preliminary offer' : 'Personalized vehicle offer') + ' &middot; ' + esc(date) + '</p></div></header>' +
       (MODIFIED ? '<div class="flag">This offer link was changed after it was sent. The dealer will confirm all numbers.</div>' : '') +
       '<h2>' + esc(customerName() ? customerName() + '\'s ' : 'Your ') + esc(vehicle() || 'vehicle') + '</h2><p class="sub">' + esc(det) + '</p>' +
       (details ? '<div class="details">' + details + '</div>' : '') +
       '<table>' + r + '</table>' +
-      (isGrid() ? '<h3>All payment options</h3>' + gridHtml(gridSel, false) + '<p class="sub" style="margin-top:8px">Estimated monthly payments' + (d.rm === 'h' ? '' : ' at ' + pct(rate()) + ' APR') + '. Your choice is highlighted.</p>' : '') +
+      (isGrid() ? '<section class="opts"><h3>' + (worksheet ? 'Payment options' : 'All payment options') + '</h3>' + gridHtml(worksheet ? null : gridSel, false) +
+        '<p class="sub" style="margin-top:8px">Estimated monthly payments' + (d.rm === 'h' ? '' : ' at ' + pct(rate()) + ' APR') +
+        (worksheet ? '. Circle the payment that works best for you.' : '. Your choice is highlighted.') + '</p></section>' : '') +
       (hasLease() ? '<h3>Lease option</h3><table>' + rowsHtml(leaseRows()) + '</table>' : '') +
       ((d.sp || d.de) ? '<p class="rep">Questions? Contact ' + esc(d.sp || dealerName()) + (d.sc ? ' at ' + esc(d.sc) : d.de ? ' at ' + esc(d.de) : '') + '.</p>' : '') +
       signBlock +
@@ -970,10 +976,10 @@ setTimeout(function () {
       'Contact ' + dealerName() + ' to confirm all details before making a ' + (SUBPRIME ? 'purchase' : 'purchase or lease') + ' decision.';
   }
 
-  function savePdf(sign) {
+  function savePdf(sign, worksheet) {
     const w = window.open('', '_blank');
     if (!w) { window.print(); return; }
-    w.document.open(); w.document.write(printable(sign === true)); w.document.close();
+    w.document.open(); w.document.write(printable(sign === true, worksheet === true)); w.document.close();
     const imgs = Array.from(w.document.images).map(i => i.complete ? null : new Promise(res => { i.onload = i.onerror = res; }));
     Promise.all(imgs).then(() => setTimeout(() => { w.focus(); w.print(); }, 400));
   }
