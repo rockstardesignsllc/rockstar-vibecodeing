@@ -4,6 +4,9 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.3
+- The dealer page has a "Saved quotes" button in its top bar while quote saving is on. It opens `CONFIG.savedQuotesPath` (default `/saved-quotes`) on the same site. Customers never see it.
+
 ## v3.2
 - New **saved quotes page** (`rockstar-master/saved-quotes.html`). A dealer signs in once with their access code and sees their quotes from the last 90 days, newest first, with customer, vehicle, payment, status and salesperson. Search by name, phone, vehicle, stock or salesperson, and "Open quote" reopens the offer. The device remembers the sign in until "Sign out".
 - Each dealer only sees their own folder. A dealer's access code is worked out from the quote store's admin code and the dealer name, so there is no list of codes to keep. Signed in with the admin code, the page can switch between dealers and show any dealer's access code.
