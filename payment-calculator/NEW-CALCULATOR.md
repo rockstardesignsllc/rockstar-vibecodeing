@@ -36,7 +36,7 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
 
 ## How to build one
 
-1. Create `clients/<slug>/config.json`. Keys:
+1. Create `<slug>/config.json` (one folder per calculator, next to `rockstar-master/`). Keys:
    - `label`
    - `calculatorType` (`standard` or `subprime`)
    - `dealerName`
@@ -54,7 +54,7 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
      These keys are starting values only. The dealer can still change them on the dealer page.
 
    Locked keys are hidden on the dealer page and never travel in links.
-2. Add a `## vX.Y` entry to `CHANGELOG.md`, then run `python3 embeds/highlevel/build.py`.
+2. Add a `## vX.Y` entry to `CHANGELOG.md`, then run `python3 payment-calculator/build.py`.
 3. Test the dealer and quote pages, and look at the screenshots.
-4. Render `clients/<slug>/social-share-customer.png` and `social-share-dealer.png`.
+4. Render `<slug>/social-share-customer.png` and `social-share-dealer.png`.
 5. Update the Code Locker artifact, commit, and push.
