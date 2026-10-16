@@ -21,9 +21,11 @@ and the account ID in `CLOUDFLARE_ACCOUNT_ID`.
 cd payment-calculator/quote-store
 npx wrangler@4 r2 bucket create rockstar-deal-desk-quotes
 npx wrangler@4 r2 bucket lifecycle add rockstar-deal-desk-quotes delete-after-90-days --expire-days 90 --force
-npx wrangler@4 deploy --var ALLOWED_ORIGINS:"https://<dealer page host>,https://<quote page host>,https://<saved quotes page host>"
+npx wrangler@4 deploy
 openssl rand -hex 24 | npx wrangler@4 secret put QUOTE_ADMIN_SECRET
 ```
+
+`ALLOWED_ORIGINS` in `wrangler.jsonc` lists every dealer subdomain. Add a new dealer's subdomain there and deploy again.
 
 Keep the `QUOTE_ADMIN_SECRET` value somewhere safe. It is the admin code for the saved quotes page, and every
 dealer's access code is worked out from it. Changing it changes every dealer's code.
