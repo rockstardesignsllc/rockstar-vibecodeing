@@ -1,0 +1,272 @@
+<!-- =========================================================
+     MANAGEMYCHURCH.ORG ONLINE COMMUNITY (https://managemychurch.org/community)
+     Built on the Rockstar Designs Master Template v1.2
+     Paste into one GHL Custom HTML/JS element (full width, no padding)
+     Requires rockstar-master.css in the site's Custom CSS
+     ========================================================= -->
+<div class="rs-page">
+  <nav class="rs-nav" aria-label="Main">
+    <div class="rs-wrap rs-nav__inner">
+      <a class="rs-brand" href="https://managemychurch.org/">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHBhdGggZD0iTTEyIDZoNDBhOCA4IDAgMCAxIDggOHYyOGE4IDggMCAwIDEtOCA4SDI2bC0xMiAxMHYtMTBoLTJhOCA4IDAgMCAxLTgtOFYxNGE4IDggMCAwIDEgOC04eiIgZmlsbD0iI2Q3MDAxNSIvPjxyZWN0IHg9IjI5IiB5PSIxMSIgd2lkdGg9IjYiIGhlaWdodD0iMzMiIHJ4PSIxLjUiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSIyMC41IiB5PSIxOCIgd2lkdGg9IjIzIiBoZWlnaHQ9IjYiIHJ4PSIxLjUiIGZpbGw9IiNmZmYiLz48L3N2Zz4K" alt="ManageMyChurch logo">
+        <span class="rs-brand__name">ManageMy<span style="color:#d70015;display:inline;font:inherit">Church</span><span class="rs-brand__by">by Rockstar Designs</span></span>
+      </a>
+      <button class="rs-burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      <ul class="rs-menu">
+        <li class="rs-has-drop">
+          <button type="button" aria-expanded="false">Features <i class="rs-caret"></i></button>
+          <ul class="rs-drop">
+            <li><a href="https://managemychurch.org/community">Community</a></li>
+            <li><a href="https://managemychurch.org/courses">Courses</a></li>
+            <li><a href="https://managemychurch.org/social-media">Social Media</a></li>
+            <li><a href="https://managemychurch.org/follow-up">Follow Up</a></li>
+          </ul>
+        </li>
+        <li><a href="https://managemychurch.org/about">About</a></li>
+        <li><a href="https://managemychurch.org/contact">Contact</a></li>
+        <li><a href="https://managemychurch.org/donation">Donate</a></li>
+        <li><a class="rs-btn rs-btn--red" href="https://managemychurch.org/walkthrough">Book a Walkthrough</a></li>
+      </ul>
+    </div>
+  </nav>
+<style>
+.rs-page .mmc-mock{background:#fff;border-radius:26px;box-shadow:0 30px 70px rgba(11,11,13,.14);padding:22px;max-width:440px;margin:0 auto;text-align:left;font-size:14px;color:#1d1d1f}
+.rs-page .mmc-mock__top{display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:15px;margin-bottom:14px}
+.rs-page .mmc-mock__top small{font-weight:700;color:#d70015;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.rs-page .mmc-post{background:#f5f5f7;border-radius:16px;padding:14px 16px;margin-top:10px}
+.rs-page .mmc-post b{display:block;font-size:13px;margin-bottom:4px}
+.rs-page .mmc-post p{margin:0;color:#3a3a3f;line-height:1.45}
+.rs-page .mmc-post span{display:block;margin-top:8px;font-size:12px;color:#6e6e73;font-weight:700}
+.rs-page .mmc-av{display:inline-block;width:26px;height:26px;border-radius:50%;background:#d70015;color:#fff;font-weight:800;font-size:12px;line-height:26px;text-align:center;margin-right:8px;vertical-align:middle}
+.rs-page .mmc-video{background:#0b0b0d;border-radius:16px;height:170px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.rs-page .mmc-video:after{content:"";width:0;height:0;border-left:26px solid #fff;border-top:16px solid transparent;border-bottom:16px solid transparent;margin-left:8px}
+.rs-page .mmc-video i{position:absolute;left:14px;bottom:12px;color:#fff;font-style:normal;font-weight:800;font-size:13px}
+.rs-page .mmc-bar{height:6px;border-radius:9px;background:#e3e3e8;margin:14px 0 6px;overflow:hidden}
+.rs-page .mmc-bar u{display:block;height:100%;width:62%;background:#d70015}
+.rs-page .mmc-lesson{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #eee;font-weight:600}
+.rs-page .mmc-lesson:last-child{border-bottom:0}
+.rs-page .mmc-dot{width:20px;height:20px;border-radius:50%;border:2px solid #d70015;flex:none}
+.rs-page .mmc-dot.on{background:#d70015}
+.rs-page .mmc-week{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.rs-page .mmc-day{background:#f5f5f7;border-radius:12px;padding:10px 8px;min-height:120px}
+.rs-page .mmc-day b{display:block;font-size:11px;letter-spacing:.1em;color:#6e6e73;margin-bottom:8px}
+.rs-page .mmc-chip{display:block;border-radius:8px;padding:6px 7px;font-size:11px;font-weight:700;margin-bottom:6px;color:#fff;background:#d70015}
+.rs-page .mmc-chip.k{background:#0b0b0d}
+.rs-page .mmc-chip.g{background:#fff;color:#0b0b0d;border:1px solid #e3e3e8}
+@media (max-width:520px){.rs-page .mmc-week{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+  <!-- HERO -->
+  <header class="rs-hero">
+    <div class="rs-wrap rs-hero__grid">
+      <div>
+        <span class="rs-eyebrow">Online Community</span>
+        <h1 class="big-headline">
+          <span class="h-line">A place to belong</span>
+          <span class="h-line">between</span>
+          <span class="h-line rs-red-text">Sundays.</span>
+        </h1>
+        <p class="rs-lead">Give your church family a private online home to pray for each other, share life, join groups and hear from their pastors, without ads, algorithms or Facebook drama.</p>
+        <div class="rs-btn-row"><a class="rs-btn rs-btn--red" href="https://managemychurch.org/walkthrough">Book a Walkthrough</a><a class="rs-btn rs-btn--ghost" href="https://managemychurch.org/#pillars">See All Features</a></div>
+        <div class="rs-proof"><span>Private to your church</span><span>Works on any phone</span><span>No social media needed</span></div>
+      </div>
+      <div>
+        <div class="mmc-mock" aria-hidden="true">
+          <div class="mmc-mock__top">Our Church Family <small>Private</small></div>
+          <div class="mmc-post"><b><i class="mmc-av">J</i>Jen asked for prayer</b><p>My dad's surgery is Thursday morning. Would love your prayers this week.</p><span>&#9829; 24 praying &middot; 9 comments</span></div>
+          <div class="mmc-post"><b><i class="mmc-av" style="background:#0b0b0d">P</i>Pastor posted</b><p>Small groups start back up Wednesday at 7:00. Bring a friend and we'll save you a seat!</p><span>&#9829; 41 &middot; 12 going</span></div>
+          <div class="mmc-post"><b><i class="mmc-av">M</i>Marcus shared</b><p>Thank you all for the meals this week. Our family felt so loved.</p><span>&#9829; 57 &middot; 18 comments</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- WHY -->
+  <section class="rs-section rs-section--white">
+    <div class="rs-wrap">
+      <div class="rs-head">
+        <span class="rs-eyebrow">Why it matters</span>
+        <h2 class="rs-h2">People stay where they feel known.</h2>
+        <p class="rs-lead">Connection is what keeps people coming back. When your church family can reach each other all week, Sunday feels like a reunion instead of a start over.</p>
+      </div>
+      <div class="rs-grid rs-grid--3">
+        <div class="rs-card"><div class="rs-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg></div><h3 class="rs-h3">Belonging grows midweek</h3><p>Prayer, encouragement and real conversation keep people close long after the service ends.</p></div>
+        <div class="rs-card"><div class="rs-icon"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></div><h3 class="rs-h3">A safer space</h3><p>Your community is private to your church. No ads, no strangers, no algorithm deciding who sees what.</p></div>
+        <div class="rs-card"><div class="rs-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg></div><h3 class="rs-h3">Everyone in the loop</h3><p>Announcements and updates reach your people directly instead of getting buried in a feed.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="rs-section">
+    <div class="rs-wrap">
+      <div class="rs-head">
+        <span class="rs-eyebrow">What you get</span>
+        <h2 class="rs-h2">Everything your church family needs to stay close.</h2>
+      </div>
+      <div class="rs-grid rs-grid--3">
+        <div class="rs-card"><div class="rs-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/></svg></div><h3 class="rs-h3">Posts and conversations</h3><p>Share updates, encouragement and photos, and let your people respond and connect.</p></div>
+        <div class="rs-card"><div class="rs-icon"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div><h3 class="rs-h3">Prayer requests</h3><p>Members share requests, the church prays together and you see who needs follow up.</p></div>
+        <div class="rs-card"><div class="rs-icon"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></svg></div><h3 class="rs-h3">Groups</h3><p>Private spaces for small groups, ministries, volunteers, youth and leaders.</p></div>
+        <div class="rs-card"><div class="rs-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div><h3 class="rs-h3">Events</h3><p>Share what's coming up and let people RSVP right inside the community.</p></div>
+        <div class="rs-card"><div class="rs-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></div><h3 class="rs-h3">Announcements</h3><p>Pin important updates so nobody misses what matters.</p></div>
+        <div class="rs-card"><div class="rs-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div><h3 class="rs-h3">Mobile friendly</h3><p>Works beautifully on phones, so your people can connect wherever they are.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- USES -->
+  <section class="rs-section rs-section--dark">
+    <div class="rs-wrap rs-split">
+      <div>
+        <span class="rs-eyebrow">How churches use it</span>
+        <h2 class="rs-h2">Real ways churches stay connected.</h2>
+        <p class="rs-lead">Every church is different. Here's how pastors are using their community space.</p>
+      </div>
+      <div>
+        <ul class="rs-checks">
+          <li>Midweek devotionals and encouragement</li>
+          <li>Prayer walls the whole church can join</li>
+          <li>Small group discussion between meetings</li>
+          <li>Volunteer schedules and team updates</li>
+          <li>Youth and parent communication</li>
+          <li>Celebrating baptisms, births and big moments</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="rs-section rs-section--white">
+    <div class="rs-wrap">
+      <div class="rs-head">
+        <span class="rs-eyebrow">Straight answers</span>
+        <h2 class="rs-h2">Questions about Community.</h2>
+      </div>
+      <div class="rs-faq">
+        <details><summary>Is it really private?</summary><p>Yes. Only the people you invite can see your community. It's your church's space, not a public page.</p></details>
+        <details><summary>Do people need to download an app?</summary><p>They can join from any phone or computer. We'll help you make it simple for everyone.</p></details>
+        <details><summary>Can we have separate groups?</summary><p>Yes. Create private groups for small groups, ministries, leaders and anything else your church needs.</p></details>
+        <details><summary>Who manages it?</summary><p>You and the leaders you choose. You decide who can post, who can moderate and who sees what.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- MORE -->
+  <section class="rs-section">
+    <div class="rs-wrap">
+      <div class="rs-head">
+        <span class="rs-eyebrow">Better together</span>
+        <h2 class="rs-h2">Everything your church needs, in one place.</h2>
+      </div>
+      <div class="rs-grid rs-grid--3">
+        <a class="rs-card" href="https://managemychurch.org/courses">
+          <span class="rs-num">COURSES</span>
+          <h3 class="rs-h3">Video Courses</h3>
+          <p>Discipleship, membership and leader training your people can take anytime, anywhere.</p>
+          <span class="rs-link">Learn more</span>
+        </a>
+        <a class="rs-card" href="https://managemychurch.org/social-media">
+          <span class="rs-num">SOCIAL MEDIA</span>
+          <h3 class="rs-h3">Social Media</h3>
+          <p>Plan, create and schedule every post from one calendar so your church shows up online all week.</p>
+          <span class="rs-link">Learn more</span>
+        </a>
+        <a class="rs-card" href="https://managemychurch.org/follow-up">
+          <span class="rs-num">FOLLOW UP</span>
+          <h3 class="rs-h3">Text and Email</h3>
+          <p>Welcome guests, follow up on prayer requests and keep people from slipping through the cracks.</p>
+          <span class="rs-link">Learn more</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="rs-section rs-section--white">
+    <div class="rs-wrap">
+      <div class="rs-cta">
+        <span class="rs-eyebrow">Let us show you around</span>
+        <h2 class="rs-h2">Give your people a place to belong all week.</h2>
+        <p class="rs-lead">Book a walkthrough and we'll show you exactly what your church community could look like.</p>
+        <div class="rs-btn-row"><a class="rs-btn rs-btn--red" href="https://managemychurch.org/walkthrough">Book a Walkthrough</a><a class="rs-btn rs-btn--ghost" href="https://managemychurch.org/#pillars">See All Features</a></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="rs-footer">
+    <div class="rs-wrap">
+      <img class="rs-footer__logo" src="data:image/png;base64,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" alt="Rockstar Designs">
+      <div class="rs-footer__tag">Communicate Better.</div>
+      <div class="rs-footer__company">ManageMyChurch is a Rockstar Designs company.</div>
+      <div class="rs-footer__family">
+        <a href="https://rockstarinfo.com">Rockstar Designs</a>
+        <a href="https://aifordealers.com">Automotive</a>
+        <a href="https://aiforpowersports.com">Powersports</a>
+        <a href="https://getrockstarai.com">Business</a>
+        <a class="is-current" href="https://managemychurch.org">Churches</a>
+      </div>
+      <div class="rs-footer__links">
+        <a href="https://managemychurch.org/">Home</a>
+        <a href="https://managemychurch.org/community">Community</a>
+        <a href="https://managemychurch.org/courses">Courses</a>
+        <a href="https://managemychurch.org/social-media">Social Media</a>
+        <a href="https://managemychurch.org/follow-up">Follow Up</a>
+        <a href="https://managemychurch.org/about">About</a>
+        <a href="https://managemychurch.org/walkthrough">Book a Walkthrough</a>
+        <a href="https://managemychurch.org/contact">Contact</a>
+        <a href="https://managemychurch.org/donation">Donate</a>
+      </div>
+      <div class="rs-footer__addr">2222 W Grand River Ave, STE A, Okemos, MI 48864</div>
+      <div class="rs-footer__legal">
+        <a href="https://rockstarinfo.com/privacy-policy">Privacy Policy</a>
+        <a href="https://rockstarinfo.com/tos">Terms of Service</a>
+        <a href="https://rockstarinfo.com/eula">End User License</a>
+        <a href="https://rockstarinfo.com/disclaimer">Legal Disclaimer</a>
+        <a href="https://rockstarinfo.com/cookie-compliance-policy">Cookie Compliance</a>
+      </div>
+      <p class="rs-footer__disc">Standard messaging and data rates may apply when using SMS and voice services. Promotional pricing discounts are for new customers only and may be extended to returning customers at the sole discretion of Rockstar Designs LLC.</p>
+      <div class="rs-footer__copy">&copy; <span class="rs-year">2026</span> Rockstar Designs LLC. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <button class="rs-top" aria-label="Back to top">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+</div>
+
+<script>
+(function () {
+  var page = document.querySelector('.rs-page');
+  if (!page) return;
+  var nav = page.querySelector('.rs-nav');
+  var burger = page.querySelector('.rs-burger');
+  var drops = page.querySelectorAll('.rs-has-drop');
+  burger.addEventListener('click', function () {
+    var open = nav.classList.toggle('is-open');
+    burger.setAttribute('aria-expanded', open);
+  });
+  drops.forEach(function (d) {
+    var btn = d.querySelector('button');
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var wasOpen = d.classList.contains('is-open');
+      drops.forEach(function (x) { x.classList.remove('is-open'); x.querySelector('button').setAttribute('aria-expanded', 'false'); });
+      if (!wasOpen) { d.classList.add('is-open'); btn.setAttribute('aria-expanded', 'true'); }
+    });
+    d.addEventListener('mouseenter', function () { if (window.innerWidth > 960) d.classList.add('is-open'); });
+    d.addEventListener('mouseleave', function () { if (window.innerWidth > 960) d.classList.remove('is-open'); });
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest('.rs-has-drop')) drops.forEach(function (x) { x.classList.remove('is-open'); });
+  });
+  page.querySelectorAll('.rs-menu a').forEach(function (a) {
+    a.addEventListener('click', function () { nav.classList.remove('is-open'); });
+  });
+  var top = page.querySelector('.rs-top');
+  window.addEventListener('scroll', function () { top.classList.toggle('is-visible', window.scrollY > 700); }, { passive: true });
+  top.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  var y = page.querySelector('.rs-year');
+  if (y) y.textContent = new Date().getFullYear();
+})();
+</script>
