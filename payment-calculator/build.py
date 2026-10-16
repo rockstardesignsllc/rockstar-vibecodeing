@@ -6,8 +6,12 @@
 3. Generates every client build in <slug>/ from <slug>/config.json.
 
 Run from anywhere: python3 payment-calculator/build.py
+Pass client folder names to rebuild only those clients, or --master-only to leave every client build as it is:
+  python3 payment-calculator/build.py --master-only
+  python3 payment-calculator/build.py kelly-ford wildcat-used-cars
 """
 import json
+import sys
 import pathlib
 import re
 
@@ -16,7 +20,7 @@ MASTER = HERE / 'rockstar-master'
 CONFIG_KEYS = ['dealerName', 'dealerEmail', 'dealerLogo', 'accentColor', 'webhookUrl', 'calculatorType', 'headerColor',
                'paymentLayout', 'gridTerms', 'gridDownPayments', 'fixedRate', 'rateDisplay', 'quotePagePath']
 QUOTE_HEADER = '''<!--
-  RockstarAI Engagement Calculator v{version}  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
+  Rockstar Deal Desk v{version}  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
   Paste this into a GHL "Custom HTML/JS" element on your /quote page
   (must match CONFIG.quotePagePath in file 1).
   This is the "Here's your personalized vehicle offer" page your customer sees,
@@ -34,7 +38,12 @@ def sub_once(pattern, repl, text, label):
     return out
 
 
-def main():
+def main(args):
+    master_only = '--master-only' in args
+    clients = [a for a in args if not a.startswith('--')]
+    for slug in clients:
+        if not (HERE / slug / 'config.json').is_file():
+            raise SystemExit(f'build: no {slug}/config.json')
     version = re.search(r'^## v(\d+(?:\.\d+)+)\s*$', (HERE / 'CHANGELOG.md').read_text(), re.M)
     if not version:
         raise SystemExit('build: no "## vX.Y" heading in CHANGELOG.md')
@@ -42,7 +51,7 @@ def main():
 
     dealer_path = MASTER / 'dealer-page.html'
     dealer = dealer_path.read_text()
-    dealer = sub_once(r'RockstarAI Engagement Calculator v[\d.]+  \|', f'RockstarAI Engagement Calculator v{version}  |', dealer, 'dealer header version')
+    dealer = sub_once(r'Rockstar Deal Desk v[\d.]+  \|', f'Rockstar Deal Desk v{version}  |', dealer, 'dealer header version')
     dealer = sub_once(r"const VERSION = '[\d.]+';", f"const VERSION = '{version}';", dealer, 'VERSION constant')
     dealer_path.write_text(dealer)
 
@@ -54,6 +63,8 @@ def main():
     built = ['rockstar-master/dealer-page.html', 'rockstar-master/quote-page.html']
 
     for cfg_path in sorted(HERE.glob('*/config.json')):
+        if master_only or (clients and cfg_path.parent.name not in clients):
+            continue
         cfg = json.loads(cfg_path.read_text())
         for name, source in (('dealer-page.html', dealer), ('quote-page.html', quote)):
             out = source
@@ -61,7 +72,7 @@ def main():
                 if key in cfg:
                     value = cfg[key].replace('\\', '\\\\').replace("'", "\\'")
                     out = sub_once(r"(\n    %s:\s*)'[^']*'" % key, lambda m: m.group(1) + "'" + value + "'", out, f'{cfg_path.parent.name} {key}')
-            out = sub_once(r'(RockstarAI Engagement Calculator v[\d.]+)  \|', r'\1 (%s)  |' % cfg['label'], out, 'client label')
+            out = sub_once(r'(Rockstar Deal Desk v[\d.]+)  \|', r'\1 (%s)  |' % cfg['label'], out, 'client label')
             (cfg_path.parent / name).write_text(out)
             built.append(f'{cfg_path.parent.name}/{name}')
 
@@ -69,4 +80,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
