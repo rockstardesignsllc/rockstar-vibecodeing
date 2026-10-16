@@ -1,7 +1,46 @@
-# RockstarAI Engagement Calculator changelog
+# Rockstar Deal Desk changelog
 
-`build.py` reads the version from the first `## v` heading below. To ship a change: add a
-heading for the new version, describe what changed, then run `python3 build.py`.
+Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from the first `## v` heading below.
+To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
+(`--master-only` leaves the client builds alone).
+
+## v3.0
+- Rockstar master only for now. The client builds stay on v2.9 until they are rebuilt.
+- Renamed to **Rockstar Deal Desk**.
+- **Customer** section: first name and last name (both required before a link is copied or the offer is printed), email, phone, street address, city, state and ZIP.
+- **Vehicle** section: stock number, VIN, year, make, model, trim and odometer. "Model and trim" is now two fields, and "Mileage" is now "Odometer".
+- **Trade** section adds trade year, make, model, trim, VIN and odometer.
+- The customer page has a "Your deal details" card with the customer, vehicle and trade details, and the PDF lists them too.
+- **Lease**: the customer taps a lease term to choose it, then taps "Lock in this lease". One "Text this lease to my salesperson" button texts the chosen lease.
+- **Print this offer** on the dealer page prints the offer with a "Lock in Your Deal" box (customer printed name, signature and date) and a preliminary quote disclaimer. Saving the PDF from a desking link prints the same box.
+- New webhook events from the dealer page: `quote_created` when the customer link or the desking link is copied, and `quote_printed` when the offer is printed. Each one goes out once per quote version, and `quote_source` says which button sent it (`customer_link`, `desk_link` or `print`).
+- Every webhook alert now carries the fields below. The old fields are unchanged, so the notification emails keep working. Links made before v3.0 still open, and their full name is split into first and last.
+
+### Webhook fields for HighLevel custom fields
+| Field | What it holds |
+|---|---|
+| `event` | `quote_created`, `quote_printed`, `quote_opened`, `quote_requested` (purchase locked in), `lease_requested` (lease locked in), `text_clicked` |
+| `quote_source` | `customer_link`, `desk_link` or `print` (only on `quote_created` and `quote_printed`) |
+| `quote_id` | The quote ID, for example `Q1A2B3C4` |
+| `quote_name` | `MM-DD-YYYY-FirstName-LastName-StockNumber-Make-Model`, for example `10-16-2026-Jane-Doe-A1234-Ford-F150` |
+| `quote_date` | The date the quote was created, `YYYY-MM-DD` |
+| `customer_first_name`, `customer_last_name` | Customer name |
+| `customer_name` | First and last name together |
+| `customer_email`, `customer_phone` | Customer contact |
+| `customer_street`, `customer_city`, `customer_state`, `customer_zip` | Customer address |
+| `vehicle_stock`, `vehicle_year`, `vehicle_make`, `vehicle_model`, `vehicle_trim`, `vehicle_vin`, `vehicle_odometer` | The vehicle being quoted |
+| `trade_year`, `trade_make`, `trade_model`, `trade_trim`, `trade_vin`, `trade_odometer` | The trade-in vehicle |
+| `deal_type` | `purchase`, or `lease` on `lease_requested` and on a lease `text_clicked` |
+| `deal_rate` | APR as a plain number, for example `7.49`. It is sent even when the rate is hidden from the customer, and is blank for a lease |
+| `deal_term` | Term in months, for example `60` |
+| `deal_down_payment` | Down payment as a plain number, for example `2000.00` |
+| `deal_monthly_payment` | Monthly payment as a plain number, for example `389.42`. It is the payment the customer chose: the slider, the grid cell they tapped or the lease they locked in |
+
+These fields are unchanged and stay formatted for emails: `vehicle`, `stock`, `salesperson`, `salesperson_cell`, `dealer`, `dealer_email`,
+`monthly_payment`, `down_payment`, `amount_financed`, `term_months`, `apr` (`hidden` when hidden), `credit_score`, `trade_allowance`,
+`trade_balance_owed`, `rebate`, `rebate_line`, `lease_quote`, `payment_layout`, `payment_grid`, `payment_grid_line`, `offer_url`,
+`timestamp`, `link_modified`, and on lease events `lease_term`, `lease_payment`, `lease_down`, `lease_miles`, `lease_line`.
+`offer_url` is always the customer link, including on the dealer page events.
 
 ## v2.9
 - New "Payment layout" choice on the dealer page: **Adjustable** (the sliders, as before) or **Multi-Payment grid**. Works on standard and subprime.
