@@ -14,6 +14,7 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
      - the fixed rate, and whether it is shown or hidden
      - the 3 terms (each one of 24, 36, 48, 60, 72, 84)
      - the 3 down payments
+6. **What is the dealer's subdomain?** For example `kellyford.rockstarcrm.app`. Their pages live at `/home`, `/quote` and `/saved-quotes` on it.
 
 ## Already decided (do not ask again)
 
@@ -44,6 +45,7 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
    - `accentColor`
    - `headerColor` (optional; set it to the logo's background color when the logo is on a dark background)
    - `webhookUrl`
+   - `quoteStoreUrl`: `https://rockstar-deal-desk-quotes.rockstar-designs-llc.workers.dev/quotes`
    - Grid builds only:
      - `paymentLayout: "grid"`
      - `gridTerms` (example `"48,60,72"`)
@@ -54,7 +56,9 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
      These keys are starting values only. The dealer can still change them on the dealer page.
 
    Locked keys are hidden on the dealer page and never travel in links.
-2. Add a `## vX.Y` entry to `CHANGELOG.md`, then run `python3 payment-calculator/build.py`.
-3. Test the dealer and quote pages, and look at the screenshots.
-4. Render `<slug>/social-share-customer.png` and `social-share-dealer.png`.
-5. Update the Code Locker artifact, commit, and push.
+2. Add the dealer's subdomain (`https://<subdomain>`) to `ALLOWED_ORIGINS` in `quote-store/wrangler.jsonc` and redeploy the quote store (see `quote-store/README.md`). Without it, their quotes are not saved.
+3. Add a `## vX.Y` entry to `CHANGELOG.md`, then run `python3 payment-calculator/build.py`. It also builds `<slug>/saved-quotes.html`.
+4. Test the dealer and quote pages, and look at the screenshots.
+5. Render `<slug>/social-share-customer.png` and `social-share-dealer.png`.
+6. Update the Code Locker artifact, commit, and push.
+7. Tell the user the dealer's saved quotes link (`https://<subdomain>/saved-quotes`). The dealer's access code needs no setup: it is worked out from the dealer name. The user gets it by signing in to any saved quotes page with the admin code, typing the dealer name exactly as in `dealerName`, and pressing "Show code".
