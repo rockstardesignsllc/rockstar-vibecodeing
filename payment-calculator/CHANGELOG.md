@@ -4,6 +4,12 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.2
+- New **saved quotes page** (`rockstar-master/saved-quotes.html`). A dealer signs in once with their access code and sees their quotes from the last 90 days, newest first, with customer, vehicle, payment, status and salesperson. Search by name, phone, vehicle, stock or salesperson, and "Open quote" reopens the offer. The device remembers the sign in until "Sign out".
+- Each dealer only sees their own folder. A dealer's access code is worked out from the quote store's admin code and the dealer name, so there is no list of codes to keep. Signed in with the admin code, the page can switch between dealers and show any dealer's access code.
+- The quote store answers `GET /quotes`, `GET /quotes/<quote_name>`, `GET /dealers` and `GET /access-code` for the saved quotes page. It now saves a short summary with each quote so a dealer's list loads in one step.
+- Fill in `quoteStoreUrl` on the saved quotes page with the same address as the dealer page.
+
 ## v3.1
 - Quote storage: with `quoteStoreUrl` set in CONFIG, every `quote_created`, `quote_printed`, `quote_requested` and `lease_requested` alert is also saved to Cloudflare R2 as `<dealer>/<quote_name>.json` (for example `kelly-ford/10-16-2026-Jane-Doe-A1234-Ford-F150.json`). A later save of the same quote name keeps the newest version. R2 deletes each file 90 days after it was last saved. The Worker is in `quote-store/`.
 - With storage on, the dealer page footer reads "All quotes will be deleted after 90 days."

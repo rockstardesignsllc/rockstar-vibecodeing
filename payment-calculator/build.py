@@ -3,7 +3,8 @@
 
 1. Stamps the version from the newest "## vX.Y" heading in CHANGELOG.md into rockstar-master/dealer-page.html.
 2. Generates rockstar-master/quote-page.html from it (customer header, PAGE_MODE 'offer').
-3. Generates every client build in <slug>/ from <slug>/config.json.
+3. Stamps the same version into rockstar-master/saved-quotes.html, the dealer's saved quotes page.
+4. Generates every client build in <slug>/ from <slug>/config.json.
 
 Run from anywhere: python3 payment-calculator/build.py
 Pass client folder names to rebuild only those clients, or --master-only to leave every client build as it is:
@@ -60,18 +61,24 @@ def main(args):
         raise SystemExit('build: PAGE_MODE builder line not found exactly once')
     quote = QUOTE_HEADER.format(version=version) + body.replace("const PAGE_MODE = 'builder';", "const PAGE_MODE = 'offer';")
     (MASTER / 'quote-page.html').write_text(quote)
-    built = ['rockstar-master/dealer-page.html', 'rockstar-master/quote-page.html']
+    saved_path = MASTER / 'saved-quotes.html'
+    saved = saved_path.read_text()
+    saved = sub_once(r'Rockstar Deal Desk v[\d.]+  \|', f'Rockstar Deal Desk v{version}  |', saved, 'saved quotes header version')
+    saved = sub_once(r"const VERSION = '[\d.]+';", f"const VERSION = '{version}';", saved, 'saved quotes VERSION constant')
+    saved_path.write_text(saved)
+    built = ['rockstar-master/dealer-page.html', 'rockstar-master/quote-page.html', 'rockstar-master/saved-quotes.html']
 
     for cfg_path in sorted(HERE.glob('*/config.json')):
         if master_only or (clients and cfg_path.parent.name not in clients):
             continue
         cfg = json.loads(cfg_path.read_text())
-        for name, source in (('dealer-page.html', dealer), ('quote-page.html', quote)):
+        for name, source in (('dealer-page.html', dealer), ('quote-page.html', quote), ('saved-quotes.html', saved)):
             out = source
             for key in CONFIG_KEYS:
-                if key in cfg:
-                    value = cfg[key].replace('\\', '\\\\').replace("'", "\\'")
-                    out = sub_once(r"(\n    %s:\s*)'[^']*'" % key, lambda m: m.group(1) + "'" + value + "'", out, f'{cfg_path.parent.name} {key}')
+                if key not in cfg or (name == 'saved-quotes.html' and not re.search(r"\n    %s:" % key, source)):
+                    continue
+                value = cfg[key].replace('\\', '\\\\').replace("'", "\\'")
+                out = sub_once(r"(\n    %s:\s*)'[^']*'" % key, lambda m: m.group(1) + "'" + value + "'", out, f'{cfg_path.parent.name} {key}')
             out = sub_once(r'(Rockstar Deal Desk v[\d.]+)  \|', r'\1 (%s)  |' % cfg['label'], out, 'client label')
             (cfg_path.parent / name).write_text(out)
             built.append(f'{cfg_path.parent.name}/{name}')

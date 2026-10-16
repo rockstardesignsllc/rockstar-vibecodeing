@@ -21,10 +21,35 @@ and the account ID in `CLOUDFLARE_ACCOUNT_ID`.
 cd payment-calculator/quote-store
 npx wrangler@4 r2 bucket create rockstar-deal-desk-quotes
 npx wrangler@4 r2 bucket lifecycle add rockstar-deal-desk-quotes delete-after-90-days --expire-days 90 --force
-npx wrangler@4 deploy --var ALLOWED_ORIGINS:"https://<dealer page host>,https://<quote page host>"
+npx wrangler@4 deploy --var ALLOWED_ORIGINS:"https://<dealer page host>,https://<quote page host>,https://<saved quotes page host>"
+openssl rand -hex 24 | npx wrangler@4 secret put QUOTE_ADMIN_SECRET
 ```
 
+Keep the `QUOTE_ADMIN_SECRET` value somewhere safe. It is the admin code for the saved quotes page, and every
+dealer's access code is worked out from it. Changing it changes every dealer's code.
+
 Then put the Worker URL plus `/quotes` in `quoteStoreUrl` in the master CONFIG and rebuild.
+
+## Saved quotes page
+
+`rockstar-master/saved-quotes.html` lets a dealer see their own quotes from the last 90 days.
+
+1. In HighLevel, add a page (for example `/saved-quotes`) to the funnel or site that holds the dealer page.
+2. Add a "Custom HTML/JS" element and paste the whole file in. Set `quoteStoreUrl` in its CONFIG to the same
+   address as the dealer page.
+3. In the page's SEO settings, turn off search engine indexing, and keep the page out of the site menu.
+4. Give each dealer the page link and their access code. Sign in on the page with the admin code, type the dealer
+   name under "Access code for dealer name" and press "Show code". The name must match the dealer name on their
+   quotes.
+
+Reading routes, all with the code in the `x-access-code` header:
+
+| Route | Code | Returns |
+|---|---|---|
+| `GET /quotes?dealer=<name>` | dealer or admin | that dealer's quotes, newest first |
+| `GET /quotes/<quote_name>?dealer=<name>` | dealer or admin | one full quote, including `offer_url` |
+| `GET /dealers` | admin | every dealer folder |
+| `GET /access-code?dealer=<name>` | admin | that dealer's access code |
 
 ## Finding a quote
 
