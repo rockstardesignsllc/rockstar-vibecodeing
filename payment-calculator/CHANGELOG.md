@@ -4,6 +4,11 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.1
+- Quote storage: with `quoteStoreUrl` set in CONFIG, every `quote_created`, `quote_printed`, `quote_requested` and `lease_requested` alert is also saved to Cloudflare R2 as `<dealer>/<quote_name>.json` (for example `kelly-ford/10-16-2026-Jane-Doe-A1234-Ford-F150.json`). A later save of the same quote name keeps the newest version. R2 deletes each file 90 days after it was last saved. The Worker is in `quote-store/`.
+- With storage on, the dealer page footer reads "All quotes will be deleted after 90 days."
+- Storage stays off until the quote store is deployed and its URL is added to CONFIG.
+
 ## v3.0
 - Rockstar master only for now. The client builds stay on v2.9 until they are rebuilt.
 - Renamed to **Rockstar Deal Desk**.

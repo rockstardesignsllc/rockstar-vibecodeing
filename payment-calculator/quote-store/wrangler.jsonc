@@ -1,0 +1,10 @@
+{
+	"name": "rockstar-deal-desk-quotes",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-08-10",
+	"r2_buckets": [{ "binding": "QUOTES", "bucket_name": "rockstar-deal-desk-quotes" }],
+	"vars": {
+		// Comma separated origins allowed to save quotes, for example "https://app.rockstarinfo.com,https://quote.rockstarinfo.com"
+		"ALLOWED_ORIGINS": ""
+	}
+}
