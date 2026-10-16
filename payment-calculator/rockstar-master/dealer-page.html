@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.2  |  FILE 1 of 2: DEALER CALCULATOR PAGE
+  Rockstar Deal Desk v3.3  |  FILE 1 of 2: DEALER CALCULATOR PAGE
   Paste this into a GHL "Custom HTML/JS" element on your dealer workspace page.
   This is where your team builds the deal and copies the customer link.
   Customer links open the RESULTS PAGE (file 2) at CONFIG.quotePagePath (default /quote).
@@ -49,6 +49,8 @@ setTimeout(function () {
 #rsec .ec-top img{width:38px;height:auto}
 #rsec .ec-top b{font-size:17px;letter-spacing:-.01em}
 #rsec .ec-top span{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.14em;color:#a1a1a6;text-transform:uppercase}
+#rsec .ec-toplink{margin-left:14px;padding:7px 14px;border:1.5px solid rgba(255,255,255,.5);border-radius:999px;color:#fff;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
+#rsec .ec-toplink:hover{background:#fff;color:var(--ink)}
 #rsec .ec-shell{background:var(--paper);border-radius:0 0 22px 22px;padding:34px 28px}
 #rsec .ec-intro{max-width:720px;margin-bottom:28px}
 #rsec .ec-intro h1{font-size:40px;line-height:1.08;font-weight:900;letter-spacing:-.04em;margin-bottom:12px}
@@ -236,6 +238,7 @@ setTimeout(function () {
   #rsec .ec-gtab{border-spacing:4px}
   #rsec .ec-gtab td button{font-size:15px;padding:12px 1px}
   #rsec .ec-top span,#rsec .ec-bar span{display:none}
+  #rsec .ec-toplink{margin-left:auto}
   #rsec .ec-hero{display:block;padding:28px 18px 24px}
   #rsec .ec-hero h1{font-size:34px}
   #rsec .ec-total{text-align:left;margin-top:18px}
@@ -267,11 +270,12 @@ setTimeout(function () {
     fixedRate: '',   /* starting APR % for the Fixed and Hidden rate options, example: '14.99' */
     rateDisplay: '',   /* starting rate option: 'shown' (Fixed rate) or 'hidden' (Hidden rate); blank keeps the usual default */
     quoteStoreUrl: 'https://rockstar-deal-desk-quotes.rockstar-designs-llc.workers.dev/quotes',   /* Rockstar quote store endpoint (https://.../quotes); blank turns quote saving off */
-    quotePagePath: '/quote'
+    quotePagePath: '/quote',
+    savedQuotesPath: '/saved-quotes'   /* the dealer's saved quotes page; the dealer page links to it while quote saving is on */
   };
   /* =============================================================== */
 
-  const VERSION = '3.2';
+  const VERSION = '3.3';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -327,6 +331,7 @@ setTimeout(function () {
   const cfg = k => (CFG_KEY[k] && String(CONFIG[CFG_KEY[k]] || '').trim()) || '';
   const isLocked = k => !!cfg(k);
   const path = () => '/' + String(CONFIG.quotePagePath || '/quote').replace(/^\/+|\/+$/g, '');
+  const savedPath = () => '/' + String(CONFIG.savedQuotesPath || '/saved-quotes').replace(/^\/+|\/+$/g, '');
 
   /* ---------- helpers ---------- */
   const num = (v, d = 0) => (v !== '' && v !== null && v !== undefined && Number.isFinite(+v)) ? +v : d;
@@ -609,7 +614,8 @@ setTimeout(function () {
   function builder() {
     const allDealerLocked = ['dn', 'de', 'dl', 'ac', 'wh'].every(isLocked);
     root.innerHTML =
-      '<div class="ec-top"><img src="' + LOGO_WHITE + '" alt="Rockstar Designs"><b>Rockstar Deal Desk</b><span>Dealer workspace &middot; v' + VERSION + '</span></div>' +
+      '<div class="ec-top"><img src="' + LOGO_WHITE + '" alt="Rockstar Designs"><b>Rockstar Deal Desk</b><span>Dealer workspace &middot; v' + VERSION + '</span>' +
+        (isHttps(STORE_URL) ? '<a class="ec-toplink" href="' + esc(savedPath()) + '">Saved quotes</a>' : '') + '</div>' +
       '<div class="ec-shell">' +
         '<div class="ec-intro"><div class="ec-kicker">Build the deal. Send the link. Get the yes.</div>' +
           '<h1>Create a quote your customer can work.</h1>' +
