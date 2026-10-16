@@ -8,7 +8,8 @@ To ship a change: add a heading for the new version, describe what changed, then
 - New **saved quotes page** (`rockstar-master/saved-quotes.html`). A dealer signs in once with their access code and sees their quotes from the last 90 days, newest first, with customer, vehicle, payment, status and salesperson. Search by name, phone, vehicle, stock or salesperson, and "Open quote" reopens the offer. The device remembers the sign in until "Sign out".
 - Each dealer only sees their own folder. A dealer's access code is worked out from the quote store's admin code and the dealer name, so there is no list of codes to keep. Signed in with the admin code, the page can switch between dealers and show any dealer's access code.
 - The quote store answers `GET /quotes`, `GET /quotes/<quote_name>`, `GET /dealers` and `GET /access-code` for the saved quotes page. It now saves a short summary with each quote so a dealer's list loads in one step.
-- Fill in `quoteStoreUrl` on the saved quotes page with the same address as the dealer page.
+- The quote store is live at `https://rockstar-deal-desk-quotes.rockstar-designs-llc.workers.dev/quotes`. The Rockstar master dealer page and saved quotes page have it in `quoteStoreUrl`, so master quotes are saved from now on. The client builds turn it on when they are rebuilt.
+- Fill in `quoteStoreUrl` on a saved quotes page with the same address as its dealer page.
 
 ## v3.1
 - Quote storage: with `quoteStoreUrl` set in CONFIG, every `quote_created`, `quote_printed`, `quote_requested` and `lease_requested` alert is also saved to Cloudflare R2 as `<dealer>/<quote_name>.json` (for example `kelly-ford/10-16-2026-Jane-Doe-A1234-Ford-F150.json`). A later save of the same quote name keeps the newest version. R2 deletes each file 90 days after it was last saved. The Worker is in `quote-store/`.
