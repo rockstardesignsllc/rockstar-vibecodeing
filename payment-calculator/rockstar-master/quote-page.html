@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.0  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
+  Rockstar Deal Desk v3.2  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
   Paste this into a GHL "Custom HTML/JS" element on your /quote page
   (must match CONFIG.quotePagePath in file 1).
   This is the "Here's your personalized vehicle offer" page your customer sees,
@@ -196,6 +196,7 @@ setTimeout(function () {
 #rsec .ec-details td{padding:7px 0;border-bottom:1px solid var(--line);vertical-align:top}
 #rsec .ec-details td:first-child{color:var(--steel);padding-right:12px}
 #rsec .ec-details td:last-child{text-align:right;font-weight:700;overflow-wrap:anywhere}
+#rsec .ec-footnote{text-align:center;margin-top:22px}
 #rsec .ec-namewarn{text-align:center;color:#ff4d5e;margin-top:12px}
 #rsec .ec-lterm small{display:block;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--steel)}
 #rsec .ec-lterm strong{display:block;font-size:40px;font-weight:900;letter-spacing:-.04em;line-height:1.1;margin:8px 0 2px}
@@ -267,11 +268,12 @@ setTimeout(function () {
     gridDownPayments: '',   /* starting grid down payments in dollars, example: '1000,2000,3000' */
     fixedRate: '',   /* starting APR % for the Fixed and Hidden rate options, example: '14.99' */
     rateDisplay: '',   /* starting rate option: 'shown' (Fixed rate) or 'hidden' (Hidden rate); blank keeps the usual default */
+    quoteStoreUrl: 'https://rockstar-deal-desk-quotes.rockstar-designs-llc.workers.dev/quotes',   /* Rockstar quote store endpoint (https://.../quotes); blank turns quote saving off */
     quotePagePath: '/quote'
   };
   /* =============================================================== */
 
-  const VERSION = '3.0';
+  const VERSION = '3.2';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -542,9 +544,12 @@ setTimeout(function () {
     ? { deal_type: 'lease', deal_rate: '', deal_term: String(lease[0]), deal_down_payment: plain(leaseDown()), deal_monthly_payment: plain(leasePay(lease[0], lease[1])) }
     : { deal_type: 'purchase', deal_rate: plain(rate()), deal_term: String(term()), deal_down_payment: plain(down()), deal_monthly_payment: plain(monthly()) };
 
+  const STORE_URL = String(CONFIG.quoteStoreUrl || '').trim();
+  const isHttps = u => /^https:\/\//i.test(u);
+  /* the same alert goes to the dealer's webhook and, when CONFIG.quoteStoreUrl is set, to the quote store */
   function hook(event, lease, extra) {
-    const url = String(d.wh || '').trim();
-    if (!url || PREVIEW || !/^https:\/\//i.test(url)) return;
+    const targets = [String(d.wh || '').trim(), STORE_URL].filter(isHttps);
+    if (!targets.length || PREVIEW) return;
     try {
       const body = new URLSearchParams({
         event, quote_id: d.id || '', quote_name: quoteName(), quote_date: d.cd || today(), link_modified: MODIFIED ? 'yes' : 'no',
@@ -565,7 +570,7 @@ setTimeout(function () {
         offer_url: IS_OFFER ? location.href : linkFor('send'), timestamp: new Date().toISOString(),
         ...(lease ? leaseFields(lease[0], lease[1]) : {}), ...(extra || {})
       });
-      fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body }).catch(() => { /* alerts are optional */ });
+      targets.forEach(url => fetch(url, { method: 'POST', mode: 'no-cors', keepalive: true, body }).catch(() => { /* alerts are optional */ }));
     } catch (e) { /* alerts are optional */ }
   }
 
@@ -719,6 +724,7 @@ setTimeout(function () {
             '<p class="ec-fine" id="ec-idline"></p>' +
           '</aside>' +
         '</div>' +
+        (isHttps(STORE_URL) ? '<p class="ec-fine ec-footnote">All quotes will be deleted after 90 days.</p>' : '') +
       '</div>';
 
     const $ = s => root.querySelector(s);
