@@ -4,6 +4,9 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.6
+- Kelly Ford, Redemption Auto Sales and Wildcat Used Cars move from v2.9 to Rockstar Deal Desk, with everything from v3.0 to v3.5: the customer, vehicle and trade fields, required customer name, the new webhook fields, Print this offer (Multi-Payment grid only), and quote saving to the quote store. Each now also has its own saved quotes page.
+
 ## v3.5
 - **Print this offer** on the dealer page only shows with the Multi-Payment grid layout. With Adjustable, the salesperson works the payment with the customer or sends the link, so there is nothing to print. The button appears and disappears as the layout is switched.
 
