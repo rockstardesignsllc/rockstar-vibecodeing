@@ -4,6 +4,9 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.5
+- **Print this offer** on the dealer page only shows with the Multi-Payment grid layout. With Adjustable, the salesperson works the payment with the customer or sends the link, so there is nothing to print. The button appears and disappears as the layout is switched.
+
 ## v3.4
 - **Print this offer** on the dealer page, with the Multi-Payment grid, now prints a worksheet: every grid payment with none picked, "Circle the payment that works best for you", and blank lines for the down payment, term and monthly payment the customer chooses. Page 1 shows the price lines without the picked down payment, amount financed, term or payment.
 - Every printed offer with a payment grid starts the payment options on page 2, so the grid is never split. Page 1 holds the customer, vehicle and pricing.
