@@ -4,6 +4,9 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.9
+- Every webhook alert carries `vehicle_price`, the purchase price as a plain number (for example `40000.00`), ready for a HighLevel custom field. It is the price before tax and fees.
+
 ## v3.8
 - Every webhook alert carries two new trade fields as plain numbers, ready for HighLevel custom fields: `trade_allowance_amount` (what the trade is worth, for example `10000.00`) and `trade_amount_owed` (what the customer still owes on it, for example `2000.00`). Both are `0.00` when there is no trade. The money-formatted `trade_allowance` and `trade_balance_owed` fields are unchanged, so the emails keep working.
 
@@ -60,6 +63,7 @@ To ship a change: add a heading for the new version, describe what changed, then
 | `customer_email`, `customer_phone` | Customer contact |
 | `customer_street`, `customer_city`, `customer_state`, `customer_zip` | Customer address |
 | `vehicle_stock`, `vehicle_year`, `vehicle_make`, `vehicle_model`, `vehicle_trim`, `vehicle_vin`, `vehicle_odometer` | The vehicle being quoted |
+| `vehicle_price` | Purchase price before tax and fees as a plain number, for example `40000.00` (added in v3.9) |
 | `trade_year`, `trade_make`, `trade_model`, `trade_trim`, `trade_vin`, `trade_odometer` | The trade-in vehicle |
 | `trade_allowance_amount`, `trade_amount_owed` | Trade allowance and amount owed as plain numbers, for example `10000.00` (added in v3.8) |
 | `deal_type` | `purchase`, or `lease` on `lease_requested` and on a lease `text_clicked` |
