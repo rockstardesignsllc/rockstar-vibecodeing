@@ -4,6 +4,9 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.7
+- Redemption Auto Sales moves to its own HighLevel sub account, so its dealer and customer pages now send webhooks to the new sub account's inbound webhook. The other calculators keep their webhooks.
+
 ## v3.6
 - Kelly Ford, Redemption Auto Sales and Wildcat Used Cars move from v2.9 to Rockstar Deal Desk, with everything from v3.0 to v3.5: the customer, vehicle and trade fields, required customer name, the new webhook fields, Print this offer (Multi-Payment grid only), and quote saving to the quote store. Each now also has its own saved quotes page.
 
