@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.9 (Kelly Ford)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
+  Rockstar Deal Desk v3.10 (Kelly Ford)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
   Paste this into a GHL "Custom HTML/JS" element on your dealer workspace page.
   This is where your team builds the deal and copies the customer link.
   Customer links open the RESULTS PAGE (file 2) at CONFIG.quotePagePath (default /quote).
@@ -276,7 +276,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '3.9';
+  const VERSION = '3.10';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -569,7 +569,6 @@ setTimeout(function () {
         salesperson: d.sp || '', salesperson_cell: d.sc || '', dealer: dealerName(), dealer_email: d.de || '',
         monthly_payment: money(monthly()), down_payment: money(down()), amount_financed: money(financed()),
         term_months: String(term()), apr: d.rm === 'h' ? 'hidden' : pct(rate()), credit_score: d.rm === 't' ? String(d.cs) : '',
-        trade_allowance: money(d.ta), trade_balance_owed: money(d.tb),
         rebate: hasRebate() ? money(rebate()) : '', rebate_line: hasRebate() ? 'Rebate: ' + money(rebate()) : '',
         lease_quote: hasLease() ? leaseQuote() : '',
         payment_layout: isGrid() ? 'grid' : 'adjustable', payment_grid: isGrid() ? gridLines().join(' | ') : '',
