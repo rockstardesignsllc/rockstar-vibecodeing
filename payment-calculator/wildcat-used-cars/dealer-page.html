@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.8 (Wildcat Used Cars · Subprime)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
+  Rockstar Deal Desk v3.9 (Wildcat Used Cars · Subprime)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
   Paste this into a GHL "Custom HTML/JS" element on your dealer workspace page.
   This is where your team builds the deal and copies the customer link.
   Customer links open the RESULTS PAGE (file 2) at CONFIG.quotePagePath (default /quote).
@@ -276,7 +276,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '3.8';
+  const VERSION = '3.9';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -562,6 +562,7 @@ setTimeout(function () {
         customer_street: d.ad, customer_city: d.ci, customer_state: d.sa, customer_zip: d.zp,
         vehicle: vehicle(), stock: d.st || '',
         vehicle_stock: d.st, vehicle_year: d.yr, vehicle_make: d.mk, vehicle_model: d.md, vehicle_trim: d.tr, vehicle_vin: d.vn, vehicle_odometer: d.mi,
+        vehicle_price: plain(num(d.pr)),
         trade_year: d.ty, trade_make: d.tmk, trade_model: d.tmd, trade_trim: d.ttr, trade_vin: d.tvn, trade_odometer: d.tmi,
         trade_allowance_amount: plain(num(d.ta)), trade_amount_owed: plain(num(d.tb)),
         ...dealFields(lease),
