@@ -4,11 +4,15 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.10
+- One set of trade amounts in the webhook: `trade_allowance_amount` and `trade_amount_owed` (plain numbers). The money-formatted `trade_allowance` and `trade_balance_owed` are no longer sent.
+- The "Quote locked in" notification email (`emails/1-quote-locked-in.html`) now reads the trade lines from `trade_allowance_amount` and `trade_amount_owed`. Paste the updated email into HighLevel when the new pages go live, or its trade lines come through blank.
+
 ## v3.9
 - Every webhook alert carries `vehicle_price`, the purchase price as a plain number (for example `40000.00`), ready for a HighLevel custom field. It is the price before tax and fees.
 
 ## v3.8
-- Every webhook alert carries two new trade fields as plain numbers, ready for HighLevel custom fields: `trade_allowance_amount` (what the trade is worth, for example `10000.00`) and `trade_amount_owed` (what the customer still owes on it, for example `2000.00`). Both are `0.00` when there is no trade. The money-formatted `trade_allowance` and `trade_balance_owed` fields are unchanged, so the emails keep working.
+- Every webhook alert carries two new trade fields as plain numbers, ready for HighLevel custom fields: `trade_allowance_amount` (what the trade is worth, for example `10000.00`) and `trade_amount_owed` (what the customer still owes on it, for example `2000.00`). Both are `0.00` when there is no trade. The money-formatted `trade_allowance` and `trade_balance_owed` fields are unchanged, so the emails keep working (both removed in v3.10).
 
 ## v3.7
 - Redemption Auto Sales moves to its own HighLevel sub account, so its dealer and customer pages now send webhooks to the new sub account's inbound webhook. The other calculators keep their webhooks.
@@ -73,8 +77,8 @@ To ship a change: add a heading for the new version, describe what changed, then
 | `deal_monthly_payment` | Monthly payment as a plain number, for example `389.42`. It is the payment the customer chose: the slider, the grid cell they tapped or the lease they locked in |
 
 These fields are unchanged and stay formatted for emails: `vehicle`, `stock`, `salesperson`, `salesperson_cell`, `dealer`, `dealer_email`,
-`monthly_payment`, `down_payment`, `amount_financed`, `term_months`, `apr` (`hidden` when hidden), `credit_score`, `trade_allowance`,
-`trade_balance_owed`, `rebate`, `rebate_line`, `lease_quote`, `payment_layout`, `payment_grid`, `payment_grid_line`, `offer_url`,
+`monthly_payment`, `down_payment`, `amount_financed`, `term_months`, `apr` (`hidden` when hidden), `credit_score`,
+`rebate`, `rebate_line`, `lease_quote`, `payment_layout`, `payment_grid`, `payment_grid_line`, `offer_url`,
 `timestamp`, `link_modified`, and on lease events `lease_term`, `lease_payment`, `lease_down`, `lease_miles`, `lease_line`.
 `offer_url` is always the customer link, including on the dealer page events.
 
