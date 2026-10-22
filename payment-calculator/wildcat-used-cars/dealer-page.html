@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.10 (Wildcat Used Cars · Subprime)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
+  Rockstar Deal Desk v3.11 (Wildcat Used Cars · Subprime)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
   Paste this into a GHL "Custom HTML/JS" element on your dealer workspace page.
   This is where your team builds the deal and copies the customer link.
   Customer links open the RESULTS PAGE (file 2) at CONFIG.quotePagePath (default /quote).
@@ -198,6 +198,13 @@ setTimeout(function () {
 #rsec .ec-details td:first-child{color:var(--steel);padding-right:12px}
 #rsec .ec-details td:last-child{text-align:right;font-weight:700;overflow-wrap:anywhere}
 #rsec .ec-footnote{text-align:center;margin-top:22px}
+#rsec .ec-codehelp{max-width:460px;margin:10px auto 0;text-align:center}
+#rsec .ec-linkbtn{background:none;border:0;padding:4px;color:var(--steel);font-size:13px;font-weight:700;text-decoration:underline;cursor:pointer}
+#rsec .ec-codeform{display:flex;gap:10px;align-items:flex-end;margin-top:10px;text-align:left}
+#rsec .ec-codeform[hidden]{display:none}
+#rsec .ec-codeform .ec-field{flex:1}
+#rsec .ec-codeform .ec-btn{padding:12px 18px}
+@media (max-width:520px){#rsec .ec-codeform{flex-direction:column;align-items:stretch}}
 #rsec .ec-namewarn{text-align:center;color:#ff4d5e;margin-top:12px}
 #rsec .ec-lterm small{display:block;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--steel)}
 #rsec .ec-lterm strong{display:block;font-size:40px;font-weight:900;letter-spacing:-.04em;line-height:1.1;margin:8px 0 2px}
@@ -276,7 +283,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '3.10';
+  const VERSION = '3.11';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -551,6 +558,20 @@ setTimeout(function () {
 
   const STORE_URL = String(CONFIG.quoteStoreUrl || '').trim();
   const isHttps = u => /^https:\/\//i.test(u);
+  const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/;
+  /* asks the quote store to email this dealer's saved quotes access code; resolves to the message shown to the dealer */
+  async function requestCodeEmail(email) {
+    const fallback = 'That did not go through. Try again, or ask Rockstar Designs for your code.';
+    try {
+      const res = await fetch(new URL(STORE_URL).origin + '/access-code/email', {
+        method: 'POST', body: new URLSearchParams({ dealer: dealerName(), email, saved_quotes_path: savedPath() })
+      });
+      if (res.status === 202) return 'Sent. Your code is on its way to ' + email + '.';
+      if (res.status === 429) return 'Your code was emailed a few minutes ago. Check your inbox, or try again in 5 minutes.';
+      if (res.status === 503) return 'Code emails are not set up yet. Ask Rockstar Designs for your code.';
+      return fallback;
+    } catch (e) { return fallback; }
+  }
   /* the same alert goes to the dealer's webhook and, when CONFIG.quoteStoreUrl is set, to the quote store */
   function hook(event, lease, extra) {
     const targets = [String(d.wh || '').trim(), STORE_URL].filter(isHttps);
@@ -731,7 +752,12 @@ setTimeout(function () {
             '<p class="ec-fine" id="ec-idline"></p>' +
           '</aside>' +
         '</div>' +
-        (isHttps(STORE_URL) ? '<p class="ec-fine ec-footnote">All quotes will be deleted after 90 days.</p>' : '') +
+        (isHttps(STORE_URL) ? '<p class="ec-fine ec-footnote">All quotes will be deleted after 90 days.</p>' +
+          '<div class="ec-codehelp"><button type="button" class="ec-linkbtn" id="ec-codelink" aria-expanded="false">Forgot your saved quotes code?</button>' +
+          '<form class="ec-codeform" id="ec-codeform" hidden novalidate><label class="ec-field">Email my code to' +
+          '<input id="ec-codeemail" type="email" autocomplete="email" placeholder="you@yourstore.com" maxlength="254"></label>' +
+          '<button type="submit" class="ec-btn ec-btn--ghost" id="ec-codesend">Email my code</button></form>' +
+          '<p class="ec-fine" id="ec-codemsg" aria-live="polite"></p></div>' : '') +
       '</div>';
 
     const $ = s => root.querySelector(s);
@@ -848,6 +874,24 @@ setTimeout(function () {
     });
     termSel.addEventListener('change', () => { d.t = num(termSel.value, d.tm[0]); refresh(); });
     if ($('#ec-ls')) $('#ec-ls').addEventListener('change', e => { d.ls = e.target.checked ? '1' : ''; refresh(); });
+    const codeLink = $('#ec-codelink');
+    if (codeLink) {
+      const form = $('#ec-codeform'), emailIn = $('#ec-codeemail'), send = $('#ec-codesend'), msg = $('#ec-codemsg');
+      codeLink.onclick = () => {
+        form.hidden = !form.hidden;
+        codeLink.setAttribute('aria-expanded', form.hidden ? 'false' : 'true');
+        if (!form.hidden) emailIn.focus();
+      };
+      form.onsubmit = async e => {
+        e.preventDefault();
+        const email = emailIn.value.trim();
+        if (!EMAIL_RE.test(email)) { msg.textContent = 'Enter a valid email address.'; emailIn.focus(); return; }
+        send.disabled = true;
+        msg.textContent = 'Sending...';
+        msg.textContent = await requestCodeEmail(email);
+        send.disabled = false;
+      };
+    }
     const forget = $('#ec-forget');
     if (forget) forget.onclick = () => { store.clear(); PROFILE.forEach(k => { d[k] = clone(DEF[k]); }); Object.keys(CFG_KEY).forEach(k => { if (isLocked(k)) d[k] = cfg(k); }); builder(); };
     /* a quote needs the customer's first and last name before it is sent, copied or printed */
