@@ -53,6 +53,24 @@ Reading routes, all with the code in the `x-access-code` header:
 | `GET /dealers` | admin | every dealer folder |
 | `GET /access-code?dealer=<name>` | admin | that dealer's access code |
 
+## Forgot your code emails
+
+The dealer page has a "Forgot your saved quotes code?" link at the bottom. The dealer types an email address,
+and the Worker posts that dealer's access code to a HighLevel inbound webhook, whose workflow emails it.
+
+1. In HighLevel, create a workflow with an Inbound Webhook trigger and a Send Email action to
+   `{{inboundWebhookRequest.email}}`. Paste `emails/4-access-code.html` into the email.
+2. Store the webhook URL as a Worker secret and deploy:
+
+```bash
+echo '<webhook url>' | npx wrangler@4 secret put CODE_EMAIL_WEBHOOK
+```
+
+`POST /access-code/email` takes the form fields `dealer`, `email` and `saved_quotes_path` from an allowed origin and
+sends `event` (`access_code_requested`), `dealer`, `dealer_slug`, `email`, `access_code`, `saved_quotes_url` and
+`requested_at` to the webhook. It answers 202 when sent, 429 when that dealer's code was emailed in the last
+5 minutes, and 503 until `CODE_EMAIL_WEBHOOK` is set. The last send time per dealer is kept in R2 under `_service/`.
+
 ## Finding a quote
 
 Cloudflare dashboard, R2, `rockstar-deal-desk-quotes`, then the dealer's folder. Files are deleted 90 days after

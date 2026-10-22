@@ -14,6 +14,11 @@
  * QUOTE_ADMIN_SECRET itself is the admin code: it opens every dealer and unlocks
  *   GET /dealers                                    lists every dealer folder
  *   GET /access-code?dealer=<dealer name>           returns that dealer's access code
+ *
+ * A dealer who forgot their code asks for it from the dealer page:
+ *   POST /access-code/email  (form fields dealer, email, saved_quotes_path)
+ * The Worker posts the dealer's code and the typed email to the CODE_EMAIL_WEBHOOK secret, a HighLevel inbound
+ * webhook whose workflow emails the code. One request per dealer is sent every CODE_EMAIL_INTERVAL_MS.
  */
 
 interface R2PutOptions {
@@ -43,6 +48,7 @@ type R2ListResult = { objects: R2ObjectLike[]; delimitedPrefixes: string[] } & (
 interface R2BucketLike {
 	put(key: string, value: string, options?: R2PutOptions): Promise<unknown>;
 	get(key: string): Promise<R2ObjectBodyLike | null>;
+	head(key: string): Promise<R2ObjectLike | null>;
 	list(options?: R2ListOptions): Promise<R2ListResult>;
 }
 
@@ -50,6 +56,7 @@ export interface Env {
 	QUOTES: R2BucketLike;
 	ALLOWED_ORIGINS: string;
 	QUOTE_ADMIN_SECRET: string;
+	CODE_EMAIL_WEBHOOK?: string;
 }
 
 type Fields = Record<string, string>;
@@ -81,6 +88,12 @@ const SUMMARY_FIELDS = ['quote_id', 'event', 'quote_date', 'customer_name', 'cus
 const SUMMARY_FIELD_CHARS = 100;
 const CODE_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 const CODE_BYTES = 10;
+/* service records live under a prefix no dealer slug can start with, so they never show up as a dealer folder */
+const SERVICE_PREFIX = '_service/';
+const CODE_EMAIL_INTERVAL_MS = 5 * 60 * 1000;
+const MAX_FORM_BYTES = 2 * 1024;
+const EMAIL = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]{2,}$/;
+const SAVED_PATH = /^\/[A-Za-z0-9/_-]{0,100}$/;
 
 export const slug = (s: string): string =>
 	s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'unknown-dealer';
@@ -215,10 +228,46 @@ async function adminRoute(request: Request, env: Env, origin: string | null, url
 	}
 	if (url.pathname === '/dealers') {
 		const { prefixes } = await listAll(env, { delimiter: '/' });
-		return json({ dealers: prefixes.map(p => p.replace(/\/$/, '')).sort() }, origin);
+		return json({ dealers: prefixes.filter(p => p !== SERVICE_PREFIX).map(p => p.replace(/\/$/, '')).sort() }, origin);
 	}
 	const dealer = slug(url.searchParams.get('dealer') || '');
 	return json({ dealer, access_code: await accessCode(env.QUOTE_ADMIN_SECRET, dealer) }, origin);
+}
+
+async function emailCode(request: Request, env: Env, origin: string | null): Promise<Response> {
+	if (!origin) return reply(403, 'origin not allowed', null);
+	const webhook = (env.CODE_EMAIL_WEBHOOK || '').trim();
+	if (!env.QUOTE_ADMIN_SECRET || !/^https:\/\//i.test(webhook)) return reply(503, 'code emails are not set up', origin);
+	const text = await request.text();
+	if (text.length > MAX_FORM_BYTES) return reply(413, 'too large', origin);
+
+	const form = new URLSearchParams(text);
+	const dealerName = (form.get('dealer') || '').trim().slice(0, 100);
+	const email = (form.get('email') || '').trim().slice(0, 254);
+	const savedPath = form.get('saved_quotes_path') || '/saved-quotes';
+	if (!dealerName) return reply(400, 'dealer required', origin);
+	if (!EMAIL.test(email)) return reply(400, 'invalid email', origin);
+	if (!SAVED_PATH.test(savedPath)) return reply(400, 'invalid saved quotes path', origin);
+
+	const dealer = slug(dealerName);
+	const marker = SERVICE_PREFIX + 'code-emails/' + dealer;
+	const last = await env.QUOTES.head(marker);
+	if (last && Date.now() - last.uploaded.getTime() < CODE_EMAIL_INTERVAL_MS) return reply(429, 'code was emailed recently', origin);
+
+	const requestedAt = new Date().toISOString();
+	const body = new URLSearchParams({
+		event: 'access_code_requested',
+		dealer: dealerName,
+		dealer_slug: dealer,
+		email,
+		access_code: await accessCode(env.QUOTE_ADMIN_SECRET, dealer),
+		saved_quotes_url: origin + savedPath,
+		requested_at: requestedAt
+	});
+	const sent = await fetch(webhook, { method: 'POST', body });
+	if (!sent.ok) return reply(502, 'email service did not accept the request', origin);
+	await env.QUOTES.put(marker, JSON.stringify({ email, requested_at: requestedAt }), { httpMetadata: { contentType: 'application/json' } });
+	return reply(202, 'sent', origin);
 }
 
 export default {
@@ -227,6 +276,7 @@ export default {
 		const url = new URL(request.url);
 		const isQuotes = url.pathname === '/quotes' || url.pathname.startsWith('/quotes/');
 		const isAdminPath = url.pathname === '/dealers' || url.pathname === '/access-code';
+		const isCodeEmail = url.pathname === '/access-code/email';
 
 		if (request.method === 'OPTIONS') {
 			if (!origin) return reply(403, 'origin not allowed', null);
@@ -241,9 +291,10 @@ export default {
 			});
 		}
 		if (request.method === 'POST' && url.pathname === '/quotes') return saveQuote(request, env, origin);
+		if (request.method === 'POST' && url.pathname === '/access-code/email') return emailCode(request, env, origin);
 		if (request.method === 'GET' && isQuotes) return readQuotes(request, env, origin, url);
 		if (request.method === 'GET' && isAdminPath) return adminRoute(request, env, origin, url);
-		if (isQuotes || isAdminPath) return reply(405, 'method not allowed', origin);
+		if (isQuotes || isAdminPath || isCodeEmail) return reply(405, 'method not allowed', origin);
 		return reply(404, 'not found', origin);
 	}
 };

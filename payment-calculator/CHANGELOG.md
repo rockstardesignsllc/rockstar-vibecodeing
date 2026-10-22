@@ -4,6 +4,11 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.11
+- **Forgot your saved quotes code?** at the bottom of the dealer page, while quote saving is on. The dealer types an email address and taps "Email my code". The quote store sends the dealer's access code to the HighLevel webhook in its `CODE_EMAIL_WEBHOOK` secret, and that workflow emails it. One code email per dealer every 5 minutes.
+- The webhook fields are `event` (`access_code_requested`), `dealer`, `dealer_slug`, `email` (the address the dealer typed), `access_code`, `saved_quotes_url` and `requested_at`. The email template is `emails/4-access-code.html`.
+- The saved quotes sign in points to the new link.
+
 ## v3.10
 - One set of trade amounts in the webhook: `trade_allowance_amount` and `trade_amount_owed` (plain numbers). The money-formatted `trade_allowance` and `trade_balance_owed` are no longer sent.
 - The "Quote locked in" notification email (`emails/1-quote-locked-in.html`) now reads the trade lines from `trade_allowance_amount` and `trade_amount_owed`. Paste the updated email into HighLevel when the new pages go live, or its trade lines come through blank.
