@@ -156,7 +156,5 @@
 		"singleQuote": true,
 		"useTabs": true
 	},
-	"overrides": {
-		"vite": "npm:rolldown-vite@latest"
-	}
+	"overrides": {}
 }
