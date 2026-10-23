@@ -111,4 +111,12 @@ SEO for all 14 pages lives in `getrockstarai/seo/getrockstarai-seo.md`: the titl
 
 SEO for all 9 pages lives in `managemychurch/seo/managemychurch-seo.md`: the title, description, keywords, social image and JSON-LD schema for each page. The social images are in `managemychurch/social-images/`.
 
+## churchcaptions.com (standalone)
+
+| File | Slug |
+|---|---|
+| 01-home.html | `/` |
+
+Standalone site: never link it to or from the other Rockstar sites. SEO and schema are in `churchcaptions/seo/churchcaptions-seo.md`, the share image is in `churchcaptions/social-images/`, and robots.txt and llms.txt are in `churchcaptions/robots-llms/`.
+
 Each site folder has `rockstar-master.css`. rockstarinfo, getrockstarai and managemychurch also have `social-images/` (one share image per page), and managemychurch has `logo/`.
