@@ -143,3 +143,8 @@ Required in `.dev.vars` for local development:
 - When the user asks to build a new calculator, follow `payment-calculator/NEW-CALCULATOR.md`. Ask its questions first, starting with "Is this a standard calculator or subprime?", and wait for the answers before building.
 - Each calculator has its own folder under `payment-calculator/`. `rockstar-master/dealer-page.html` is the single source; client folders are generated from their `config.json`.
 - Version every change in `payment-calculator/CHANGELOG.md`, then run `python3 payment-calculator/build.py`.
+
+## Rockstar AI Audit (`ai-audit/`)
+- Rex, the self-serve AI Audit chat embedded on a HighLevel page. `embed.html` is the HighLevel embed; `worker/` is the Cloudflare Worker (one `AuditSession` Durable Object per audit, Claude Sonnet 5.5) that writes the results to HighLevel.
+- Rex's questions, voice, product catalog and pricing line live in `ai-audit/worker/src/prompt.ts`. HighLevel field IDs live in `ai-audit/worker/src/fields.ts`.
+- Version every change in `ai-audit/CHANGELOG.md`, run `npm run typecheck` in `ai-audit/worker`, and follow `ai-audit/README.md` for setup and deploys.
