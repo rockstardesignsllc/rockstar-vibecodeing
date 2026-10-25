@@ -120,3 +120,14 @@ SEO for all 9 pages lives in `managemychurch/seo/managemychurch-seo.md`: the tit
 Standalone site: never link it to or from the other Rockstar sites. SEO and schema are in `churchcaptions/seo/churchcaptions-seo.md`, the share image is in `churchcaptions/social-images/`, and robots.txt and llms.txt are in `churchcaptions/robots-llms/`.
 
 Each site folder has `rockstar-master.css`. rockstarinfo, getrockstarai and managemychurch also have `social-images/` (one share image per page), and managemychurch has `logo/`.
+
+## matkoenig.com (Mat's personal brand site)
+
+| File | Slug |
+|---|---|
+| 01-home.html | `/` |
+| 02-about.html | `about` |
+| 03-speaking.html | `speaking` |
+| 04-contact.html | `contact` |
+
+Uses the same `rockstar-master.css`. SEO for all 4 pages is in `matkoenig/seo/matkoenig-seo.md`, social images are in `matkoenig/social-images/`, and robots.txt and llms.txt are in `matkoenig/robots-llms/`. Footer links to every Rockstar site plus localchurchgathering.com. Never link churchcaptions.com.
