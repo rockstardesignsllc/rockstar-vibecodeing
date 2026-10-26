@@ -1,3 +1,4 @@
+<!-- Rockstar page v1.1 | Updated 2026-10-26 23:39 UTC -->
 <!--
   Rockstar AI Audit  |  PAGE 2 of 2: AUDIT COMPLETE (https://aiaudit.rockstarinfo.com/audit-complete)
   Paste this whole file into a HighLevel "Custom HTML/JS" element on the audit-complete page.
@@ -81,6 +82,12 @@
 	<p class="rd-foot">Rockstar AI · Rex is an AI, and a real person reviews every audit.</p>
 </div>
 
+<!--
+  ===== CONVERSION PIXEL PLACEHOLDER =====
+  Best spot for the Meta pixel / Google Ads tag: the page's Settings, Tracking Code, Header in HighLevel.
+  The script below already fires a "Lead" event to the Meta pixel (fbq) and an "ai_audit_complete" event to Google
+  (gtag / dataLayer) once per finished audit, as soon as those tags are on the page. Nothing to edit here.
+-->
 <script src="https://app.rockstarinfo.com/js/form_embed.js"></script>
 <script>
 (function () {
@@ -117,6 +124,22 @@
 		lead.textContent = 'Your full results and recommendations will be sent over within 24 hours. Keep an eye on your email and texts.';
 		bookTitle.textContent = 'Want to go over it sooner?';
 		bookText.textContent = 'Grab a 20 minute Strategy Call and we will walk through your audit together. No pressure, no pitch deck.';
+	}
+
+	/* conversion tracking: only real finished audits (result present), once per audit */
+	if (result) {
+		var fired = false;
+		try { fired = window.sessionStorage.getItem(CONFIG.resultKey + '-tracked') === '1'; } catch (e) {}
+		if (!fired) {
+			var track = function () {
+				if (typeof window.fbq === 'function') window.fbq('track', 'Lead', { content_name: 'AI Audit Complete' });
+				if (typeof window.gtag === 'function') window.gtag('event', 'ai_audit_complete');
+				else { window.dataLayer = window.dataLayer || []; window.dataLayer.push({ event: 'ai_audit_complete' }); }
+				try { window.sessionStorage.setItem(CONFIG.resultKey + '-tracked', '1'); } catch (e) {}
+			};
+			/* give header tracking tags a moment to load */
+			if (document.readyState === 'complete') setTimeout(track, 300); else window.addEventListener('load', function () { setTimeout(track, 300); });
+		}
 	}
 
 	var frame = root.querySelector('.rd-cal');

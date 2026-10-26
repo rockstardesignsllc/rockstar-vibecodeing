@@ -61,7 +61,8 @@ AI audit results, AI strategy call, RockstarAI, Rockstar AI
    record HighLevel shows you, and set page 1 as the subdomain's home page.
 
 Page 2 is where conversion tracking belongs (Meta pixel, Google Ads conversion): only people who finished an audit
-land there. Add the tracking code in the page's tracking code settings, not in the Custom HTML element.
+land there. Add the tracking code in the page's tracking code settings, not in the Custom HTML element. The page already sends a Meta `Lead` event and a Google `ai_audit_complete` event once per finished audit, so
+use those as the conversion events.
 
 ## Changing the share images
 

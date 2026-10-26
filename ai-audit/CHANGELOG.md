@@ -1,5 +1,11 @@
 # Rockstar AI Audit changelog
 
+## v1.2
+- Version stamps at the top of both pages: `pages/audit.html` v1.2, `pages/audit-complete.html` v1.1.
+- Audit Complete page fires conversion events once per finished audit: Meta pixel `Lead` and Google
+  `ai_audit_complete`, as soon as Mat adds those tags in the page's Tracking Code settings. A marked placeholder in
+  the file says where the pixel goes.
+
 ## v1.1
 - Two pages on the Rockstar Info site: the audit at `https://aiaudit.rockstarinfo.com` (`pages/audit.html`, was
   `embed.html`) and a new Audit Complete page at `https://aiaudit.rockstarinfo.com/audit-complete`
