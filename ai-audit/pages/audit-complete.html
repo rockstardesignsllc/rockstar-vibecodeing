@@ -1,0 +1,131 @@
+<!--
+  Rockstar AI Audit  |  PAGE 2 of 2: AUDIT COMPLETE (https://aiaudit.rockstarinfo.com/audit-complete)
+  Paste this whole file into a HighLevel "Custom HTML/JS" element on the audit-complete page.
+  Rex sends prospects here when the audit ends. The audit page hands over their first name, whether they want the
+  Strategy Call, and their prefilled booking link. Anyone who opens this page directly sees the general version.
+  This is the page to put conversion tracking on (Meta pixel, Google Ads): every visit is a finished audit.
+  SEO and social sharing settings: ai-audit/SEO.md
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+#rex-done{--ink:#0b0b0d;--acc:#d70015;--acc-dark:#a80010;--paper:#f5f5f7;--line:#e3e3e8;--steel:#6e6e73;--white:#fff;--ok:#19b986;
+	font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--ink);max-width:880px;margin:0 auto;padding:8px 0 24px;
+	box-sizing:border-box;line-height:1.5;-webkit-font-smoothing:antialiased}
+#rex-done *,#rex-done *::before,#rex-done *::after{box-sizing:border-box}
+#rex-done .rd-hero{background:var(--ink);color:var(--white);border-radius:22px;padding:40px 32px 34px;text-align:center;position:relative;overflow:hidden}
+#rex-done .rd-hero::before{content:'';position:absolute;inset:auto -120px -160px auto;width:360px;height:360px;border-radius:50%;background:radial-gradient(closest-side,rgba(215,0,21,.35),rgba(215,0,21,0))}
+#rex-done .rd-check{width:64px;height:64px;border-radius:50%;background:var(--ok);display:grid;place-items:center;margin:0 auto 18px;box-shadow:0 10px 30px rgba(25,185,134,.4)}
+#rex-done .rd-pill{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.14em;color:#6fe0bb;margin-bottom:10px}
+#rex-done h1{font-size:clamp(28px,5vw,42px);line-height:1.1;letter-spacing:-.02em;font-weight:900;margin:0 0 12px;position:relative}
+#rex-done .rd-lead{font-size:17.5px;color:#d1d1d6;max-width:560px;margin:0 auto;position:relative}
+#rex-done .rd-cta{display:inline-block;margin-top:22px;background:var(--acc);color:var(--white);text-decoration:none;font-weight:800;font-size:16px;padding:15px 26px;border-radius:999px;
+	box-shadow:0 10px 26px rgba(215,0,21,.35);position:relative}
+#rex-done .rd-cta:hover{background:var(--acc-dark)}
+#rex-done .rd-section{margin-top:22px;background:var(--white);border:1px solid var(--line);border-radius:20px;padding:26px 24px}
+#rex-done h2{font-size:21px;font-weight:800;letter-spacing:-.01em;margin:0 0 6px}
+#rex-done .rd-muted{color:var(--steel);margin:0 0 18px;font-size:15px}
+#rex-done .rd-cal{width:100%;min-height:720px;border:0;border-radius:14px;background:var(--paper);display:block}
+#rex-done .rd-cal-link{display:block;text-align:center;margin-top:10px;font-size:13.5px;color:var(--steel)}
+#rex-done .rd-cal-link a{color:var(--acc);font-weight:700}
+#rex-done .rd-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:0;padding:0;list-style:none}
+#rex-done .rd-steps li{background:var(--paper);border-radius:16px;padding:18px}
+#rex-done .rd-steps b{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--white);font-size:14px;margin-bottom:10px}
+#rex-done .rd-steps strong{display:block;font-size:15.5px;margin-bottom:4px}
+#rex-done .rd-steps span{font-size:14px;color:var(--steel)}
+#rex-done .rd-proof{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px}
+#rex-done .rd-proof div{background:var(--ink);color:var(--white);border-radius:16px;padding:18px 12px;text-align:center}
+#rex-done .rd-proof strong{display:block;font-size:26px;font-weight:900;letter-spacing:-.02em}
+#rex-done .rd-proof span{display:block;font-size:12.5px;color:#c7c7cc;margin-top:2px}
+#rex-done .rd-foot{text-align:center;font-size:12.5px;color:var(--steel);margin-top:18px}
+@media (max-width:640px){
+	#rex-done .rd-hero{padding:32px 20px 28px;border-radius:18px}
+	#rex-done .rd-section{padding:22px 16px}
+	#rex-done .rd-steps{grid-template-columns:1fr}
+	#rex-done .rd-proof{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+
+<div id="rex-done">
+	<div class="rd-hero">
+		<div class="rd-check" aria-hidden="true"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+		<div class="rd-pill">AUDIT COMPLETE</div>
+		<h1 class="rd-title">Nice work! Your AI Audit is done.</h1>
+		<p class="rd-lead">Rex has everything he needs. The Rockstar team is reviewing your answers and building your personalized plan.</p>
+		<a class="rd-cta" href="#rd-book" hidden>Pick my Strategy Call time</a>
+	</div>
+
+	<div class="rd-section" id="rd-book">
+		<h2 class="rd-book-title">Book your 20 minute Strategy Call</h2>
+		<p class="rd-muted rd-book-text">Pick a time that works. We'll walk through your audit, show you the numbers, and let you hear RockstarAI on a real call.</p>
+		<iframe class="rd-cal" title="Book your Strategy Call" scrolling="no"></iframe>
+		<p class="rd-cal-link">Calendar not loading? <a class="rd-cal-open" href="#" target="_blank" rel="noopener">Open it in a new tab</a></p>
+	</div>
+
+	<div class="rd-section">
+		<h2>What happens next</h2>
+		<p class="rd-muted">No fluff, no pressure. Here's how it goes from here.</p>
+		<ul class="rd-steps">
+			<li><b>1</b><strong>We review your audit</strong><span>A real person on the Rockstar team goes through every answer you gave Rex.</span></li>
+			<li><b>2</b><strong>You get your plan</strong><span>Your results and recommendations land in your inbox within 24 hours.</span></li>
+			<li><b>3</b><strong>Live in 14 days</strong><span>Like the plan? RockstarAI typically goes live in 14 days.</span></li>
+		</ul>
+	</div>
+
+	<div class="rd-proof">
+		<div><strong>12 sec</strong><span>average lead response</span></div>
+		<div><strong>24/7</strong><span>nights, weekends, holidays</span></div>
+		<div><strong>90+</strong><span>businesses served</span></div>
+		<div><strong>48%</strong><span>sales increase at Wildcat Used Cars</span></div>
+	</div>
+	<p class="rd-foot">Rockstar AI · Rex is an AI, and a real person reviews every audit.</p>
+</div>
+
+<script src="https://app.rockstarinfo.com/js/form_embed.js"></script>
+<script>
+(function () {
+	var CONFIG = {
+		bookingUrl: 'https://app.rockstarinfo.com/widget/bookings/rockstarai',
+		/* must match CONFIG.resultKey in pages/audit.html */
+		resultKey: 'rockstar-ai-audit-result'
+	};
+
+	var root = document.getElementById('rex-done');
+	if (!root || root.getAttribute('data-ready')) return;
+	root.setAttribute('data-ready', '1');
+
+	var result = null;
+	try { result = JSON.parse(window.sessionStorage.getItem(CONFIG.resultKey) || 'null'); } catch (e) { result = null; }
+
+	/* only booking links on the Rockstar calendar are used, so a crafted storage value can't load another site */
+	var booking = CONFIG.bookingUrl;
+	if (result && typeof result.booking_url === 'string' && result.booking_url.indexOf(CONFIG.bookingUrl + '?') === 0) booking = result.booking_url;
+	var firstName = result && typeof result.first_name === 'string' ? result.first_name.trim().slice(0, 40) : '';
+
+	var title = root.querySelector('.rd-title');
+	var lead = root.querySelector('.rd-lead');
+	var cta = root.querySelector('.rd-cta');
+	var bookTitle = root.querySelector('.rd-book-title');
+	var bookText = root.querySelector('.rd-book-text');
+
+	if (firstName) title.textContent = 'Nice work, ' + firstName + '! Your AI Audit is done.';
+	if (result && result.wants_call) {
+		lead.textContent = 'One last step: lock in your 20 minute Strategy Call below. Your personalized plan will be ready to walk through.';
+		cta.hidden = false;
+		bookTitle.textContent = 'Last step: pick your Strategy Call time';
+	} else if (result) {
+		lead.textContent = 'Your full results and recommendations will be sent over within 24 hours. Keep an eye on your email and texts.';
+		bookTitle.textContent = 'Want to go over it sooner?';
+		bookText.textContent = 'Grab a 20 minute Strategy Call and we will walk through your audit together. No pressure, no pitch deck.';
+	}
+
+	var frame = root.querySelector('.rd-cal');
+	frame.id = 'rockstarai_' + Date.now();
+	frame.src = booking;
+	root.querySelector('.rd-cal-open').href = booking;
+	cta.addEventListener('click', function (e) {
+		e.preventDefault();
+		document.getElementById('rd-book').scrollIntoView({ behavior: 'smooth', block: 'start' });
+	});
+})();
+</script>

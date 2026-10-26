@@ -145,6 +145,6 @@ Required in `.dev.vars` for local development:
 - Version every change in `payment-calculator/CHANGELOG.md`, then run `python3 payment-calculator/build.py`.
 
 ## Rockstar AI Audit (`ai-audit/`)
-- Rex, the self-serve AI Audit chat embedded on a HighLevel page. `embed.html` is the HighLevel embed; `worker/` is the Cloudflare Worker (one `AuditSession` Durable Object per audit, Claude Sonnet 5.5) that writes the results to HighLevel.
+- Rex, the self-serve AI Audit chat embedded on a HighLevel page. `pages/audit.html` (the chat) and `pages/audit-complete.html` (the thank-you page) are the HighLevel embeds, with their SEO in `ai-audit/SEO.md`; `worker/` is the Cloudflare Worker (one `AuditSession` Durable Object per audit, Claude Sonnet 5.5) that writes the results to HighLevel.
 - Rex's questions, voice, product catalog and pricing line live in `ai-audit/worker/src/prompt.ts`. HighLevel field IDs live in `ai-audit/worker/src/fields.ts`.
 - Version every change in `ai-audit/CHANGELOG.md`, run `npm run typecheck` in `ai-audit/worker`, and follow `ai-audit/README.md` for setup and deploys.

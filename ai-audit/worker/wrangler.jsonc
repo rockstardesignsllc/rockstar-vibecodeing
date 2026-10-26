@@ -16,7 +16,7 @@
 	],
 	"vars": {
 		// Comma separated origins allowed to run the audit: the HighLevel page that holds the embed, and its preview domain
-		"ALLOWED_ORIGINS": "https://app.rockstarinfo.com,https://rockstarinfo.com,https://www.rockstarinfo.com,https://getrockstarai.com,https://www.getrockstarai.com",
+		"ALLOWED_ORIGINS": "https://aiaudit.rockstarinfo.com,https://app.rockstarinfo.com,https://rockstarinfo.com,https://www.rockstarinfo.com,https://getrockstarai.com,https://www.getrockstarai.com",
 		"BOOKING_URL": "https://app.rockstarinfo.com/widget/bookings/rockstarai",
 		"HIGHLEVEL_LOCATION_ID": "hrsRmtnUmvqCKm3d01tx",
 		"MODEL": "claude-sonnet-5-5"

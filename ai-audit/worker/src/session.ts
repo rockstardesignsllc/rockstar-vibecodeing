@@ -82,8 +82,14 @@ export class AuditSession extends DurableObject<Env> {
 
 	private reply(state: SessionState, messages: string[]): ChatReply {
 		const done = state.status !== 'chatting';
-		const wantsCall = done && state.answers?.wants_strategy_call === true;
-		return { session_id: state.id, messages, done, wants_call: wantsCall, booking_url: wantsCall ? this.bookingUrl(state) : null };
+		return {
+			session_id: state.id,
+			messages,
+			done,
+			wants_call: done && state.answers?.wants_strategy_call === true,
+			booking_url: done ? this.bookingUrl(state) : null,
+			first_name: done ? (state.contact?.first_name ?? null) : null
+		};
 	}
 
 	async start(id: string): Promise<SessionResult<ChatReply>> {

@@ -6,10 +6,11 @@ Strategy Call. When the audit is done, Claude writes a report, the Worker fills 
 HighLevel workflow emails Mat the full summary, his next steps, and a ready-to-send email for the prospect.
 
 ```
-HighLevel page (embed.html)  ──►  Cloudflare Worker (worker/)  ──►  Claude (Sonnet 5.5)
+aiaudit.rockstarinfo.com (pages/audit.html)  ──►  Cloudflare Worker (worker/)  ──►  Claude (Sonnet 5.5)
                                       │  one Durable Object per audit holds the conversation
                                       └──►  HighLevel API: contact, AI Audit fields, note, tags
                                                  └──►  Workflow on tag "ai audit complete" emails Mat
+aiaudit.rockstarinfo.com/audit-complete (pages/audit-complete.html): thank-you page with the booking calendar
 ```
 
 ## What the prospect sees
@@ -33,8 +34,9 @@ HighLevel page (embed.html)  ──►  Cloudflare Worker (worker/)  ──►  
    12. How soon they want something live
 4. Rex gives the headline: the biggest opportunity, the rough monthly cost, and the RockstarAI path. Then Rex asks
    whether they want a 20 minute Strategy Call.
-5. If they say yes, they get the booking link and a "Book my Strategy Call" button, prefilled with their name, email
-   and phone. If they say no, Rex tells them the results will be sent over within 24 hours.
+5. Rex closes out, and a few seconds later the prospect moves to the Audit Complete page. If they said yes, the page
+   greets them by name and shows your booking calendar, prefilled with their name, email and phone. If they said no,
+   it tells them the results will be sent over within 24 hours and offers the calendar as a softer option.
 
 Pricing questions always get: "RockstarAI tools start as low as $10 per day, but we customize our pricing to help you
 get the best results for the lowest investment."
@@ -64,8 +66,8 @@ npx wrangler secret put HIGHLEVEL_TOKEN       # the Private Integration token fr
 openssl rand -hex 24 | npx wrangler secret put ADMIN_KEY   # only needed for the redeliver command below
 ```
 
-The Worker goes live at `https://rockstar-ai-audit.rockstar-designs-llc.workers.dev`, which is already in `embed.html`.
-If Cloudflare gives it a different address, put that address in `apiUrl` at the top of the script in `embed.html`.
+The Worker goes live at `https://rockstar-ai-audit.rockstar-designs-llc.workers.dev`, which is already in `pages/audit.html`.
+If Cloudflare gives it a different address, put that address in `apiUrl` at the top of the script in `pages/audit.html`.
 
 ### 2. HighLevel Private Integration token
 
@@ -73,22 +75,22 @@ In the **Rockstar Designs** sub account: Settings, Private Integrations, Create 
 "Rockstar AI Audit" and give it the scopes `contacts.write` and `contacts.readonly`. Copy the token into the
 `HIGHLEVEL_TOKEN` secret.
 
-### 3. The audit page
+### 3. The two pages
 
-1. Create the page in HighLevel (for example `/ai-audit`) and add a **Custom HTML/JS** element.
-2. Paste in the whole of `embed.html`.
-3. In the page's SEO settings, turn off search engine indexing.
-4. Add the page's domain to `ALLOWED_ORIGINS` in `worker/wrangler.jsonc` if it is not already there, then run
-   `npx wrangler deploy` again. The list already has `app.rockstarinfo.com` (the HighLevel preview domain),
-   `rockstarinfo.com` and `getrockstarai.com`, with and without `www`. A page on any other domain gets
-   "origin not allowed".
+Follow `SEO.md`: it has both pages' names, addresses, the file to paste into each, and their titles, descriptions,
+keywords and social sharing images. Page 1 is `https://aiaudit.rockstarinfo.com`, page 2 is
+`https://aiaudit.rockstarinfo.com/audit-complete`.
+
+The Worker only answers pages on the domains in `ALLOWED_ORIGINS` in `worker/wrangler.jsonc`: `aiaudit.rockstarinfo.com`,
+`app.rockstarinfo.com` (the HighLevel preview domain), `rockstarinfo.com` and `getrockstarai.com`. To move the audit to
+another domain, add it there and run `npx wrangler deploy` again, and change `completeUrl` in `pages/audit.html`.
 
 ### 4. Mat's email workflow
 
 1. Automation, Workflows, Create workflow. Trigger: **Contact Tag Added**, tag `ai audit complete`.
 2. Action: **Internal Notification**, type Email, to the specific email `mat@rockstarinfo.com`.
    Subject: `AI Audit: {{contact.company_name}} ({{contact.ai_audit__opportunity_score}}/10)`
-3. In the email body's code view, paste in `emails/audit-complete.html`.
+3. In the email body's code view, paste in `emails/mat-notification.html`.
 4. Publish.
 
 Optional: a second workflow for abandoned audits. Trigger on tag `ai audit started`, wait 2 hours, and if the contact
@@ -129,8 +131,11 @@ its AI Audit fields, a note and both tags, and the email should be in your inbox
 
 | Path | What it is |
 |---|---|
-| `embed.html` | The chat window. Paste into a HighLevel Custom HTML/JS element |
-| `emails/audit-complete.html` | Mat's notification email body for the HighLevel workflow |
+| `pages/audit.html` | Page 1, the Rex chat. Paste into a HighLevel Custom HTML/JS element |
+| `pages/audit-complete.html` | Page 2, the thank-you page with the booking calendar |
+| `SEO.md` | Page names, addresses, SEO titles, descriptions, keywords and share images |
+| `social/` | The share images (PNG) and the HTML they are rendered from |
+| `emails/mat-notification.html` | Mat's notification email body for the HighLevel workflow |
 | `worker/src/index.ts` | Routes, CORS and rate limits |
 | `worker/src/session.ts` | The `AuditSession` Durable Object: conversation, tools, report delivery |
 | `worker/src/prompt.ts` | Rex's instructions, the RockstarAI catalog and the report instructions |

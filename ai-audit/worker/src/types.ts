@@ -107,7 +107,9 @@ export interface ChatReply {
 	messages: string[];
 	done: boolean;
 	wants_call: boolean;
+	/** The Strategy Call booking link, prefilled with the prospect's details. Set once the audit is done. */
 	booking_url: string | null;
+	first_name: string | null;
 }
 
 export interface SessionView extends ChatReply {

@@ -1,4 +1,9 @@
-<!-- Rockstar AI Audit: Rex chat. Paste this whole file into a HighLevel "Custom HTML/JS" element. -->
+<!--
+  Rockstar AI Audit  |  PAGE 1 of 2: THE AUDIT (https://aiaudit.rockstarinfo.com)
+  Paste this whole file into a HighLevel "Custom HTML/JS" element on the audit page.
+  When the audit ends, Rex sends the prospect to page 2 (CONFIG.completeUrl), pages/audit-complete.html.
+  SEO and social sharing settings: ai-audit/SEO.md
+-->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -84,6 +89,11 @@
 	var CONFIG = {
 		apiUrl: 'https://rockstar-ai-audit.rockstar-designs-llc.workers.dev',
 		storageKey: 'rockstar-ai-audit-session',
+		/* page 2; must match RESULT_KEY handling in pages/audit-complete.html */
+		completeUrl: 'https://aiaudit.rockstarinfo.com/audit-complete',
+		resultKey: 'rockstar-ai-audit-result',
+		/* seconds the prospect has to read Rex's last message before moving to page 2 */
+		redirectDelay: 5,
 		/* prospect messages it usually takes to finish, used only for the progress bar */
 		expectedTurns: 20
 	};
@@ -174,34 +184,39 @@
 		scroll();
 	}
 
-	function finish(reply) {
+	function goToNextSteps() {
+		try { window.top.location.href = CONFIG.completeUrl; } catch (e) { window.location.href = CONFIG.completeUrl; }
+	}
+
+	/* Hands the result to page 2 and shows the wrap-up card. A live finish moves on by itself; a reloaded one waits for a tap. */
+	function finish(reply, live) {
 		if (finished) return;
 		finished = true;
 		progress(true);
+		try {
+			window.sessionStorage.setItem(CONFIG.resultKey, JSON.stringify({
+				first_name: reply.first_name || '',
+				wants_call: Boolean(reply.wants_call),
+				booking_url: reply.booking_url || ''
+			}));
+		} catch (e) { /* storage blocked: page 2 shows its general version */ }
 		var card = document.createElement('div');
 		card.className = 'rx-finish';
 		var h = document.createElement('h3');
+		h.textContent = 'Your audit is done. Nice work!';
 		var p = document.createElement('p');
-		if (reply.wants_call && reply.booking_url) {
-			h.textContent = 'Your audit is done. Grab your Strategy Call.';
-			p.textContent = 'Pick a 20 minute time that works for you.';
-			var a = document.createElement('a');
-			a.className = 'rx-book';
-			a.href = reply.booking_url;
-			a.target = '_blank';
-			a.rel = 'noopener';
-			a.textContent = 'Book my Strategy Call';
-			card.appendChild(h);
-			card.appendChild(p);
-			card.appendChild(a);
-		} else {
-			h.textContent = 'Your audit is done. Nice work!';
-			p.textContent = 'Your full results and recommendations will be sent over within 24 hours.';
-			card.appendChild(h);
-			card.appendChild(p);
-		}
+		p.textContent = live ? 'Taking you to your next steps...' : 'Your next steps are one tap away.';
+		var a = document.createElement('a');
+		a.className = 'rx-book';
+		a.href = CONFIG.completeUrl;
+		a.textContent = reply.wants_call ? 'Book my Strategy Call' : 'See my next steps';
+		a.addEventListener('click', function (e) { e.preventDefault(); goToNextSteps(); });
+		card.appendChild(h);
+		card.appendChild(p);
+		card.appendChild(a);
 		log.appendChild(card);
 		scroll();
+		if (live) window.setTimeout(goToNextSteps, CONFIG.redirectDelay * 1000);
 	}
 
 	function setWaiting(on) {
@@ -215,7 +230,7 @@
 	function apply(reply) {
 		(reply.messages || []).forEach(function (m) { bubble('rex', m); });
 		progress(reply.done);
-		if (reply.done) finish(reply);
+		if (reply.done) finish(reply, true);
 	}
 
 	function request(method, path, body) {
@@ -263,7 +278,7 @@
 			restart.hidden = false;
 			setWaiting(false);
 			progress(view.done);
-			if (view.done) finish(view);
+			if (view.done) finish(view, false);
 		}).catch(function (error) {
 			setWaiting(false);
 			if (error.status === 404) { store('clear'); start(); return; }
