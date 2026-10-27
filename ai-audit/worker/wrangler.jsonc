@@ -1,0 +1,24 @@
+{
+	"name": "rockstar-ai-audit",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-10-01",
+	"compatibility_flags": ["nodejs_compat"],
+	"observability": { "enabled": true },
+	"durable_objects": {
+		"bindings": [{ "name": "AUDIT_SESSIONS", "class_name": "AuditSession" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["AuditSession"] }],
+	"ratelimits": [
+		// New audits per visitor IP, per minute
+		{ "name": "START_LIMITER", "namespace_id": "4101", "simple": { "limit": 5, "period": 60 } },
+		// Chat messages per visitor IP, per minute
+		{ "name": "MESSAGE_LIMITER", "namespace_id": "4102", "simple": { "limit": 30, "period": 60 } }
+	],
+	"vars": {
+		// Comma separated origins allowed to run the audit: the HighLevel page that holds the embed, and its preview domain
+		"ALLOWED_ORIGINS": "https://aiaudit.rockstarinfo.com,https://app.rockstarinfo.com,https://rockstarinfo.com,https://www.rockstarinfo.com,https://getrockstarai.com,https://www.getrockstarai.com",
+		"BOOKING_URL": "https://app.rockstarinfo.com/widget/bookings/rockstarai",
+		"HIGHLEVEL_LOCATION_ID": "hrsRmtnUmvqCKm3d01tx",
+		"MODEL": "claude-sonnet-5-5"
+	}
+}
