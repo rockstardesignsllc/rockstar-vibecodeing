@@ -1,5 +1,10 @@
 # Rockstar AI Audit changelog
 
+## v1.3
+- `pages/audit.html` v1.3: on phones the chat is sized to the visible screen, so the reply box is always in view
+  without scrolling, whatever the phone's height or the browser's address bar. It re-fits when the screen rotates or
+  the address bar shows or hides, and leaves the layout alone while the keyboard is open.
+
 ## v1.2
 - Version stamps at the top of both pages: `pages/audit.html` v1.2, `pages/audit-complete.html` v1.1.
 - Audit Complete page fires conversion events once per finished audit: Meta pixel `Lead` and Google
