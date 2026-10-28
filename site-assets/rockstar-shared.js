@@ -9,12 +9,12 @@
 (function () {
 	'use strict';
 
-	var VERSION = '1.0.0';
+	var VERSION = '1.0.1-test';
 
 	/* Every shared button. label: the button text. href: where it goes. newTab: open in a new window. */
 	var CTAS = {
 		audit: { label: 'Free Instant AI Audit', href: 'https://aiaudit.rockstarinfo.com', newTab: true },
-		meeting: { label: 'Book a Meeting', href: 'https://app.rockstarinfo.com/widget/bookings/rockstarai', newTab: true }
+		meeting: { label: 'Book a Meeting (live test)', href: 'https://app.rockstarinfo.com/widget/bookings/rockstarai', newTab: true }
 	};
 
 	function applyCtas(root) {
