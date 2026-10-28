@@ -9,13 +9,36 @@
 (function () {
 	'use strict';
 
-	var VERSION = '1.0.2';
+	var VERSION = '1.1.0';
 
 	/* Every shared button. label: the button text. href: where it goes. newTab: open in a new window. */
 	var CTAS = {
 		audit: { label: 'Free Instant AI Audit', href: 'https://aiaudit.rockstarinfo.com', newTab: true },
-		meeting: { label: 'Book a Meeting', href: 'https://app.rockstarinfo.com/widget/bookings/rockstarai', newTab: true }
+		meeting: { label: 'Book a Meeting', href: 'https://app.rockstarinfo.com/widget/bookings/rockstarai', newTab: true },
+		/* other links to the calendar that keep their own wording ("Talk to Mat's Team", "Get Custom Pricing") */
+		booking: { label: null, href: 'https://app.rockstarinfo.com/widget/bookings/rockstarai', newTab: false }
 	};
+
+	/*
+	  Shared menus and footers. Each page marks them with data-rs-part="nav" or "footer" and data-rs-site="<site>".
+	  Empty means every page keeps the menu and footer pasted into it. To change one site-wide, put the new inner
+	  HTML here, e.g. PARTS.footer.aifordealers = '<div class="rs-wrap">...</div>'; ("all" covers every site).
+	*/
+	var PARTS = { nav: {}, footer: {} };
+
+	function applyParts(root) {
+		var els = (root || document).querySelectorAll('[data-rs-part]');
+		for (var i = 0; i < els.length; i++) {
+			var el = els[i];
+			var part = PARTS[el.getAttribute('data-rs-part')];
+			if (!part) continue;
+			var html = part[el.getAttribute('data-rs-site')] || part.all;
+			if (typeof html === 'string' && el.getAttribute('data-rs-applied') !== VERSION) {
+				el.innerHTML = html;
+				el.setAttribute('data-rs-applied', VERSION);
+			}
+		}
+	}
 
 	function applyCtas(root) {
 		var links = (root || document).querySelectorAll('a[data-rs-cta]');
@@ -32,11 +55,12 @@
 	}
 
 	function run() {
+		applyParts(document);
 		applyCtas(document);
 		document.documentElement.setAttribute('data-rs-shared', VERSION);
 	}
 
-	window.RockstarShared = { version: VERSION, ctas: CTAS, apply: applyCtas };
+	window.RockstarShared = { version: VERSION, ctas: CTAS, parts: PARTS, apply: function (root) { applyParts(root); applyCtas(root); } };
 	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
 	else run();
 	/* HighLevel can render page sections after load; catch anything added late */
