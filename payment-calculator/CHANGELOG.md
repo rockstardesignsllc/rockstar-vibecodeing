@@ -4,6 +4,11 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.13
+- **Automatic sales tax.** The dealer page works out the sales tax from the customer's state and ZIP code, so an out-of-state buyer is taxed by their own state. It applies each state's vehicle rules (trade-in credit and caps, doc fee and rebate treatment, local tax caps such as Tennessee's $1,600 and Florida's $5,000, max tax caps such as South Carolina's $500) on top of the ZIP local rate, and shows the math under the tax field. "Enter tax by hand" turns it off (remembered on the device); "Calculate tax from customer ZIP" turns it back on.
+- New pricing fields: **Of those fees, the dealer doc fee** (used only for tax) and **Vehicle is New / Used** (Ohio gives trade-in credit on new vehicles only).
+- Tax data loads from `https://assets.rockstarinfo.com/deal-desk/tax/`, built by `build_tax.py` from `tax/state-rules.json` and the ZIP rate tables in `tax-rates/`. The state rules are a first draft and every state is unverified until checked against a real deal.
+
 ## v3.12
 - **Live updates.** Each calculator now has short loader snippets in `<slug>/ghl/` (dealer page, quote page, saved quotes page). The calculator code and each dealer's settings load from `https://assets.rockstarinfo.com/deal-desk/`, so after a one-time re-paste of the loaders, every future change goes live in HighLevel within about 5 minutes with no re-paste.
 - `build.py` now also runs `build_hosted.py`, which writes `hosted/deal-desk/deal-desk.js`, `saved-quotes.js` and `clients/<slug>.json`. Copy `hosted/deal-desk/` to `site-assets/deal-desk/` on the `site-assets` branch to publish.

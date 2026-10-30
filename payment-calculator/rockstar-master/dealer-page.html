@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.12  |  FILE 1 of 2: DEALER CALCULATOR PAGE
+  Rockstar Deal Desk v3.13  |  FILE 1 of 2: DEALER CALCULATOR PAGE
   Paste this into a GHL "Custom HTML/JS" element on your dealer workspace page.
   This is where your team builds the deal and copies the customer link.
   Customer links open the RESULTS PAGE (file 2) at CONFIG.quotePagePath (default /quote).
@@ -71,6 +71,9 @@ setTimeout(function () {
 #rsec .ec-field input:focus,#rsec .ec-field select:focus{border-color:var(--acc)}
 #rsec .ec-field input[type=color]{height:46px;padding:4px;cursor:pointer}
 #rsec .ec-field input.ec-bad{border-color:#d70015}
+#rsec .ec-taxauto{margin-top:8px;font-size:13px;line-height:1.5;color:var(--ink);background:var(--paper);border-radius:12px;padding:10px 12px}
+#rsec .ec-taxauto .ec-textbtn{margin-top:6px}
+#rsec .ec-field input.ec-ro{background:var(--paper)}
 #rsec .ec-warn{font-size:12px;font-weight:700;color:#d70015;margin-top:6px}
 #rsec .ec-lockedlogo{display:block;max-height:48px;max-width:100%;margin-bottom:6px}
 #rsec .ec-lockedval{margin-top:6px;border:1px dashed var(--line);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--ink);background:var(--paper)}
@@ -283,7 +286,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '3.12';
+  const VERSION = '3.13';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -320,7 +323,7 @@ setTimeout(function () {
     fn: '', ln: '', em: '', ph: '', ad: '', ci: '', sa: '', zp: '',
     st: '', yr: '', mk: '', md: '', tr: '', vn: '', mi: '',
     ty: '', tmk: '', tmd: '', ttr: '', tvn: '', tmi: '',
-    pr: 30000, tx: 0, fe: 0, dp: 1000, ta: 0, tb: 0, rb: 0,
+    pr: 30000, tx: 0, fe: 0, df: 0, dp: 1000, ta: 0, tb: 0, rb: 0, at: '1', nu: '',
     rm: CFG_RM || (SUBPRIME ? 'h' : CFG_GRID ? 'f' : 't'),
     ra: CFG_RATE !== '' && okDown(+CFG_RATE) ? +CFG_RATE : 7.49,
     rt: [5.49, 6.49, 8.99, 12.99, 17.99], cs: 720,
@@ -330,11 +333,11 @@ setTimeout(function () {
     gt: listOf(CONFIG.gridTerms, okTerm) || [48, 60, 72],
     gd: listOf(CONFIG.gridDownPayments, okDown) || [1000, 2000, 3000]
   };
-  const NUM = ['pr', 'tx', 'fe', 'dp', 'ta', 'tb', 'rb', 'ra', 'cs', 't', 'ld', 'l1', 'p1', 'l2', 'p2'];
+  const NUM = ['pr', 'tx', 'fe', 'df', 'dp', 'ta', 'tb', 'rb', 'ra', 'cs', 't', 'ld', 'l1', 'p1', 'l2', 'p2'];
   const BLANK_WHEN_ZERO = ['rb', 'p1', 'p2'];
   const LEASE_KEYS = ['ls', 'ld', 'lm', 'l1', 'p1', 'l2', 'p2'];
   const LEASE_MAX_DOWN = 10000;
-  const PROFILE = ['dn', 'de', 'dl', 'ac', 'wh', 'sp', 'sc', 'rm', 'rt', 'pm', 'gt', 'gd'];
+  const PROFILE = ['dn', 'de', 'dl', 'ac', 'wh', 'sp', 'sc', 'rm', 'rt', 'pm', 'gt', 'gd', 'at'];
   const CFG_KEY = { dn: 'dealerName', de: 'dealerEmail', dl: 'dealerLogo', ac: 'accentColor', wh: 'webhookUrl' };
   const cfg = k => (CFG_KEY[k] && String(CONFIG[CFG_KEY[k]] || '').trim()) || '';
   const isLocked = k => !!cfg(k);
@@ -442,6 +445,82 @@ setTimeout(function () {
   const rate = () => d.rm === 't' ? num(d.rt[tierIdx()], 0) : num(d.ra);
   const pay = (p, apr, n) => { if (p <= 0) return 0; const r = apr / 100 / 12; return r ? p * r / (1 - Math.pow(1 + r, -n)) : p / n; };
   const monthly = () => pay(financed(), rate(), term());
+
+  /* ---------- automatic sales tax: customer's state and ZIP, state vehicle rules, ZIP local rates ---------- */
+  const TAX_URL = 'https://assets.rockstarinfo.com/deal-desk/tax';
+  const TAX = { rules: null, prefix: null, zips: {}, pending: {}, failed: false };
+  function taxFetch(path, done) {
+    if (TAX.pending[path]) return;
+    TAX.pending[path] = true;
+    fetch(TAX_URL + '/' + path, { cache: 'no-cache' })
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(j => { done(j); if (typeof TAX.onLoad === 'function') TAX.onLoad(); })
+      .catch(() => { TAX.failed = true; if (typeof TAX.onLoad === 'function') TAX.onLoad(); });
+  }
+  function taxState(rules) {
+    const raw = String(d.sa || '').trim().toUpperCase();
+    if (rules[raw] && raw.length === 2) return raw;
+    const byName = Object.keys(rules).find(k => k.length === 2 && rules[k].name.toUpperCase() === raw);
+    if (byName) return byName;
+    const zip = String(d.zp || '').trim().slice(0, 5);
+    if (!/^\d{5}$/.test(zip) || !TAX.prefix) return '';
+    const cands = (TAX.prefix[zip.slice(0, 3)] || []).filter(st => rules[st]);
+    if (cands.length === 1) return cands[0];
+    return cands.find(st => TAX.zips[st] && TAX.zips[st][zip]) || '';
+  }
+  /* returns null while data loads, or { tax, state, region, lines, notes } */
+  function autoTax() {
+    if (!TAX.rules) { taxFetch('rules.json', j => { TAX.rules = j; }); return null; }
+    if (!TAX.prefix) { taxFetch('prefix.json', j => { TAX.prefix = j; }); }
+    const rules = TAX.rules;
+    const zip = String(d.zp || '').trim().slice(0, 5);
+    const okZip = /^\d{5}$/.test(zip);
+    if (!String(d.sa || '').trim() && TAX.prefix && okZip) (TAX.prefix[zip.slice(0, 3)] || []).forEach(st => { if (rules[st] && !TAX.zips[st]) taxFetch('zip/' + st + '.json', j => { TAX.zips[st] = j; }); });
+    const st = taxState(rules);
+    if (!st) return { error: okZip || String(d.sa || '').trim() ? 'Enter the customer\'s 2-letter state (for example TN) to calculate tax.' : 'Enter the customer\'s state and ZIP code to calculate tax.' };
+    const rule = rules[st];
+    let loc = null;
+    if (rule.base === 'zip') {
+      if (!TAX.zips[st]) { taxFetch('zip/' + st + '.json', j => { TAX.zips[st] = j; }); return null; }
+      loc = okZip ? TAX.zips[st][zip] || null : null;
+    }
+    const price = num(d.pr), docFee = Math.min(num(d.df), num(d.fe));
+    const lines = [], notes = [];
+    let base = price;
+    if (rule.docFeeTaxable && docFee) { base += docFee; lines.push('Doc fee ' + money(docFee) + ' is taxable'); }
+    if (rule.rebateReducesTax && rebate()) { base -= rebate(); lines.push('Rebate ' + money(rebate()) + ' lowers the taxable price'); }
+    const tradeOk = rule.trade === 'full' || (rule.trade === 'new-only' && d.nu === 'n');
+    if (num(d.ta) > 0) {
+      if (tradeOk) {
+        const credit = rule.tradeCap ? Math.min(num(d.ta), rule.tradeCap) : num(d.ta);
+        base -= credit;
+        lines.push('Trade credit ' + money(credit) + (credit < num(d.ta) ? ' (capped)' : ''));
+      } else lines.push(rule.trade === 'new-only' ? 'No trade credit unless the vehicle is new' : 'No trade-in credit in ' + rule.name);
+    }
+    base = Math.max(0, base);
+    let tax = 0;
+    if (rule.base !== 'none') {
+      /* ZIP states: the state share and the local share (combined minus state) come from the ZIP table; without a ZIP, the rule's state rate */
+      const rate = loc ? loc[1] : rule.highRate && price > rule.highOver ? rule.highRate : rule.rate;
+      tax += base * (rate + (rule.extra || 0));
+      lines.unshift(rule.name + ' ' + pct((rate + (rule.extra || 0)) * 100) + ' on ' + money(base));
+      if (rule.base === 'zip') {
+        const local = loc ? Math.max(0, loc[0] - loc[1]) : 0;
+        if (local > 0) {
+          const lb = rule.localCap ? Math.min(base, rule.localCap) : base;
+          tax += lb * local;
+          lines.push(loc[2] + ' local ' + pct(local * 100) + ' on ' + money(lb));
+        } else if (!loc) notes.push(okZip ? 'ZIP ' + zip + ' is not in the ' + rule.name + ' table, so local tax is not included.' : 'Add the customer\'s ZIP to include local tax.');
+      }
+      if (rule.singleArticle) {
+        const sa = rule.singleArticle, band = Math.max(0, Math.min(base, sa.to) - sa.from);
+        if (band) { tax += band * sa.rate; lines.push('Single article ' + pct(sa.rate * 100) + ' on ' + money(band)); }
+      }
+      if (rule.maxTax && tax > rule.maxTax) { tax = rule.maxTax; lines.push('Capped at ' + money(rule.maxTax)); }
+    }
+    if (rule.note) notes.push(rule.note);
+    return { tax: Math.round(tax * 100) / 100, state: st, region: loc ? loc[2] : '', lines, notes };
+  }
   /* multi-payment grid: rows are d.gd down payments, columns are d.gt terms; the customer's pick is [row, column] */
   const isGrid = () => d.pm === 'g';
   const GRID_START = [1, 1];
@@ -673,8 +752,11 @@ setTimeout(function () {
             '</div></div>' +
             '<div class="ec-sec"><h3>Pricing</h3><p>Enter whole dollar amounts.</p><div class="ec-grid">' +
               field('pr', 'Purchase price', 'number', '', 'min="0"') +
-              '<div>' + field('tx', 'Total sales tax in dollars', 'number', 'example: 2150', 'min="0"') + '<div class="ec-warn" id="ec-taxwarn" hidden>That looks like a percentage. Enter the total tax in dollars.</div></div>' +
+              '<div>' + field('tx', 'Total sales tax in dollars', 'number', 'example: 2150', 'min="0"') + '<div class="ec-warn" id="ec-taxwarn" hidden>That looks like a percentage. Enter the total tax in dollars.</div>' +
+                '<div class="ec-taxauto" id="ec-taxauto"><div id="ec-taxinfo"></div><button type="button" class="ec-textbtn" id="ec-taxtoggle"></button></div></div>' +
               field('fe', 'Title, registration and dealer fees in dollars', 'number', 'example: 899', 'min="0"') +
+              field('df', 'Of those fees, the dealer doc fee', 'number', 'example: 499', 'min="0"') +
+              '<label class="ec-field">Vehicle is<select data-k="nu"><option value="">Choose</option><option value="n"' + (d.nu === 'n' ? ' selected' : '') + '>New</option><option value="u"' + (d.nu === 'u' ? ' selected' : '') + '>Used</option></select></label>' +
               '<div id="ec-dp-wrap">' + field('dp', 'Starting down payment', 'number', '', 'min="0"') + '</div>' +
               field('rb', 'Rebate (leave blank if none)', 'number', 'example: 1500', 'min="0"') +
             '</div></div>' +
@@ -763,7 +845,28 @@ setTimeout(function () {
     const $ = s => root.querySelector(s);
     const termSel = $('#ec-term');
 
+    function applyTax() {
+      const auto = d.at === '1';
+      const info = $('#ec-taxinfo'), btn = $('#ec-taxtoggle'), input = $('[data-k="tx"]');
+      btn.textContent = auto ? 'Enter tax by hand' : 'Calculate tax from customer ZIP';
+      const r = auto ? autoTax() : null;
+      const locked = !!(r && r.lines);
+      input.readOnly = locked;
+      input.classList.toggle('ec-ro', locked);
+      if (!auto) { info.innerHTML = ''; return; }
+      if (!r && TAX.failed) { info.innerHTML = '<span class="ec-warn">Tax rates could not load. Enter the tax by hand.</span>'; return; }
+      if (!r) { info.innerHTML = '<span class="ec-fine">Loading tax rates...</span>'; return; }
+      if (r.error) { info.innerHTML = '<span class="ec-fine">' + esc(r.error) + '</span>'; return; }
+      if (num(d.tx) !== r.tax) { d.tx = r.tax; }
+      if (document.activeElement !== input) input.value = r.tax ? r.tax.toFixed(2) : '0';
+      info.innerHTML = '<b>Estimated ' + esc(r.state) + ' tax ' + money(r.tax) + '</b>' + r.lines.map(l => '<br>' + esc(l)).join('') +
+        (r.notes.length ? '<br><span class="ec-fine">' + r.notes.map(esc).join(' ') + '</span>' : '') +
+        '<br><span class="ec-fine">Estimate from ' + esc(TAX.rules._rates || 'current rate tables') + '. Confirm before contracting.</span>';
+    }
+    TAX.onLoad = () => refresh();
+
     function refresh() {
+      applyTax();
       termSel.innerHTML = d.tm.map(t => '<option value="' + t + '" ' + (t === d.t ? 'selected' : '') + '>' + t + ' months</option>').join('');
       const grid = isGrid();
       root.querySelectorAll('[data-pm]').forEach(b => b.classList.toggle('on', b.dataset.pm === d.pm));
@@ -848,6 +951,8 @@ setTimeout(function () {
       el.addEventListener('input', onEdit);
       el.addEventListener('change', onEdit);
     });
+    $('#ec-taxtoggle').addEventListener('click', () => { d.at = d.at === '1' ? '' : '1'; saveProfile(); refresh(); });
+    root.querySelectorAll('select[data-k]').forEach(el => el.addEventListener('change', () => { d[el.dataset.k] = el.value; refresh(); }));
     root.querySelectorAll('input[data-tier]').forEach(el => {
       el.addEventListener('input', () => { d.rt[+el.dataset.tier] = num(el.value, 0); saveProfile(); refresh(); });
     });
