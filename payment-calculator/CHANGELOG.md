@@ -4,6 +4,11 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.12
+- **Live updates.** Each calculator now has short loader snippets in `<slug>/ghl/` (dealer page, quote page, saved quotes page). The calculator code and each dealer's settings load from `https://assets.rockstarinfo.com/deal-desk/`, so after a one-time re-paste of the loaders, every future change goes live in HighLevel within about 5 minutes with no re-paste.
+- `build.py` now also runs `build_hosted.py`, which writes `hosted/deal-desk/deal-desk.js`, `saved-quotes.js` and `clients/<slug>.json`. Copy `hosted/deal-desk/` to `site-assets/deal-desk/` on the `site-assets` branch to publish.
+- The full single-file pages are still built, for dealers who paste the calculator on their own website.
+
 ## v3.11
 - **Forgot your saved quotes code?** at the bottom of the dealer page, while quote saving is on. The dealer types an email address and taps "Email my code". The quote store sends the dealer's access code to the HighLevel webhook in its `CODE_EMAIL_WEBHOOK` secret, and that workflow emails it. One code email per dealer every 5 minutes.
 - The webhook fields are `event` (`access_code_requested`), `dealer`, `dealer_slug`, `email` (the address the dealer typed), `access_code`, `saved_quotes_url` and `requested_at`. The email template is `emails/4-access-code.html`.

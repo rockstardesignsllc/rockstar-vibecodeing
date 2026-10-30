@@ -60,5 +60,6 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
 3. Add a `## vX.Y` entry to `CHANGELOG.md`, then run `python3 payment-calculator/build.py`. It also builds `<slug>/saved-quotes.html`.
 4. Test the dealer and quote pages, and look at the screenshots.
 5. Render `<slug>/social-share-customer.png` and `social-share-dealer.png`.
-6. Update the Code Locker artifact, commit, and push.
-7. Tell the user the dealer's saved quotes link (`https://<subdomain>/saved-quotes`). The dealer's access code needs no setup: it is worked out from the dealer name. The user gets it by signing in to any saved quotes page with the admin code, typing the dealer name exactly as in `dealerName`, and pressing "Show code".
+6. Publish the live files: copy `hosted/deal-desk/` to `site-assets/deal-desk/` on the `site-assets` branch and push it (live at `https://assets.rockstarinfo.com/deal-desk/` in about a minute).
+7. Update the Code Locker artifact with the three short loaders in `<slug>/ghl/` (the dealer pastes these, not the full pages), commit, and push.
+8. Tell the user the dealer's saved quotes link (`https://<subdomain>/saved-quotes`). The dealer's access code needs no setup: it is worked out from the dealer name. The user gets it by signing in to any saved quotes page with the admin code, typing the dealer name exactly as in `dealerName`, and pressing "Show code".

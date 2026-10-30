@@ -1,0 +1,14 @@
+<!-- Rockstar page v3.12 | Updated 2026-10-30 21:16 UTC -->
+<!--
+  Rockstar Deal Desk (Redemption Auto Sales · Subprime)  |  SAVED QUOTES PAGE (for example /saved-quotes)  |  live loader
+  Paste this whole snippet into the page's Custom HTML/JS element ONE time.
+  The calculator itself loads from assets.rockstarinfo.com, so future updates go live here automatically.
+-->
+<div id="rsq" data-client="redemption-auto-sales"></div>
+<script>
+setTimeout(function () {
+  var el = document.getElementById('rsq');
+  if (el && !el.children.length) el.innerHTML = '<div style="font:15px/1.5 Arial,sans-serif;max-width:640px;margin:40px auto;padding:20px 24px;border:2px solid #d70015;border-radius:14px;color:#0b0b0d"><b>This page did not finish loading.</b><br>Check your connection and refresh. If it keeps happening, tell Rockstar support.</div>';
+}, 8000);
+</script>
+<script src="https://assets.rockstarinfo.com/deal-desk/saved-quotes.js"></script>
