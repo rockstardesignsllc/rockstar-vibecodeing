@@ -35,6 +35,9 @@ def main():
             entry['count'] = len(data['offers'])
         index['brands'][slug] = entry
     (OUT / 'index.json').write_text(json.dumps(index, separators=(',', ':')))
+    for stale in OUT.glob('*.json'):
+        if stale.stem != 'index' and 'count' not in index['brands'].get(stale.stem, {}):
+            stale.unlink()
     on_file = [s for s, b in index['brands'].items() if 'count' in b]
     print(f'offers: {len(brands)} brands, {len(on_file)} with offers on file' + (f' ({", ".join(on_file)})' if on_file else ''))
 
