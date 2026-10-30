@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.13 (Wildcat Used Cars · Subprime)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
+  Rockstar Deal Desk v3.14 (Wildcat Used Cars · Subprime)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
   Paste this into a GHL "Custom HTML/JS" element on your dealer workspace page.
   This is where your team builds the deal and copies the customer link.
   Customer links open the RESULTS PAGE (file 2) at CONFIG.quotePagePath (default /quote).
@@ -74,6 +74,14 @@ setTimeout(function () {
 #rsec .ec-taxauto{margin-top:8px;font-size:13px;line-height:1.5;color:var(--ink);background:var(--paper);border-radius:12px;padding:10px 12px}
 #rsec .ec-taxauto .ec-textbtn{margin-top:6px}
 #rsec .ec-field input.ec-ro{background:var(--paper)}
+#rsec .ec-offers{margin-top:14px}
+#rsec .ec-offer{border-top:1px solid var(--line);padding:10px 0}
+#rsec .ec-offer:first-of-type{border-top:0}
+#rsec .ec-offer.on b{color:var(--acc)}
+#rsec .ec-offer .ec-amt{float:right;font-weight:700}
+#rsec .ec-offer details{margin-top:4px;font-size:12px}
+#rsec .ec-offer summary{cursor:pointer;color:var(--acc)}
+#rsec .ec-offer .ec-textbtn{display:block;margin-top:6px}
 #rsec .ec-warn{font-size:12px;font-weight:700;color:#d70015;margin-top:6px}
 #rsec .ec-lockedlogo{display:block;max-height:48px;max-width:100%;margin-bottom:6px}
 #rsec .ec-lockedval{margin-top:6px;border:1px dashed var(--line);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--ink);background:var(--paper)}
@@ -286,7 +294,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '3.13';
+  const VERSION = '3.14';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -446,17 +454,20 @@ setTimeout(function () {
   const pay = (p, apr, n) => { if (p <= 0) return 0; const r = apr / 100 / 12; return r ? p * r / (1 - Math.pow(1 + r, -n)) : p / n; };
   const monthly = () => pay(financed(), rate(), term());
 
-  /* ---------- automatic sales tax: customer's state and ZIP, state vehicle rules, ZIP local rates ---------- */
-  const TAX_URL = 'https://assets.rockstarinfo.com/deal-desk/tax';
-  const TAX = { rules: null, prefix: null, zips: {}, pending: {}, failed: false };
-  function taxFetch(path, done) {
-    if (TAX.pending[path]) return;
-    TAX.pending[path] = true;
-    fetch(TAX_URL + '/' + path, { cache: 'no-cache' })
+  /* ---------- shared data from assets.rockstarinfo.com: each file is fetched once, then state.onLoad redraws ---------- */
+  const ASSET_URL = 'https://assets.rockstarinfo.com/deal-desk';
+  function assetFetch(state, path, done) {
+    if (state.pending[path]) return;
+    state.pending[path] = true;
+    fetch(ASSET_URL + '/' + path, { cache: 'no-cache' })
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(j => { done(j); if (typeof TAX.onLoad === 'function') TAX.onLoad(); })
-      .catch(() => { TAX.failed = true; if (typeof TAX.onLoad === 'function') TAX.onLoad(); });
+      .then(j => { done(j); if (typeof state.onLoad === 'function') state.onLoad(); })
+      .catch(() => { state.failed = true; if (typeof state.onLoad === 'function') state.onLoad(); });
   }
+
+  /* ---------- automatic sales tax: customer's state and ZIP, state vehicle rules, ZIP local rates ---------- */
+  const TAX = { rules: null, prefix: null, zips: {}, pending: {}, failed: false };
+  const taxFetch = (path, done) => assetFetch(TAX, 'tax/' + path, done);
   function taxState(rules) {
     const raw = String(d.sa || '').trim().toUpperCase();
     if (rules[raw] && raw.length === 2) return raw;
@@ -521,6 +532,54 @@ setTimeout(function () {
     if (rule.note) notes.push(rule.note);
     return { tax: Math.round(tax * 100) / 100, state: st, region: loc ? loc[2] : '', lines, notes };
   }
+  /* ---------- factory offers: collected weekly from manufacturer sites, approved by Rockstar, matched on make, year and model ---------- */
+  const OFFERS = { index: null, brands: {}, pending: {}, failed: false };
+  const OFFER_FILLER = new Set(['all', 'new', 'select', 'models', 'model', 'and', 'the', 'series', 'edition', 'with']);
+  const words = s => String(s ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const tokens = s => words(s).split(' ').filter(w => w && !OFFER_FILLER.has(w));
+  function offerBrand() {
+    const mk = words(d.mk);
+    return Object.keys(OFFERS.index.brands).find(slug => OFFERS.index.brands[slug].makes.some(m => words(m) === mk)) || '';
+  }
+  /* 2: the offer names this model. 1: the offer covers every model, or may cover it (check the trim). 0: another model or year. */
+  function offerFit(o) {
+    const yr = parseInt(d.yr, 10);
+    if (o.modelYears.length && yr && !o.modelYears.includes(yr)) return 0;
+    const have = tokens(d.md + ' ' + d.tr);
+    if (!o.models.length || !have.length) return 1;
+    const haveSet = new Set(have), model = new Set(tokens(d.md));
+    return o.models.reduce((best, m) => {
+      const t = tokens(m);
+      if (t.length && t.every(w => haveSet.has(w))) return 2;
+      return model.size && [...model].every(w => t.includes(w)) ? Math.max(best, 1) : best;
+    }, 0);
+  }
+  /* returns null while data loads, or { error }, or { brand, name, updated, matches: [{ o, fit }], others: [offer] } */
+  function vehicleOffers() {
+    if (!OFFERS.index) {
+      if (OFFERS.failed) return { error: 'Factory offers could not load.' };
+      assetFetch(OFFERS, 'offers/index.json', j => { OFFERS.index = j; });
+      return null;
+    }
+    if (!String(d.mk || '').trim()) return { error: 'Enter the make, year and model to see current factory offers.' };
+    const slug = offerBrand();
+    if (!slug) return { error: 'No factory offers on file for ' + String(d.mk).trim() + '.' };
+    const brand = OFFERS.index.brands[slug];
+    if (!brand.count) return { error: 'No current ' + brand.name + ' offers on file.' };
+    if (!OFFERS.brands[slug]) {
+      if (OFFERS.failed) return { error: brand.name + ' offers could not load.' };
+      assetFetch(OFFERS, 'offers/' + slug + '.json', j => { OFFERS.brands[slug] = j; });
+      return null;
+    }
+    const now = today();
+    const scored = OFFERS.brands[slug].offers.filter(o => !o.end || o.end >= now).map(o => ({ o, fit: offerFit(o) }));
+    return {
+      brand: slug, name: brand.name, updated: brand.updated,
+      matches: scored.filter(x => x.fit).sort((a, b) => b.fit - a.fit),
+      others: scored.filter(x => !x.fit).map(x => x.o)
+    };
+  }
+
   /* multi-payment grid: rows are d.gd down payments, columns are d.gt terms; the customer's pick is [row, column] */
   const isGrid = () => d.pm === 'g';
   const GRID_START = [1, 1];
@@ -759,7 +818,7 @@ setTimeout(function () {
               '<label class="ec-field">Vehicle is<select data-k="nu"><option value="">Choose</option><option value="n"' + (d.nu === 'n' ? ' selected' : '') + '>New</option><option value="u"' + (d.nu === 'u' ? ' selected' : '') + '>Used</option></select></label>' +
               '<div id="ec-dp-wrap">' + field('dp', 'Starting down payment', 'number', '', 'min="0"') + '</div>' +
               field('rb', 'Rebate (leave blank if none)', 'number', 'example: 1500', 'min="0"') +
-            '</div></div>' +
+            '</div><div class="ec-taxauto ec-offers" id="ec-offers"></div></div>' +
             '<div class="ec-sec"><h3>Trade</h3><p>Leave the amounts at 0 and the vehicle blank if there is no trade.</p><div class="ec-grid">' +
               field('ta', 'Trade allowance (what it is worth)', 'number', '', 'min="0"') + field('tb', 'Trade balance owed (what the customer owes)', 'number', '', 'min="0"') +
             '</div><div class="ec-callout" id="ec-tradecall" hidden></div><div class="ec-grid" style="margin-top:14px">' +
@@ -865,8 +924,42 @@ setTimeout(function () {
     }
     TAX.onLoad = () => refresh();
 
+    /* offers added to the rebate; typing in the rebate field clears them */
+    const picked = new Map();
+    let offersSig = '';
+    function offerHtml(o, fit) {
+      const value = o.type === 'apr' ? (o.apr != null ? pct(o.apr) + ' APR' + (o.termMonths ? ', up to ' + o.termMonths + ' mo' : '') : '') : o.amount ? money(o.amount) : '';
+      const meta = [fit === 1 && o.models.length ? 'Check the model: ' + o.models.join(', ') : '', o.eligibility, o.combinable, o.end ? 'Ends ' + o.end : ''].filter(Boolean).join(' | ');
+      const source = /^https:\/\//.test(o.sourceUrl) ? ' <a href="' + esc(o.sourceUrl) + '" target="_blank" rel="noopener">Source</a>' : '';
+      let btn = '';
+      if (o.type === 'apr' && o.apr != null) btn = '<button type="button" class="ec-textbtn" data-offer-apr="' + esc(o.id) + '">' + (d.rm === 't' ? 'Use this rate (switches to a fixed rate)' : 'Use this rate') + '</button>';
+      else if (o.type !== 'apr' && o.amount) btn = '<button type="button" class="ec-textbtn" data-offer="' + esc(o.id) + '">' + (picked.has(o.id) ? 'Remove from rebate' : 'Add to rebate') + '</button>';
+      return '<div class="ec-offer' + (picked.has(o.id) ? ' on' : '') + '">' + (value ? '<span class="ec-amt">' + esc(value) + '</span>' : '') + '<b>' + esc(o.title) + '</b>' +
+        (meta ? '<br><span class="ec-fine">' + esc(meta) + '</span>' : '') +
+        '<details><summary>Fine print</summary>' + esc(o.finePrint || 'See the manufacturer\'s offer page.') + source + '</details>' + btn + '</div>';
+    }
+    function applyOffers() {
+      const box = $('#ec-offers');
+      const r = vehicleOffers();
+      const sig = JSON.stringify([d.mk, d.yr, d.md, d.tr, d.rm, [...picked.keys()], !!r, r && r.error, r && r.brand && !!OFFERS.brands[r.brand]]);
+      if (sig === offersSig) return;
+      offersSig = sig;
+      if (!r) { box.innerHTML = '<span class="ec-fine">Loading factory offers...</span>'; return; }
+      if (r.error) { box.innerHTML = '<span class="ec-fine">' + esc(r.error) + '</span>'; return; }
+      const head = '<b>' + esc(r.name) + ' factory offers</b> <span class="ec-fine">checked ' + esc(r.updated) + '</span>';
+      const list = r.matches.length ? r.matches.map(x => offerHtml(x.o, x.fit)).join('') : '<p class="ec-fine">No current ' + esc(r.name) + ' offers match this year and model.</p>';
+      const more = r.others.length ? '<details><summary>' + r.others.length + ' other ' + esc(r.name) + ' offers</summary>' + r.others.map(o => offerHtml(o, 0)).join('') + '</details>' : '';
+      box.innerHTML = head + list + more + '<p class="ec-fine">From the manufacturer\'s public offer pages. Confirm the program, dates and eligibility before contracting.</p>';
+    }
+    OFFERS.onLoad = () => refresh();
+    function offerById(id) {
+      const r = vehicleOffers();
+      return r && r.brand ? OFFERS.brands[r.brand].offers.find(o => o.id === id) : null;
+    }
+
     function refresh() {
       applyTax();
+      applyOffers();
       termSel.innerHTML = d.tm.map(t => '<option value="' + t + '" ' + (t === d.t ? 'selected' : '') + '>' + t + ' months</option>').join('');
       const grid = isGrid();
       root.querySelectorAll('[data-pm]').forEach(b => b.classList.toggle('on', b.dataset.pm === d.pm));
@@ -945,6 +1038,12 @@ setTimeout(function () {
         const k = el.dataset.k;
         d[k] = NUM.includes(k) ? num(el.value, 0) : el.value;
         if (k === 'cs') d.cs = Math.min(850, Math.max(300, num(el.value, 720)));
+        if (k === 'rb') picked.clear();
+        /* a different vehicle drops the offers picked for the last one */
+        if (['mk', 'yr', 'md', 'tr'].includes(k) && picked.size) {
+          if (num(d.rb) === [...picked.values()].reduce((a, b) => a + b, 0)) { d.rb = 0; $('[data-k="rb"]').value = ''; }
+          picked.clear();
+        }
         if (PROFILE.includes(k)) { saveProfile(); flashSaved(); }
         refresh();
       };
@@ -952,6 +1051,25 @@ setTimeout(function () {
       el.addEventListener('change', onEdit);
     });
     $('#ec-taxtoggle').addEventListener('click', () => { d.at = d.at === '1' ? '' : '1'; saveProfile(); refresh(); });
+    $('#ec-offers').addEventListener('click', e => {
+      const btn = e.target.closest('[data-offer],[data-offer-apr]');
+      const o = btn && offerById(btn.dataset.offer || btn.dataset.offerApr);
+      if (!o) return;
+      if (btn.dataset.offer) {
+        if (picked.has(o.id)) picked.delete(o.id); else picked.set(o.id, o.amount);
+        d.rb = [...picked.values()].reduce((a, b) => a + b, 0);
+        $('[data-k="rb"]').value = d.rb || '';
+      } else {
+        d.ra = o.apr;
+        $('[data-k="ra"]').value = o.apr;
+        if (d.rm === 't') { d.rm = 'f'; saveProfile(); }
+        if (o.termMonths && TERMS.includes(o.termMonths) && !isGrid()) {
+          if (!d.tm.includes(o.termMonths)) { d.tm = TERMS.filter(t => t === o.termMonths || d.tm.includes(t)); root.querySelector('[data-term="' + o.termMonths + '"]').checked = true; }
+          d.t = o.termMonths;
+        }
+      }
+      refresh();
+    });
     root.querySelectorAll('select[data-k]').forEach(el => el.addEventListener('change', () => { d[el.dataset.k] = el.value; refresh(); }));
     root.querySelectorAll('input[data-tier]').forEach(el => {
       el.addEventListener('input', () => { d.rt[+el.dataset.tier] = num(el.value, 0); saveProfile(); refresh(); });

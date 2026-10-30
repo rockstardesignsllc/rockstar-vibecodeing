@@ -6,6 +6,7 @@ Reads the pages build.py just made in rockstar-master/ and writes:
   hosted/deal-desk/saved-quotes.js     saved quotes page engine
   hosted/deal-desk/clients/<slug>.json one settings file per calculator (from <slug>/config.json)
   <slug>/ghl/*.html                    the short loader snippets pasted into HighLevel once
+  hosted/deal-desk/offers/             factory offers (build_offers.py)
 
 hosted/deal-desk/ is copied to the site-assets branch (site-assets/deal-desk/), which Cloudflare Pages
 serves at https://assets.rockstarinfo.com/deal-desk/. After that, every change goes live on every
@@ -17,6 +18,8 @@ import datetime
 import json
 import pathlib
 import re
+
+import build_offers
 
 HERE = pathlib.Path(__file__).resolve().parent
 MASTER = HERE / 'rockstar-master'
@@ -146,6 +149,7 @@ def main():
             path.write_text(new)
         built.append(f'clients/{slug}.json + {slug}/ghl/')
     print(f'hosted v{version}: ' + ', '.join(built))
+    build_offers.main()
 
 
 if __name__ == '__main__':

@@ -1,0 +1,61 @@
+# Reads each brand's public offer pages every Monday and opens a pull request with any new or changed
+# factory offers. Nothing reaches the Deal Desk until that pull request is merged (see offers-publish.yml).
+name: Weekly rebate offers
+
+on:
+  schedule:
+    - cron: '0 11 * * 1'
+  workflow_dispatch:
+    inputs:
+      brand:
+        description: 'One brand to collect (blank = all), e.g. polaris'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: offers-collect
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: payment-calculator/offers
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: payment-calculator/offers/package-lock.json
+
+      - run: npm ci --no-audit --no-fund
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: Collect offers
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BRAND: ${{ inputs.brand }}
+        run: node collect.mjs ${BRAND:+--brand "$BRAND"}
+
+      - name: Add the run summary to the job page
+        if: always()
+        run: if [ -f last-run.md ]; then cat last-run.md >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Open the approval pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: offers/weekly
+          delete-branch: true
+          add-paths: payment-calculator/offers/data/*.json
+          commit-message: 'Deal Desk offers: weekly update'
+          title: 'Deal Desk offers: weekly update'
+          body-path: payment-calculator/offers/last-run.md

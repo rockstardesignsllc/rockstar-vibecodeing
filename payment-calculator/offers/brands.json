@@ -1,0 +1,54 @@
+{
+  "polaris": {
+    "name": "Polaris",
+    "makes": ["polaris", "slingshot"],
+    "pages": [
+      "https://www.polaris.com/en-us/off-road/special-offers/",
+      "https://www.polaris.com/en-us/snowmobiles/special-offers/"
+    ]
+  },
+  "can-am": {
+    "name": "Can-Am",
+    "makes": ["can-am", "can am", "canam", "brp"],
+    "pages": [
+      "https://can-am.brp.com/off-road/us/en/promotions.html",
+      "https://can-am.brp.com/on-road/us/en/promotions.html",
+      "https://promotions-off-road.can-am.brp.com/en-US/usa"
+    ]
+  },
+  "honda": {
+    "name": "Honda",
+    "makes": ["honda"],
+    "pages": [
+      "https://powersports.honda.com/offers"
+    ]
+  },
+  "kawasaki": {
+    "name": "Kawasaki",
+    "makes": ["kawasaki"],
+    "pages": [
+      "https://www.kawasaki.com/en-us/research-tools/current-offers"
+    ]
+  },
+  "yamaha": {
+    "name": "Yamaha",
+    "makes": ["yamaha"],
+    "pages": [
+      "https://yamahamotorsports.com/current-offers"
+    ]
+  },
+  "indian": {
+    "name": "Indian Motorcycle",
+    "makes": ["indian", "indian motorcycle"],
+    "pages": [
+      "https://www.indianmotorcycle.com/en-us/special-offers/"
+    ]
+  },
+  "harley-davidson": {
+    "name": "Harley-Davidson",
+    "makes": ["harley-davidson", "harley davidson", "harley", "h-d", "hd"],
+    "pages": [
+      "https://www.harley-davidson.com/us/en/tools/offers.html"
+    ]
+  }
+}
