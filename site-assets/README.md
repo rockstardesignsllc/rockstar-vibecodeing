@@ -7,6 +7,7 @@ pick it up within 5 minutes (`_headers`).
 | File | What it does |
 |---|---|
 | `rockstar-master.css` | The shared look for every Rockstar HighLevel page |
+| `deal-desk/` | Rockstar Deal Desk (payment calculators): `deal-desk.js`, `saved-quotes.js` and one settings file per dealer in `clients/`. Built from `payment-calculator/` on main by `build.py`; do not edit here |
 | `rockstar-shared.js` | Shared buttons and parts: links with `data-rs-cta="audit"`, `"meeting"` or `"booking"` take their label, link and new-tab setting from `CTAS`; menus and footers marked `data-rs-part` can be replaced from `PARTS` |
 
 Each HighLevel page loads them with these two lines at the top of its Custom HTML/JS element:
