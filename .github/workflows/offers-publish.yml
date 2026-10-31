@@ -1,0 +1,46 @@
+# Publishes approved factory offers to assets.rockstarinfo.com/deal-desk/offers/ when an offers pull request
+# merges. Only the offers folder on the site-assets branch is touched.
+name: Publish rebate offers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'payment-calculator/offers/data/**'
+      - 'payment-calculator/offers/brands.json'
+      - 'payment-calculator/build_offers.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-assets-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build the offer files
+        run: python3 payment-calculator/build_offers.py
+
+      - uses: actions/checkout@v4
+        with:
+          ref: site-assets
+          path: site
+
+      - name: Copy to site-assets and push
+        run: |
+          mkdir -p site/site-assets/deal-desk/offers
+          rsync -a --delete payment-calculator/hosted/deal-desk/offers/ site/site-assets/deal-desk/offers/
+          cd site
+          git add site-assets/deal-desk/offers
+          if git diff --cached --quiet; then echo "Offers already up to date."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Deal Desk offers: publish ${GITHUB_SHA::7}"
+          git push origin HEAD:site-assets

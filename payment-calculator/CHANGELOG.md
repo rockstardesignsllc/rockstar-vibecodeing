@@ -4,6 +4,21 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.14
+- **Factory offers.** Under Pricing, the dealer page lists the current factory rebates and promotional rates for the vehicle's make, year and model (Polaris, Can-Am, Honda, Kawasaki, Yamaha, Indian Motorcycle and Harley-Davidson). Offers that name the model come first, offers that cover every model next, and offers for other models sit under "other offers". "Add to rebate" adds a cash offer to the Rebate field (add several to stack them; typing in the Rebate field clears the picks). "Use this rate" puts a promotional APR and term on the deal, switching the credit score slider to a fixed rate.
+- Offers are collected every Monday by `offers/collect.mjs` (GitHub workflow `offers-weekly.yml`), which reads each brand's public offer pages and fine print and has Claude pull out the offers. The changes arrive as a pull request; merging it publishes them to `https://assets.rockstarinfo.com/deal-desk/offers/` (workflow `offers-publish.yml`, built by `build_offers.py`). Brands and their pages are listed in `offers/brands.json`.
+- Tax and offer data share one loader for files on assets.rockstarinfo.com.
+
+## v3.13
+- **Automatic sales tax.** The dealer page works out the sales tax from the customer's state and ZIP code, so an out-of-state buyer is taxed by their own state. It applies each state's vehicle rules (trade-in credit and caps, doc fee and rebate treatment, local tax caps such as Tennessee's $1,600 and Florida's $5,000, max tax caps such as South Carolina's $500) on top of the ZIP local rate, and shows the math under the tax field. "Enter tax by hand" turns it off (remembered on the device); "Calculate tax from customer ZIP" turns it back on.
+- New pricing fields: **Of those fees, the dealer doc fee** (used only for tax) and **Vehicle is New / Used** (Ohio gives trade-in credit on new vehicles only).
+- Tax data loads from `https://assets.rockstarinfo.com/deal-desk/tax/`, built by `build_tax.py` from `tax/state-rules.json` and the ZIP rate tables in `tax-rates/`. The state rules are a first draft and every state is unverified until checked against a real deal.
+
+## v3.12
+- **Live updates.** Each calculator now has short loader snippets in `<slug>/ghl/` (dealer page, quote page, saved quotes page). The calculator code and each dealer's settings load from `https://assets.rockstarinfo.com/deal-desk/`, so after a one-time re-paste of the loaders, every future change goes live in HighLevel within about 5 minutes with no re-paste.
+- `build.py` now also runs `build_hosted.py`, which writes `hosted/deal-desk/deal-desk.js`, `saved-quotes.js` and `clients/<slug>.json`. Copy `hosted/deal-desk/` to `site-assets/deal-desk/` on the `site-assets` branch to publish.
+- The full single-file pages are still built, for dealers who paste the calculator on their own website.
+
 ## v3.11
 - **Forgot your saved quotes code?** at the bottom of the dealer page, while quote saving is on. The dealer types an email address and taps "Email my code". The quote store sends the dealer's access code to the HighLevel webhook in its `CODE_EMAIL_WEBHOOK` secret, and that workflow emails it. One code email per dealer every 5 minutes.
 - The webhook fields are `event` (`access_code_requested`), `dealer`, `dealer_slug`, `email` (the address the dealer typed), `access_code`, `saved_quotes_url` and `requested_at`. The email template is `emails/4-access-code.html`.

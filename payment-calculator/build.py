@@ -5,6 +5,7 @@
 2. Generates rockstar-master/quote-page.html from it (customer header, PAGE_MODE 'offer').
 3. Stamps the same version into rockstar-master/saved-quotes.html, the dealer's saved quotes page.
 4. Generates every client build in <slug>/ from <slug>/config.json.
+5. Runs build_hosted.py: the live engine in hosted/deal-desk/ and the HighLevel loaders in <slug>/ghl/.
 
 Run from anywhere: python3 payment-calculator/build.py
 Pass client folder names to rebuild only those clients, or --master-only to leave every client build as it is:
@@ -84,6 +85,9 @@ def main(args):
             built.append(f'{cfg_path.parent.name}/{name}')
 
     print(f'built v{version}: ' + ', '.join(built))
+
+    import build_hosted
+    build_hosted.main()
 
 
 if __name__ == '__main__':
