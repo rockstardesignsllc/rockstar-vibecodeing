@@ -47,6 +47,7 @@ const MAX_PDF_BYTES = 8 * 1024 * 1024;
 const MIN_PAGE_CHARS = 400;
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36';
 const DETAIL_LINK = /offer|promo|rebate|incentive|financ|bonus|savings|disclaim|terms|details|fine-?print|legal/i;
+const ZIP_INPUT = ['zip', 'postal'].flatMap(w => ['name', 'id', 'placeholder', 'aria-label'].map(a => `input[${a}*="${w}" i]`)).join(', ');
 const BLOCKED_PAGE = /access denied|request unsuccessful|are you a robot|verify you are human|captcha|pardon our interruption/i;
 
 const Offer = z.object({
@@ -90,13 +91,31 @@ async function readJson(file, fallback) {
   try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch (e) { if (e.code === 'ENOENT') return fallback; throw e; }
 }
 
+/* Pages that ask where the shopper is (brands with a "zip" in brands.json) get that ZIP typed in and submitted. */
+async function enterZip(page, zip) {
+  const box = page.locator(ZIP_INPUT).first();
+  if (!(await box.count()) || !(await box.isVisible())) return;
+  await box.fill(zip);
+  await box.press('Enter');
+  await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+}
+
+/* The form fields and links on a page, for the report when a brand returns no offers. */
+const pageMap = page => page.evaluate(() => ({
+  fields: [...document.querySelectorAll('input, select, button')].filter(e => e.offsetParent).slice(0, 25)
+    .map(e => [e.tagName.toLowerCase(), e.type, e.name || e.id, e.placeholder || e.getAttribute('aria-label') || e.innerText].filter(Boolean).join(' ').replace(/\s+/g, ' ').slice(0, 120)),
+  links: [...document.querySelectorAll('a[href]')].filter(a => a.offsetParent).slice(0, 60)
+    .map(a => (a.innerText || a.title || '').replace(/\s+/g, ' ').trim().slice(0, 60) + ' -> ' + a.href)
+}));
+
 /* Load a page, scroll so lazy content renders, and return its text plus the links worth following. */
-async function readPage(context, url) {
+async function readPage(context, url, zip) {
   const page = await context.newPage();
   try {
     const res = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
     if (!res || res.status() >= 400) throw new Error('HTTP ' + (res ? res.status() : 'no response'));
     await page.waitForLoadState('networkidle', { timeout: 20000 }).catch(() => {});
+    if (zip) await enterZip(page, zip);
     await page.evaluate(async () => {
       for (let y = 0; y < document.body.scrollHeight; y += 800) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 150)); }
     });
@@ -104,7 +123,7 @@ async function readPage(context, url) {
     const text = (await page.evaluate(() => document.body.innerText)).replace(/\n{3,}/g, '\n\n').trim();
     const links = await page.evaluate(() => [...document.querySelectorAll('a[href]')].map(a => ({ href: a.href, text: (a.innerText || a.title || '').trim() })));
     if (text.length < MIN_PAGE_CHARS || BLOCKED_PAGE.test(text.slice(0, 2000))) throw new Error('page looked empty or blocked (' + text.length + ' characters)');
-    return { url, text: text.slice(0, MAX_PAGE_CHARS), links };
+    return { url, text: text.slice(0, MAX_PAGE_CHARS), links, map: await pageMap(page) };
   } finally {
     await page.close();
   }
@@ -127,7 +146,7 @@ async function gather(context, brand) {
   for (const url of brand.pages) {
     seen.add(url);
     try {
-      const p = await readPage(context, url);
+      const p = await readPage(context, url, brand.zip);
       pages.push(p);
       for (const l of p.links) {
         const href = l.href.split('#')[0];
@@ -141,7 +160,7 @@ async function gather(context, brand) {
     }
   }
   for (const url of detail.slice(0, MAX_DETAIL_PAGES)) {
-    try { pages.push(await readPage(context, url)); } catch (e) { problems.push('Skipped detail page ' + url + ': ' + e.message); }
+    try { pages.push(await readPage(context, url, brand.zip)); } catch (e) { problems.push('Skipped detail page ' + url + ': ' + e.message); }
   }
   for (const url of pdfLinks.slice(0, MAX_PDFS)) {
     try { pdfs.push(await readPdf(context, url)); } catch (e) { problems.push('Skipped PDF ' + url + ': ' + e.message); }
@@ -240,6 +259,13 @@ async function main() {
       const sources = [...pages.map(p => p.url), ...pdfs.map(p => p.url)];
       const { kept, dropped } = clean(slug, result.offers, sources);
       notes.push(...result.problems, ...dropped);
+      if (!kept.length) {
+        report.push('No offers found' + (previous && previous.offers.length ? ', so the previous ' + previous.offers.length + ' offers stay in place.' : '.'), '', ...notes.map(n => '- ' + n), '');
+        report.push('<details><summary>What the robot saw on each page</summary>', '');
+        for (const p of pages) report.push('**' + p.url + '**', '', 'Fields: ' + (p.map.fields.join('; ') || 'none'), '', ...p.map.links.map(l => '- ' + l), '');
+        report.push('</details>', '');
+        continue;
+      }
       if (previous && JSON.stringify(previous.offers) === JSON.stringify(kept)) {
         report.push('The pages changed but the offers did not (' + kept.length + ' offers).', '', ...notes.map(n => '- ' + n), '');
         continue;
