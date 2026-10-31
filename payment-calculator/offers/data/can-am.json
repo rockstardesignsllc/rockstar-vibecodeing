@@ -1,0 +1,13 @@
+{
+  "brand": "can-am",
+  "name": "Can-Am",
+  "updated": "2026-10-31",
+  "sourceHash": "9ab35d8aef1437c025273527ac492976d7bee354583fb61067fd7105fdd7519d",
+  "sources": [
+    "https://can-am.brp.com/off-road/us/en/promotions.html",
+    "https://can-am.brp.com/on-road/us/en/promotions.html",
+    "https://can-am.brp.com/off-road/us/en/legal-notice.html",
+    "https://can-am.brp.com/on-road/us/en/legal-notice.html"
+  ],
+  "offers": []
+}
