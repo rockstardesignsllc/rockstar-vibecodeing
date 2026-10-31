@@ -10,6 +10,7 @@
   "can-am": {
     "name": "Can-Am",
     "makes": ["can-am", "can am", "canam", "brp"],
+    "zip": "37201",
     "pages": [
       "https://can-am.brp.com/off-road/us/en/promotions.html",
       "https://can-am.brp.com/on-road/us/en/promotions.html",
