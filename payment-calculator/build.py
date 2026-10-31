@@ -19,7 +19,7 @@ import re
 
 HERE = pathlib.Path(__file__).resolve().parent
 MASTER = HERE / 'rockstar-master'
-CONFIG_KEYS = ['dealerName', 'dealerEmail', 'dealerLogo', 'accentColor', 'webhookUrl', 'calculatorType', 'headerColor',
+CONFIG_KEYS = ['dealerName', 'dealerEmail', 'dealerLogo', 'accentColor', 'webhookUrl', 'calculatorType', 'vertical', 'headerColor',
                'paymentLayout', 'gridTerms', 'gridDownPayments', 'fixedRate', 'rateDisplay', 'quoteStoreUrl', 'quotePagePath', 'savedQuotesPath']
 QUOTE_HEADER = '''<!--
   Rockstar Deal Desk v{version}  |  FILE 2 of 2: CUSTOMER RESULTS PAGE

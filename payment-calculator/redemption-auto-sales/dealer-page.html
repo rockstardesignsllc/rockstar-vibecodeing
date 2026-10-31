@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.14 (Redemption Auto Sales · Subprime)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
+  Rockstar Deal Desk v3.15 (Redemption Auto Sales · Subprime)  |  FILE 1 of 2: DEALER CALCULATOR PAGE
   Paste this into a GHL "Custom HTML/JS" element on your dealer workspace page.
   This is where your team builds the deal and copies the customer link.
   Customer links open the RESULTS PAGE (file 2) at CONFIG.quotePagePath (default /quote).
@@ -75,13 +75,14 @@ setTimeout(function () {
 #rsec .ec-taxauto .ec-textbtn{margin-top:6px}
 #rsec .ec-field input.ec-ro{background:var(--paper)}
 #rsec .ec-offers{margin-top:14px}
-#rsec .ec-offer{border-top:1px solid var(--line);padding:10px 0}
-#rsec .ec-offer:first-of-type{border-top:0}
-#rsec .ec-offer.on b{color:var(--acc)}
-#rsec .ec-offer .ec-amt{float:right;font-weight:700}
-#rsec .ec-offer details{margin-top:4px;font-size:12px}
-#rsec .ec-offer summary{cursor:pointer;color:var(--acc)}
-#rsec .ec-offer .ec-textbtn{display:block;margin-top:6px}
+#rsec .ec-fo{border-top:1px solid var(--line);padding:10px 0}
+#rsec .ec-fo:first-of-type{border-top:0}
+#rsec .ec-fo.on b{color:var(--acc)}
+#rsec .ec-fo .ec-amt{float:right;font-weight:700}
+#rsec .ec-fo details{margin-top:4px;font-size:12px}
+#rsec .ec-fo summary{cursor:pointer;color:var(--acc)}
+#rsec .ec-fo .ec-textbtn{display:block;margin-top:6px}
+#rsec .ec-odo{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
 #rsec .ec-warn{font-size:12px;font-weight:700;color:#d70015;margin-top:6px}
 #rsec .ec-lockedlogo{display:block;max-height:48px;max-width:100%;margin-bottom:6px}
 #rsec .ec-lockedval{margin-top:6px;border:1px dashed var(--line);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--ink);background:var(--paper)}
@@ -282,9 +283,10 @@ setTimeout(function () {
     accentColor: '#d8272c',   /* example: '#0055a5' (blank uses Rockstar red) */
     webhookUrl:  'https://services.leadconnectorhq.com/hooks/gocUhUIqlLQsGwJwv5Vq/webhook-trigger/InwUtOEeuj3Y3G7d1Gns',   /* GHL inbound webhook for quote alerts; blank adds a webhook field to the dealer page */
     calculatorType: 'subprime',   /* 'standard' or 'subprime' (subprime: no lease, no credit score slider, hidden rate by default) */
+    vertical: '',   /* 'powersports' (24 to 144 month terms, freight and setup lines, miles or hours, factory offers, no lease) or blank for auto */
     headerColor: '#0a0b09',   /* customer page header bar color, example: '#0a0b09' (blank is white); use the logo background color for dark logos */
     paymentLayout: '',   /* starting payment layout: 'adjustable' (blank) or 'grid' (3 terms by 3 down payments) */
-    gridTerms: '',   /* starting grid terms in months, example: '48,60,72' (each one of 24, 36, 48, 60, 72, 84) */
+    gridTerms: '',   /* starting grid terms in months, example: '48,60,72' (each one of 24, 36, 48, 60, 72, 84; powersports also 96 to 144) */
     gridDownPayments: '',   /* starting grid down payments in dollars, example: '1000,2000,3000' */
     fixedRate: '',   /* starting APR % for the Fixed and Hidden rate options, example: '14.99' */
     rateDisplay: '',   /* starting rate option: 'shown' (Fixed rate) or 'hidden' (Hidden rate); blank keeps the usual default */
@@ -294,7 +296,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '3.14';
+  const VERSION = '3.15';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -303,7 +305,13 @@ setTimeout(function () {
   const LOGO_WHITE = 'data:image/png;base64,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';
   const SUBPRIME = String(CONFIG.calculatorType || '').trim().toLowerCase() === 'subprime';
   const RATE_MODES = SUBPRIME ? ['f', 'h'] : ['t', 'f', 'h'];
-  const TERMS = [24, 36, 48, 60, 72, 84];
+  const POWERSPORTS = String(CONFIG.vertical || '').trim().toLowerCase() === 'powersports';
+  const NO_LEASE = SUBPRIME || POWERSPORTS;
+  const TERMS = POWERSPORTS ? [24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144] : [24, 36, 48, 60, 72, 84];
+  /* placeholders and starting price for the kind of vehicle this desk sells */
+  const EX = POWERSPORTS
+    ? { mk: 'Polaris', md: 'RZR XP 1000', tr: 'Ultimate', mi: '350', tmk: 'Honda', tmd: 'Rancher', ttr: 'ES', tmi: '1200', pr: 18000 }
+    : { mk: 'Ford', md: 'F-150', tr: 'XLT', mi: '12500', tmk: 'Chevrolet', tmd: 'Silverado', ttr: 'LT', tmi: '84000', pr: 30000 };
   const TIERS = [
     { min: 781, label: 'Excellent', range: '781+' },
     { min: 721, label: 'Very good', range: '721 to 780' },
@@ -331,7 +339,7 @@ setTimeout(function () {
     fn: '', ln: '', em: '', ph: '', ad: '', ci: '', sa: '', zp: '',
     st: '', yr: '', mk: '', md: '', tr: '', vn: '', mi: '',
     ty: '', tmk: '', tmd: '', ttr: '', tvn: '', tmi: '',
-    pr: 30000, tx: 0, fe: 0, df: 0, dp: 1000, ta: 0, tb: 0, rb: 0, at: '1', nu: '',
+    pr: EX.pr, tx: 0, fe: 0, fr: 0, su: 0, df: 0, dp: 1000, ta: 0, tb: 0, rb: 0, at: '1', nu: '', ou: 'mi', tou: 'mi',
     rm: CFG_RM || (SUBPRIME ? 'h' : CFG_GRID ? 'f' : 't'),
     ra: CFG_RATE !== '' && okDown(+CFG_RATE) ? +CFG_RATE : 7.49,
     rt: [5.49, 6.49, 8.99, 12.99, 17.99], cs: 720,
@@ -341,7 +349,7 @@ setTimeout(function () {
     gt: listOf(CONFIG.gridTerms, okTerm) || [48, 60, 72],
     gd: listOf(CONFIG.gridDownPayments, okDown) || [1000, 2000, 3000]
   };
-  const NUM = ['pr', 'tx', 'fe', 'df', 'dp', 'ta', 'tb', 'rb', 'ra', 'cs', 't', 'ld', 'l1', 'p1', 'l2', 'p2'];
+  const NUM = ['pr', 'tx', 'fe', 'fr', 'su', 'df', 'dp', 'ta', 'tb', 'rb', 'ra', 'cs', 't', 'ld', 'l1', 'p1', 'l2', 'p2'];
   const BLANK_WHEN_ZERO = ['rb', 'p1', 'p2'];
   const LEASE_KEYS = ['ls', 'ld', 'lm', 'l1', 'p1', 'l2', 'p2'];
   const LEASE_MAX_DOWN = 10000;
@@ -394,7 +402,9 @@ setTimeout(function () {
     if (!RATE_MODES.includes(o.rm)) o.rm = DEF.rm;
     /* the grid uses one fixed rate, shown or hidden; the credit score slider is adjustable only */
     if (o.pm === 'g' && o.rm === 't') o.rm = 'f';
-    if (o.ls !== '1' || SUBPRIME) o.ls = '';
+    if (o.ls !== '1' || NO_LEASE) o.ls = '';
+    if (!['mi', 'h'].includes(o.ou)) o.ou = 'mi';
+    if (!['mi', 'h'].includes(o.tou)) o.tou = 'mi';
     o.cs = Math.min(850, Math.max(300, Math.round(o.cs)));
     o.t = closest(o.t, o.tm);
     Object.keys(CFG_KEY).forEach(k => { if (isLocked(k)) o[k] = cfg(k); });
@@ -437,7 +447,8 @@ setTimeout(function () {
   }
 
   /* ---------- deal math ---------- */
-  const total = () => num(d.pr) + num(d.tx) + num(d.fe);
+  const freight = () => num(d.fr) + num(d.su);
+  const total = () => num(d.pr) + num(d.tx) + num(d.fe) + freight();
   const netTrade = () => num(d.ta) - num(d.tb);
   const hasTrade = () => num(d.ta) > 0 || num(d.tb) > 0;
   const rebate = () => Math.max(0, num(d.rb));
@@ -498,6 +509,7 @@ setTimeout(function () {
     const price = num(d.pr), docFee = Math.min(num(d.df), num(d.fe));
     const lines = [], notes = [];
     let base = price;
+    if (freight()) { base += freight(); lines.push('Freight and setup ' + money(freight()) + ' taxed with the price'); }
     if (rule.docFeeTaxable && docFee) { base += docFee; lines.push('Doc fee ' + money(docFee) + ' is taxable'); }
     if (rule.rebateReducesTax && rebate()) { base -= rebate(); lines.push('Rebate ' + money(rebate()) + ' lowers the taxable price'); }
     const tradeOk = rule.trade === 'full' || (rule.trade === 'new-only' && d.nu === 'n');
@@ -618,8 +630,8 @@ setTimeout(function () {
   const customerName = () => [d.fn, d.ln].map(s => String(s || '').trim()).filter(Boolean).join(' ');
   const vehicle = () => [d.yr, d.mk, d.md, d.tr].filter(Boolean).join(' ');
   const tradeVehicle = () => [d.ty, d.tmk, d.tmd, d.ttr].filter(Boolean).join(' ');
-  const odo = v => v === '' ? '' : (Number.isFinite(+v) ? Number(v).toLocaleString('en-US') : v) + ' miles';
-  const miles = () => odo(d.mi);
+  const odo = (v, unit) => v === '' ? '' : (Number.isFinite(+v) ? Number(v).toLocaleString('en-US') : v) + (unit === 'h' ? ' hours' : ' miles');
+  const miles = () => odo(d.mi, d.ou);
   const cityLine = () => [d.ci, [d.sa, d.zp].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   /* customer, vehicle and trade details; only the rows that were filled in */
   function detailSections() {
@@ -627,7 +639,7 @@ setTimeout(function () {
     return [
       ['Customer', keep([['Name', customerName()], ['Street address', d.ad], ['City, state, ZIP', cityLine()], ['Phone', d.ph], ['Email', d.em]])],
       ['Vehicle', keep([['Vehicle', vehicle()], ['Stock number', d.st], ['VIN', d.vn], ['Odometer', miles()]])],
-      ['Trade-in', keep([['Vehicle', tradeVehicle()], ['VIN', d.tvn], ['Odometer', odo(d.tmi)]])]
+      ['Trade-in', keep([['Vehicle', tradeVehicle()], ['VIN', d.tvn], ['Odometer', odo(d.tmi, d.tou)]])]
     ].filter(([, list]) => list.length);
   }
   /* local calendar date as YYYY-MM-DD */
@@ -648,6 +660,8 @@ setTimeout(function () {
       ['Purchase price', money(d.pr)],
       ['Sales tax', money(d.tx)],
       ['Title, registration and dealer fees', money(d.fe)],
+      ...(num(d.fr) ? [['Freight', money(d.fr)]] : []),
+      ...(num(d.su) ? [['Setup and prep', money(d.su)]] : []),
       ['Total price', money(total()), 'ec-strong']
     ];
     if (hasTrade()) r.push(['Trade allowance', money(d.ta)], ['Trade balance owed', money(d.tb)], tradeLine());
@@ -721,8 +735,9 @@ setTimeout(function () {
         customer_street: d.ad, customer_city: d.ci, customer_state: d.sa, customer_zip: d.zp,
         vehicle: vehicle(), stock: d.st || '',
         vehicle_stock: d.st, vehicle_year: d.yr, vehicle_make: d.mk, vehicle_model: d.md, vehicle_trim: d.tr, vehicle_vin: d.vn, vehicle_odometer: d.mi,
-        vehicle_price: plain(num(d.pr)),
-        trade_year: d.ty, trade_make: d.tmk, trade_model: d.tmd, trade_trim: d.ttr, trade_vin: d.tvn, trade_odometer: d.tmi,
+        vehicle_odometer_unit: d.ou === 'h' ? 'hours' : 'miles', vehicle_price: plain(num(d.pr)),
+        vehicle_freight: plain(num(d.fr)), vehicle_setup: plain(num(d.su)),
+        trade_year: d.ty, trade_make: d.tmk, trade_model: d.tmd, trade_trim: d.ttr, trade_vin: d.tvn, trade_odometer: d.tmi, trade_odometer_unit: d.tou === 'h' ? 'hours' : 'miles',
         trade_allowance_amount: plain(num(d.ta)), trade_amount_owed: plain(num(d.tb)),
         ...dealFields(lease),
         salesperson: d.sp || '', salesperson_cell: d.sc || '', dealer: dealerName(), dealer_email: d.de || '',
@@ -764,6 +779,14 @@ setTimeout(function () {
     const o = {}; PROFILE.forEach(k => { o[k] = d[k]; }); store.set(o);
   }
 
+  /* powersports units can be measured in miles or hours; the dealer picks per vehicle */
+  function odoField(k, unitKey, label, ph) {
+    if (!POWERSPORTS) return field(k, label, 'text', ph, 'inputmode="numeric"');
+    return '<div class="ec-odo">' + field(k, label, 'text', ph, 'inputmode="numeric"') +
+      '<label class="ec-field">Unit<select data-k="' + unitKey + '" aria-label="' + esc(label) + ' unit">' +
+      [['mi', 'Miles'], ['h', 'Hours']].map(([v, t]) => '<option value="' + v + '"' + (d[unitKey] === v ? ' selected' : '') + '>' + t + '</option>').join('') +
+      '</select></label></div>';
+  }
   function field(k, label, type, ph, attrs) {
     if (isLocked(k)) {
       const shown = k === 'dl' ? '<img class="ec-lockedlogo" src="' + esc(cfg(k)) + '" alt="Dealer logo">' : esc(cfg(k));
@@ -776,7 +799,7 @@ setTimeout(function () {
   function builder() {
     const allDealerLocked = ['dn', 'de', 'dl', 'ac', 'wh'].every(isLocked);
     root.innerHTML =
-      '<div class="ec-top"><img src="' + LOGO_WHITE + '" alt="Rockstar Designs"><b>Rockstar Deal Desk</b><span>Dealer workspace &middot; v' + VERSION + '</span>' +
+      '<div class="ec-top"><img src="' + LOGO_WHITE + '" alt="Rockstar Designs"><b>Rockstar ' + (POWERSPORTS ? 'Powersports ' : '') + 'Deal Desk</b><span>Dealer workspace &middot; v' + VERSION + '</span>' +
         (isHttps(STORE_URL) ? '<a class="ec-toplink" href="' + esc(savedPath()) + '">Saved quotes</a>' : '') + '</div>' +
       '<div class="ec-shell">' +
         '<div class="ec-intro"><div class="ec-kicker">Build the deal. Send the link. Get the yes.</div>' +
@@ -805,9 +828,9 @@ setTimeout(function () {
             '</div></div>' +
             '<div class="ec-sec"><h3>Vehicle</h3><div class="ec-grid">' +
               field('st', 'Stock number') + field('vn', 'VIN', 'text', '17 characters', 'maxlength="17"') +
-              field('yr', 'Year', 'text', '2025', 'inputmode="numeric"') + field('mk', 'Make', 'text', 'Ford') +
-              field('md', 'Model', 'text', 'F-150') + field('tr', 'Trim', 'text', 'XLT') +
-              field('mi', 'Odometer', 'text', '12500', 'inputmode="numeric"') +
+              field('yr', 'Year', 'text', '2025', 'inputmode="numeric"') + field('mk', 'Make', 'text', EX.mk) +
+              field('md', 'Model', 'text', EX.md) + field('tr', 'Trim', 'text', EX.tr) +
+              odoField('mi', 'ou', 'Odometer', EX.mi) +
             '</div></div>' +
             '<div class="ec-sec"><h3>Pricing</h3><p>Enter whole dollar amounts.</p><div class="ec-grid">' +
               field('pr', 'Purchase price', 'number', '', 'min="0"') +
@@ -815,16 +838,17 @@ setTimeout(function () {
                 '<div class="ec-taxauto" id="ec-taxauto"><div id="ec-taxinfo"></div><button type="button" class="ec-textbtn" id="ec-taxtoggle"></button></div></div>' +
               field('fe', 'Title, registration and dealer fees in dollars', 'number', 'example: 899', 'min="0"') +
               field('df', 'Of those fees, the dealer doc fee', 'number', 'example: 499', 'min="0"') +
+              (POWERSPORTS ? field('fr', 'Freight in dollars', 'number', 'example: 695', 'min="0"') + field('su', 'Setup and prep in dollars', 'number', 'example: 450', 'min="0"') : '') +
               '<label class="ec-field">Vehicle is<select data-k="nu"><option value="">Choose</option><option value="n"' + (d.nu === 'n' ? ' selected' : '') + '>New</option><option value="u"' + (d.nu === 'u' ? ' selected' : '') + '>Used</option></select></label>' +
               '<div id="ec-dp-wrap">' + field('dp', 'Starting down payment', 'number', '', 'min="0"') + '</div>' +
               field('rb', 'Rebate (leave blank if none)', 'number', 'example: 1500', 'min="0"') +
-            '</div><div class="ec-taxauto ec-offers" id="ec-offers"></div></div>' +
+            '</div>' + (POWERSPORTS ? '<div class="ec-taxauto ec-offers" id="ec-offers"></div>' : '') + '</div>' +
             '<div class="ec-sec"><h3>Trade</h3><p>Leave the amounts at 0 and the vehicle blank if there is no trade.</p><div class="ec-grid">' +
               field('ta', 'Trade allowance (what it is worth)', 'number', '', 'min="0"') + field('tb', 'Trade balance owed (what the customer owes)', 'number', '', 'min="0"') +
             '</div><div class="ec-callout" id="ec-tradecall" hidden></div><div class="ec-grid" style="margin-top:14px">' +
-              field('ty', 'Trade year', 'text', '2018', 'inputmode="numeric"') + field('tmk', 'Trade make', 'text', 'Chevrolet') +
-              field('tmd', 'Trade model', 'text', 'Silverado') + field('ttr', 'Trade trim', 'text', 'LT') +
-              field('tvn', 'Trade VIN', 'text', '17 characters', 'maxlength="17"') + field('tmi', 'Trade odometer', 'text', '84000', 'inputmode="numeric"') +
+              field('ty', 'Trade year', 'text', '2018', 'inputmode="numeric"') + field('tmk', 'Trade make', 'text', EX.tmk) +
+              field('tmd', 'Trade model', 'text', EX.tmd) + field('ttr', 'Trade trim', 'text', EX.ttr) +
+              field('tvn', 'Trade VIN', 'text', '17 characters', 'maxlength="17"') + odoField('tmi', 'tou', 'Trade odometer', EX.tmi) +
             '</div></div>' +
             '<div class="ec-sec"><h3>Payment layout</h3><p>Choose how payments are presented to the customer.</p>' +
               '<div class="ec-seg ec-seg--2">' +
@@ -856,7 +880,7 @@ setTimeout(function () {
                 '<div class="ec-warn" id="ec-gridwarn" hidden></div>' +
               '</div>' +
             '</div>' +
-            (SUBPRIME ? '' : '<div class="ec-sec"><h3>Lease</h3>' +
+            (NO_LEASE ? '' : '<div class="ec-sec"><h3>Lease</h3>' +
               '<label class="ec-check"><input type="checkbox" id="ec-ls" ' + (d.ls === '1' ? 'checked' : '') + '>Present Lease</label>' +
               '<p>Shows a lease option under the purchase. The lease and the purchase never change each other.</p>' +
               '<div id="ec-lease-fields"><div class="ec-grid">' +
@@ -934,12 +958,13 @@ setTimeout(function () {
       let btn = '';
       if (o.type === 'apr' && o.apr != null) btn = '<button type="button" class="ec-textbtn" data-offer-apr="' + esc(o.id) + '">' + (d.rm === 't' ? 'Use this rate (switches to a fixed rate)' : 'Use this rate') + '</button>';
       else if (o.type !== 'apr' && o.amount) btn = '<button type="button" class="ec-textbtn" data-offer="' + esc(o.id) + '">' + (picked.has(o.id) ? 'Remove from rebate' : 'Add to rebate') + '</button>';
-      return '<div class="ec-offer' + (picked.has(o.id) ? ' on' : '') + '">' + (value ? '<span class="ec-amt">' + esc(value) + '</span>' : '') + '<b>' + esc(o.title) + '</b>' +
+      return '<div class="ec-fo' + (picked.has(o.id) ? ' on' : '') + '">' + (value ? '<span class="ec-amt">' + esc(value) + '</span>' : '') + '<b>' + esc(o.title) + '</b>' +
         (meta ? '<br><span class="ec-fine">' + esc(meta) + '</span>' : '') +
         '<details><summary>Fine print</summary>' + esc(o.finePrint || 'See the manufacturer\'s offer page.') + source + '</details>' + btn + '</div>';
     }
     function applyOffers() {
       const box = $('#ec-offers');
+      if (!box) return;
       const r = vehicleOffers();
       const sig = JSON.stringify([d.mk, d.yr, d.md, d.tr, d.rm, [...picked.keys()], !!r, r && r.error, r && r.brand && !!OFFERS.brands[r.brand]]);
       if (sig === offersSig) return;
@@ -1051,7 +1076,7 @@ setTimeout(function () {
       el.addEventListener('change', onEdit);
     });
     $('#ec-taxtoggle').addEventListener('click', () => { d.at = d.at === '1' ? '' : '1'; saveProfile(); refresh(); });
-    $('#ec-offers').addEventListener('click', e => {
+    if ($('#ec-offers')) $('#ec-offers').addEventListener('click', e => {
       const btn = e.target.closest('[data-offer],[data-offer-apr]');
       const o = btn && offerById(btn.dataset.offer || btn.dataset.offerApr);
       if (!o) return;
@@ -1241,7 +1266,7 @@ setTimeout(function () {
       'rebate eligibility, trade values, taxes, fees, lender terms, vehicle price and availability may change based on credit approval, lender requirements, verification, final contract terms and prior sale. ' +
       (hasLease() ? 'Lease payments are estimates based on the lease down payment, term and annual mileage shown and are subject to credit approval and lender terms. ' +
         'Taxes, fees, and charges for excess mileage and wear may apply. Changing the lease down payment adjusts each estimate by the difference divided by the number of months. ' : '') +
-      'Contact ' + dealerName() + ' to confirm all details before making a ' + (SUBPRIME ? 'purchase' : 'purchase or lease') + ' decision.';
+      'Contact ' + dealerName() + ' to confirm all details before making a ' + (NO_LEASE ? 'purchase' : 'purchase or lease') + ' decision.';
   }
 
   function savePdf(sign, worksheet) {
@@ -1312,7 +1337,7 @@ setTimeout(function () {
         (MODIFIED ? '<div class="ec-alert">Heads up: this offer link was changed after it was sent. ' + esc(dealerName()) + ' will confirm all numbers with you.</div>' : '') +
         '<div class="ec-hero"><div><div class="ec-kicker">Hello, ' + esc(d.fn || 'there') + '</div>' +
           '<h1>Your ' + esc(vehicle() || 'next vehicle') + '.</h1><p class="ec-sub">' + det + '</p></div>' +
-          '<div class="ec-total"><small>Total price</small><strong>' + money(total()) + '</strong><small>Price ' + money(d.pr) + '  &middot;  Tax and fees ' + money(num(d.tx) + num(d.fe)) + '</small></div></div>' +
+          '<div class="ec-total"><small>Total price</small><strong>' + money(total()) + '</strong><small>Price ' + money(d.pr) + '  &middot;  ' + (freight() ? 'Tax, fees, freight and setup ' : 'Tax and fees ') + money(num(d.tx) + num(d.fe) + freight()) + '</small></div></div>' +
         '<div class="ec-main">' +
           '<div class="ec-paybox">' +
             '<div class="ec-kicker">Your estimated payment</div>' +
