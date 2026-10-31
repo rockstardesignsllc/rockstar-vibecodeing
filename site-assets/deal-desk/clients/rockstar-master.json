@@ -1,0 +1,6 @@
+{
+  "label": "Rockstar master",
+  "calculatorType": "standard",
+  "webhookUrl": "https://services.leadconnectorhq.com/hooks/hrsRmtnUmvqCKm3d01tx/webhook-trigger/f8871865-32b0-4dd6-8cba-cf263ce8873f",
+  "quoteStoreUrl": "https://rockstar-deal-desk-quotes.rockstar-designs-llc.workers.dev/quotes"
+}
