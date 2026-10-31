@@ -4,6 +4,16 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.15
+- **Rockstar Powersports Deal Desk.** New calculator `rockstar-powersports/` (pages for powerdesk.rockstarcrm.app) built from the same engine with the new `vertical: "powersports"` setting:
+  - Terms run 24 to 144 months.
+  - Separate **Freight** and **Setup and prep** fields. They show as their own lines on the quote, count in the total price, are taxed with the price by the automatic sales tax, and travel in the webhook as `vehicle_freight` and `vehicle_setup`.
+  - The dealer picks **Miles** or **Hours** for the vehicle and the trade odometer, and the quote shows whichever was picked. Webhook fields `vehicle_odometer_unit` and `trade_odometer_unit`.
+  - No lease option. Factory offers panel under Pricing. Powersports placeholders (Polaris RZR, Honda Rancher) and an $18,000 starting price.
+  - AiForPowersports logo with the Rockstar mark (`rockstar-powersports/aiforpowersports-logo.png`).
+- The factory offers panel now shows only on powersports calculators. The auto calculators no longer show it.
+- Fix: the factory offer list used the class name of the customer quote page wrapper, which added a border and padding to the customer page. Renamed.
+
 ## v3.14
 - **Factory offers.** Under Pricing, the dealer page lists the current factory rebates and promotional rates for the vehicle's make, year and model (Polaris, Can-Am, Honda, Kawasaki, Yamaha, Indian Motorcycle and Harley-Davidson). Offers that name the model come first, offers that cover every model next, and offers for other models sit under "other offers". "Add to rebate" adds a cash offer to the Rebate field (add several to stack them; typing in the Rebate field clears the picks). "Use this rate" puts a promotional APR and term on the deal, switching the credit score slider to a fixed rate.
 - Offers are collected every Monday by `offers/collect.mjs` (GitHub workflow `offers-weekly.yml`), which reads each brand's public offer pages and fine print and has Claude pull out the offers. The changes arrive as a pull request; merging it publishes them to `https://assets.rockstarinfo.com/deal-desk/offers/` (workflow `offers-publish.yml`, built by `build_offers.py`). Brands and their pages are listed in `offers/brands.json`.
