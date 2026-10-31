@@ -1,5 +1,5 @@
-# Publishes approved factory offers to assets.rockstarinfo.com/deal-desk/offers/ when an offers pull request
-# merges. Only the offers folder on the site-assets branch is touched.
+# Publishes factory offers to assets.rockstarinfo.com/deal-desk/offers/. Runs after the weekly collector
+# (offers-weekly.yml) and whenever offer data changes on main. Only the offers folder on site-assets is touched.
 name: Publish rebate offers
 
 on:
@@ -10,6 +10,13 @@ on:
       - 'payment-calculator/offers/brands.json'
       - 'payment-calculator/build_offers.py'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Branch or commit to publish from'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: write
@@ -24,6 +31,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
 
       - name: Build the offer files
         run: python3 payment-calculator/build_offers.py
