@@ -5,8 +5,8 @@
  * For each brand in brands.json: open its public offer pages in a real browser, read the text, follow the
  * detail and fine print links it finds (web pages and PDFs), and have Claude pull out the current US retail
  * offers as structured data. Each brand's offers are written to data/<brand>.json, and a summary of the run
- * is written to last-run.md. The weekly GitHub workflow opens a pull request with any changes for approval;
- * nothing reaches the Deal Desk until that pull request is merged.
+ * is written to last-run.md. The weekly GitHub workflow commits the changes to main and publishes them to the
+ * Deal Desk with no approval step, so offers outside the sanity limits below are held back and reported.
  *
  * A brand whose pages cannot be read keeps its previous data file. A brand whose page text has not changed
  * since the last run is not sent to Claude again.
@@ -45,6 +45,10 @@ const MAX_DETAIL_PAGES = 10;
 const MAX_PDFS = 4;
 const MAX_PDF_BYTES = 8 * 1024 * 1024;
 const MIN_PAGE_CHARS = 400;
+/* Offers publish without a person reviewing them, so anything outside these limits is held back and reported. */
+const MAX_CASH = 10000;
+const MAX_APR = 25;
+const MIN_KEEP_SHARE = 0.5;
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36';
 const DETAIL_LINK = /offer|promo|rebate|incentive|financ|bonus|savings|disclaim|terms|details|fine-?print|legal/i;
 const ZIP_INPUT = ['zip', 'postal'].flatMap(w => ['name', 'id', 'placeholder', 'aria-label'].map(a => `input[${a}*="${w}" i]`)).join(', ');
@@ -199,6 +203,9 @@ function clean(slug, offers, sources) {
   for (const o of offers) {
     if (!sources.includes(o.sourceUrl)) { dropped.push('"' + o.title + '" did not name a page that was read, so it was left out.'); continue; }
     if (o.end && o.end < now) { dropped.push('"' + o.title + '" ended ' + o.end + ', so it was left out.'); continue; }
+    if (o.amount != null && (o.amount <= 0 || o.amount > MAX_CASH)) { dropped.push('HELD BACK: "' + o.title + '" has an amount of ' + money(o.amount) + ', outside $1 to ' + money(MAX_CASH) + '.'); continue; }
+    if (o.apr != null && (o.apr < 0 || o.apr > MAX_APR)) { dropped.push('HELD BACK: "' + o.title + '" has an APR of ' + o.apr + '%, outside 0% to ' + MAX_APR + '%.'); continue; }
+    if (!o.models.length && !o.category.trim()) { dropped.push('HELD BACK: "' + o.title + '" names no models and no category.'); continue; }
     const id = sha([slug, o.type, o.title, o.models.join('|'), o.modelYears.join('|'), o.end || ''].join('#')).slice(0, 12);
     kept.push({ id, ...o });
   }
@@ -220,7 +227,7 @@ async function main() {
   const context = await browser.newContext({ userAgent: USER_AGENT, locale: 'en-US', timezoneId: 'America/Chicago', viewport: { width: 1366, height: 900 } });
   await fs.mkdir(DRY_RUN ? SNAPSHOT_DIR : DATA_DIR, { recursive: true });
 
-  const report = ['# Weekly rebate offers, ' + today(), '', 'Check each brand below against its offer page before merging. Merging publishes these offers to every Deal Desk.', ''];
+  const report = ['# Weekly rebate offers, ' + today(), '', 'These offers are published to every powersports Deal Desk. Lines marked HELD BACK were not published.', ''];
   let failures = 0;
   try {
     for (const slug of slugs) {
@@ -264,6 +271,10 @@ async function main() {
         report.push('<details><summary>What the robot saw on each page</summary>', '');
         for (const p of pages) report.push('**' + p.url + '**', '', 'Fields: ' + (p.map.fields.join('; ') || 'none'), '', ...p.map.links.map(l => '- ' + l), '');
         report.push('</details>', '');
+        continue;
+      }
+      if (previous && previous.offers.length >= 4 && kept.length < previous.offers.length * MIN_KEEP_SHARE) {
+        report.push('HELD BACK: only ' + kept.length + ' offers found, down from ' + previous.offers.length + '. The previous offers stay in place until this is checked.', '', ...notes.map(n => '- ' + n), '');
         continue;
       }
       if (previous && JSON.stringify(previous.offers) === JSON.stringify(kept)) {
