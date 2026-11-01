@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Social share: AI Audit</title>
+<style>
+	* { box-sizing: border-box; margin: 0; padding: 0; }
+	html, body { width: 1200px; height: 630px; overflow: hidden; }
+	body {
+		font-family: Arial, Helvetica, sans-serif; color: #fff; position: relative;
+		background: radial-gradient(900px 520px at 1050px 40px, #13394a 0%, rgba(19,57,74,0) 60%), #10233d;
+	}
+	.brand { position: absolute; left: 64px; top: 56px; display: flex; align-items: center; gap: 14px; }
+	.brand img { width: 56px; height: 56px; }
+	.brand b { display: block; font-size: 21px; }
+	.brand span { display: block; font-size: 19px; color: #c5d3e2; font-weight: bold; margin-top: 3px; }
+	h1 { position: absolute; left: 64px; top: 168px; width: 620px; font-size: 58px; line-height: 1.08; letter-spacing: -1.6px; font-weight: bold; }
+	h1 em { font-style: normal; color: #19b986; }
+	.sub { position: absolute; left: 64px; top: 382px; width: 560px; font-size: 23px; line-height: 1.4; color: #c5d3e2; }
+	.chips { position: absolute; left: 64px; top: 540px; display: flex; gap: 10px; }
+	.chips span { border: 1.5px solid #2f6b6a; color: #6fe0bb; font-weight: bold; font-size: 16.5px; padding: 10px 16px; border-radius: 999px; }
+
+	.card { position: absolute; left: 712px; top: 66px; width: 430px; border-radius: 22px; overflow: hidden; transform: rotate(2deg);
+		box-shadow: 0 30px 60px rgba(0,0,0,.35); background: #f3f6f9; }
+	.head { background: #0b1a2f; padding: 18px 22px; display: flex; align-items: center; gap: 12px; }
+	.av { width: 42px; height: 42px; border-radius: 50%; background: #19b986; display: grid; place-items: center; font-weight: bold; font-size: 20px; color: #fff; }
+	.head b { display: block; font-size: 17px; }
+	.head span { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #9fb3c8; margin-top: 3px; }
+	.head i { width: 8px; height: 8px; border-radius: 50%; background: #34d399; display: inline-block; }
+	.log { background: #f3f6f9; padding: 18px 18px 8px; display: flex; flex-direction: column; gap: 10px; }
+	.b { max-width: 82%; padding: 11px 14px; border-radius: 16px; font-size: 15.5px; line-height: 1.35; }
+	.rex { align-self: flex-start; background: #fff; color: #10233d; border: 1px solid #e1e7ee; border-bottom-left-radius: 5px; }
+	.me { align-self: flex-end; background: #10233d; color: #fff; border-bottom-right-radius: 5px; }
+	.leak { margin: 8px 18px 20px; background: #0b1a2f; border-radius: 16px; padding: 16px 18px; }
+	.leak small { display: block; font-size: 12.5px; letter-spacing: 1.6px; font-weight: bold; color: #6fe0bb; }
+	.leak strong { display: block; font-size: 40px; letter-spacing: -1px; margin-top: 4px; }
+	.leak strong em { font-style: normal; font-size: 18px; color: #c5d3e2; letter-spacing: 0; }
+	.bar { height: 10px; border-radius: 99px; background: #23405e; margin-top: 12px; position: relative; }
+	.bar::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 72%; border-radius: 99px; background: #19b986; }
+</style>
+</head>
+<body>
+	<div class="brand"><img src="rockstar-logo-56.png" alt=""><div><b>Rockstar</b><span>Free AI Audit</span></div></div>
+	<h1>Find the money your business is <em>leaving on the table.</em></h1>
+	<p class="sub">An 8 minute AI Audit that shows where calls and leads slip away, and exactly how to fix it.</p>
+	<div class="chips"><span>8 minutes</span><span>Personalized plan</span><span>100% free</span></div>
+
+	<div class="card">
+		<div class="head"><div class="av">R</div><div><b>Rex from Rockstar</b><span><i></i>Free AI Audit</span></div></div>
+		<div class="log">
+			<div class="b rex">What happens to calls that come in after hours?</div>
+			<div class="b me">Honestly? They go to voicemail.</div>
+			<div class="b rex">That's where most businesses lose the most money. Let's put a number on it.</div>
+		</div>
+		<div>
+			<div class="leak"><small>MONEY ON THE TABLE</small><strong>$7,800 <em>/ month</em></strong><div class="bar"></div></div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!-- Rockstar page v1.3 | Updated 2026-10-27 21:25 UTC -->
+<!--
+  Rockstar AI Audit  |  PAGE 1 of 2: THE AUDIT (https://aiaudit.rockstarinfo.com)
+  Paste this whole file into a HighLevel "Custom HTML/JS" element on the audit page.
+  When the audit ends, Rex sends the prospect to page 2 (CONFIG.completeUrl), pages/audit-complete.html.
+  SEO and social sharing settings: ai-audit/SEO.md
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+#rex-audit{--ink:#0b0b0d;--acc:#d70015;--acc-dark:#a80010;--paper:#f5f5f7;--line:#e3e3e8;--steel:#6e6e73;--white:#fff;
+	font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--ink);max-width:720px;margin:0 auto;
+	box-sizing:border-box;line-height:1.45;-webkit-font-smoothing:antialiased}
+#rex-audit *,#rex-audit *::before,#rex-audit *::after{box-sizing:border-box}
+#rex-audit .rx-card{background:var(--white);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;
+	height:min(680px,calc(100vh - 32px));min-height:460px;box-shadow:0 18px 50px rgba(11,11,13,.10)}
+#rex-audit .rx-head{background:var(--ink);color:var(--white);padding:16px 18px;display:flex;align-items:center;gap:12px}
+#rex-audit .rx-avatar{width:44px;height:44px;border-radius:50%;background:var(--acc);display:grid;place-items:center;font-weight:800;font-size:20px;flex:none;
+	box-shadow:0 0 0 3px rgba(255,255,255,.12)}
+#rex-audit .rx-title{flex:1;min-width:0}
+#rex-audit .rx-name{font-weight:800;font-size:16px;letter-spacing:-.01em}
+#rex-audit .rx-sub{font-size:12.5px;color:#c7c7cc;display:flex;align-items:center;gap:6px;white-space:nowrap}
+#rex-audit .rx-dot{width:8px;height:8px;border-radius:50%;background:#30d158;display:inline-block}
+#rex-audit .rx-restart{background:none;border:1px solid rgba(255,255,255,.25);color:#e5e5ea;border-radius:999px;font:600 12px/1 inherit;font-family:inherit;
+	padding:8px 12px;cursor:pointer}
+#rex-audit .rx-restart:hover{border-color:var(--white);color:var(--white)}
+#rex-audit .rx-progress{height:4px;background:#2c2c2e}
+#rex-audit .rx-bar{height:100%;width:4%;background:var(--acc);transition:width .5s ease}
+#rex-audit .rx-log{flex:1;overflow-y:auto;padding:18px 16px 8px;background:var(--paper);display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+#rex-audit .rx-msg{max-width:84%;padding:11px 14px;border-radius:18px;font-size:15px;white-space:pre-wrap;word-wrap:break-word;animation:rx-in .22s ease}
+#rex-audit .rx-rex{align-self:flex-start;background:var(--white);border:1px solid var(--line);border-bottom-left-radius:6px}
+#rex-audit .rx-me{align-self:flex-end;background:var(--ink);color:var(--white);border-bottom-right-radius:6px}
+#rex-audit .rx-msg a{color:var(--acc);font-weight:600;word-break:break-all}
+#rex-audit .rx-me a{color:#ff9aa5}
+#rex-audit .rx-error{align-self:center;background:#fff1f2;color:#9f1239;border:1px solid #fecdd3;font-size:13.5px;border-radius:12px;padding:10px 12px;
+	display:flex;gap:10px;align-items:center;max-width:92%}
+#rex-audit .rx-error button{background:var(--acc);color:var(--white);border:0;border-radius:999px;padding:6px 12px;font:700 12.5px/1 inherit;font-family:inherit;cursor:pointer}
+#rex-audit .rx-typing{align-self:flex-start;background:var(--white);border:1px solid var(--line);border-radius:18px;border-bottom-left-radius:6px;padding:14px 16px;display:flex;gap:5px}
+#rex-audit .rx-typing span{width:7px;height:7px;border-radius:50%;background:#aeaeb2;animation:rx-bounce 1.2s infinite}
+#rex-audit .rx-typing span:nth-child(2){animation-delay:.15s}
+#rex-audit .rx-typing span:nth-child(3){animation-delay:.3s}
+#rex-audit .rx-finish{align-self:stretch;margin:8px 0 4px;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}
+#rex-audit .rx-finish h3{margin:0 0 4px;font-size:17px;font-weight:800;letter-spacing:-.01em}
+#rex-audit .rx-finish p{margin:0 0 12px;color:var(--steel);font-size:14px}
+#rex-audit .rx-finish p:last-child{margin-bottom:0}
+#rex-audit .rx-book{display:inline-block;background:var(--acc);color:var(--white);text-decoration:none;font-weight:800;font-size:15.5px;padding:14px 22px;border-radius:999px;
+	box-shadow:0 8px 22px rgba(215,0,21,.28)}
+#rex-audit .rx-book:hover{background:var(--acc-dark)}
+#rex-audit .rx-form{display:flex;gap:10px;align-items:flex-end;padding:12px;border-top:1px solid var(--line);background:var(--white)}
+#rex-audit .rx-input{flex:1;resize:none;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font:400 16px/1.4 inherit;font-family:inherit;color:var(--ink);
+	max-height:140px;min-height:48px;outline:none;background:var(--paper)}
+#rex-audit .rx-input:focus{border-color:var(--ink);background:var(--white)}
+#rex-audit .rx-send{width:48px;height:48px;border-radius:50%;border:0;background:var(--acc);color:var(--white);cursor:pointer;display:grid;place-items:center;flex:none}
+#rex-audit .rx-send:disabled{background:#c7c7cc;cursor:default}
+#rex-audit .rx-send svg{width:20px;height:20px}
+#rex-audit .rx-foot{text-align:center;font-size:11.5px;color:var(--steel);padding:8px 12px 2px}
+@keyframes rx-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes rx-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+@media (max-width:520px){
+	#rex-audit .rx-card{border-radius:16px;height:calc(100vh - 48px);height:calc(100svh - 48px);min-height:340px}
+	#rex-audit .rx-head{padding:12px 14px}
+	#rex-audit .rx-foot{padding-top:6px}
+	#rex-audit .rx-msg{max-width:90%;font-size:15px}
+	#rex-audit .rx-restart{padding:7px 10px}
+}
+</style>
+
+<div id="rex-audit">
+	<div class="rx-card">
+		<div class="rx-head">
+			<div class="rx-avatar" aria-hidden="true">R</div>
+			<div class="rx-title">
+				<div class="rx-name">Rex from Rockstar</div>
+				<div class="rx-sub"><span class="rx-dot"></span><span>Free AI Audit · about 8 min</span></div>
+			</div>
+			<button type="button" class="rx-restart" hidden>Start over</button>
+		</div>
+		<div class="rx-progress" aria-hidden="true"><div class="rx-bar"></div></div>
+		<div class="rx-log" role="log" aria-live="polite"></div>
+		<form class="rx-form" autocomplete="on">
+			<textarea class="rx-input" rows="1" placeholder="Type your answer..." aria-label="Your message" maxlength="1500" disabled></textarea>
+			<button type="submit" class="rx-send" aria-label="Send" disabled>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+			</button>
+		</form>
+	</div>
+	<div class="rx-foot">Your answers go to the Rockstar team only. Rex is an AI, and a real person reviews every audit.</div>
+</div>
+
+<script>
+(function () {
+	var CONFIG = {
+		apiUrl: 'https://rockstar-ai-audit.rockstar-designs-llc.workers.dev',
+		storageKey: 'rockstar-ai-audit-session',
+		/* page 2; must match RESULT_KEY handling in pages/audit-complete.html */
+		completeUrl: 'https://aiaudit.rockstarinfo.com/audit-complete',
+		resultKey: 'rockstar-ai-audit-result',
+		/* seconds the prospect has to read Rex's last message before moving to page 2 */
+		redirectDelay: 5,
+		/* prospect messages it usually takes to finish, used only for the progress bar */
+		expectedTurns: 20
+	};
+
+	var root = document.getElementById('rex-audit');
+	if (!root || root.getAttribute('data-ready')) return;
+	root.setAttribute('data-ready', '1');
+
+	var log = root.querySelector('.rx-log');
+	var form = root.querySelector('.rx-form');
+	var input = root.querySelector('.rx-input');
+	var send = root.querySelector('.rx-send');
+	var bar = root.querySelector('.rx-bar');
+	var restart = root.querySelector('.rx-restart');
+	var sessionId = null;
+	var waiting = false;
+	var prospectTurns = 0;
+	var finished = false;
+
+	function store(action, value) {
+		try {
+			if (action === 'get') return window.localStorage.getItem(CONFIG.storageKey);
+			if (action === 'set') window.localStorage.setItem(CONFIG.storageKey, value);
+			if (action === 'clear') window.localStorage.removeItem(CONFIG.storageKey);
+		} catch (e) { /* storage blocked: the audit still works, it just will not resume after a reload */ }
+		return null;
+	}
+
+	function scroll() { log.scrollTop = log.scrollHeight; }
+
+	/* On phones, size the chat to the visible screen so the reply box is always in view without scrolling.
+	   The visible height changes with the browser's address bar, so it is measured instead of using 100vh. */
+	var card = root.querySelector('.rx-card');
+	var foot = root.querySelector('.rx-foot');
+	var fitted = false;
+	function fit() {
+		if (window.innerWidth > 520) { card.style.height = ''; return; }
+		if (document.activeElement === input) return; /* the keyboard is open; leave the layout alone */
+		var screenH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+		var top = card.getBoundingClientRect().top + (window.pageYOffset || 0);
+		var room = screenH - foot.offsetHeight - 8;
+		var nearTop = top <= screenH * 0.3;
+		card.style.height = Math.max(340, Math.round(nearTop ? room - top : room - 8)) + 'px';
+		if (!nearTop && !fitted) window.scrollTo(0, top - 8);
+		fitted = true;
+		scroll();
+	}
+	fit();
+	window.addEventListener('load', fit);
+	window.addEventListener('orientationchange', function () { setTimeout(fit, 250); });
+	(window.visualViewport || window).addEventListener('resize', fit);
+	input.addEventListener('focus', function () { setTimeout(scroll, 300); });
+
+	function progress(done) {
+		var pct = done ? 100 : Math.min(94, 4 + (prospectTurns / CONFIG.expectedTurns) * 90);
+		bar.style.width = pct + '%';
+	}
+
+	/* Builds message text as DOM nodes, turning URLs into links, so prospect or model text never runs as HTML. */
+	function fill(el, text) {
+		var parts = String(text).split(/(https?:\/\/[^\s<>"']+[^\s<>"'.,;:!?)])/g);
+		for (var i = 0; i < parts.length; i++) {
+			if (!parts[i]) continue;
+			if (i % 2 === 1) {
+				var a = document.createElement('a');
+				a.href = parts[i];
+				a.target = '_blank';
+				a.rel = 'noopener';
+				a.textContent = parts[i];
+				el.appendChild(a);
+			} else {
+				el.appendChild(document.createTextNode(parts[i]));
+			}
+		}
+	}
+
+	function bubble(speaker, text) {
+		var el = document.createElement('div');
+		el.className = 'rx-msg ' + (speaker === 'rex' ? 'rx-rex' : 'rx-me');
+		fill(el, text);
+		log.appendChild(el);
+		scroll();
+	}
+
+	function typing(on) {
+		var existing = log.querySelector('.rx-typing');
+		if (!on) { if (existing) existing.remove(); return; }
+		if (existing) return;
+		var el = document.createElement('div');
+		el.className = 'rx-typing';
+		el.setAttribute('aria-label', 'Rex is typing');
+		el.innerHTML = '<span></span><span></span><span></span>';
+		log.appendChild(el);
+		scroll();
+	}
+
+	function showError(message, retry) {
+		var el = document.createElement('div');
+		el.className = 'rx-error';
+		var span = document.createElement('span');
+		span.textContent = message;
+		el.appendChild(span);
+		if (retry) {
+			var button = document.createElement('button');
+			button.type = 'button';
+			button.textContent = 'Try again';
+			button.addEventListener('click', function () { el.remove(); retry(); });
+			el.appendChild(button);
+		}
+		log.appendChild(el);
+		scroll();
+	}
+
+	function goToNextSteps() {
+		try { window.top.location.href = CONFIG.completeUrl; } catch (e) { window.location.href = CONFIG.completeUrl; }
+	}
+
+	/* Hands the result to page 2 and shows the wrap-up card. A live finish moves on by itself; a reloaded one waits for a tap. */
+	function finish(reply, live) {
+		if (finished) return;
+		finished = true;
+		progress(true);
+		try {
+			window.sessionStorage.setItem(CONFIG.resultKey, JSON.stringify({
+				first_name: reply.first_name || '',
+				wants_call: Boolean(reply.wants_call),
+				booking_url: reply.booking_url || ''
+			}));
+		} catch (e) { /* storage blocked: page 2 shows its general version */ }
+		var card = document.createElement('div');
+		card.className = 'rx-finish';
+		var h = document.createElement('h3');
+		h.textContent = 'Your audit is done. Nice work!';
+		var p = document.createElement('p');
+		p.textContent = live ? 'Taking you to your next steps...' : 'Your next steps are one tap away.';
+		var a = document.createElement('a');
+		a.className = 'rx-book';
+		a.href = CONFIG.completeUrl;
+		a.textContent = reply.wants_call ? 'Book my Strategy Call' : 'See my next steps';
+		a.addEventListener('click', function (e) { e.preventDefault(); goToNextSteps(); });
+		card.appendChild(h);
+		card.appendChild(p);
+		card.appendChild(a);
+		log.appendChild(card);
+		scroll();
+		if (live) window.setTimeout(goToNextSteps, CONFIG.redirectDelay * 1000);
+	}
+
+	function setWaiting(on) {
+		waiting = on;
+		typing(on);
+		input.disabled = on || !sessionId;
+		send.disabled = on || !sessionId || !input.value.trim();
+		if (!on && sessionId) input.focus({ preventScroll: true });
+	}
+
+	function apply(reply) {
+		(reply.messages || []).forEach(function (m) { bubble('rex', m); });
+		progress(reply.done);
+		if (reply.done) finish(reply, true);
+	}
+
+	function request(method, path, body) {
+		return fetch(CONFIG.apiUrl + path, {
+			method: method,
+			headers: body ? { 'content-type': 'application/json' } : {},
+			body: body ? JSON.stringify(body) : undefined
+		}).then(function (res) {
+			return res.json().catch(function () { return {}; }).then(function (data) {
+				if (!res.ok) {
+					var error = new Error(data.error || 'Something went wrong.');
+					error.status = res.status;
+					throw error;
+				}
+				return data;
+			});
+		});
+	}
+
+	function start() {
+		setWaiting(true);
+		request('POST', '/sessions').then(function (reply) {
+			sessionId = reply.session_id;
+			store('set', sessionId);
+			setWaiting(false);
+			apply(reply);
+		}).catch(function (error) {
+			setWaiting(false);
+			showError(error.message || 'Rex could not connect.', start);
+		});
+	}
+
+	function resume(id) {
+		setWaiting(true);
+		request('GET', '/sessions/' + encodeURIComponent(id)).then(function (view) {
+			sessionId = id;
+			(view.transcript || []).forEach(function (line) {
+				if (line.speaker === 'prospect') {
+					bubble('prospect', line.text);
+					prospectTurns++;
+					return;
+				}
+				String(line.text).split(/\n\s*\n/).forEach(function (part) { if (part.trim()) bubble('rex', part.trim()); });
+			});
+			restart.hidden = false;
+			setWaiting(false);
+			progress(view.done);
+			if (view.done) finish(view, false);
+		}).catch(function (error) {
+			setWaiting(false);
+			if (error.status === 404) { store('clear'); start(); return; }
+			showError(error.message || 'Rex could not connect.', function () { resume(id); });
+		});
+	}
+
+	function deliver(text) {
+		setWaiting(true);
+		request('POST', '/sessions/' + encodeURIComponent(sessionId) + '/messages', { text: text }).then(function (reply) {
+			setWaiting(false);
+			apply(reply);
+		}).catch(function (error) {
+			setWaiting(false);
+			if (error.status === 404) {
+				showError('This audit expired. Tap Start over to begin a new one.');
+				return;
+			}
+			showError(error.message || 'Rex could not connect.', function () { deliver(text); });
+		});
+	}
+
+	function submit() {
+		var text = input.value.trim();
+		if (!text || waiting || !sessionId) return;
+		input.value = '';
+		resize();
+		bubble('prospect', text);
+		prospectTurns++;
+		restart.hidden = false;
+		progress(finished);
+		deliver(text);
+	}
+
+	function resize() {
+		input.style.height = 'auto';
+		input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+		send.disabled = waiting || !sessionId || !input.value.trim();
+	}
+
+	form.addEventListener('submit', function (e) { e.preventDefault(); submit(); });
+	input.addEventListener('input', resize);
+	input.addEventListener('keydown', function (e) {
+		if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); submit(); }
+	});
+	restart.addEventListener('click', function () {
+		if (waiting) return;
+		if (!finished && !window.confirm('Start the audit over? Your answers so far will be cleared from this screen.')) return;
+		store('clear');
+		sessionId = null;
+		finished = false;
+		prospectTurns = 0;
+		log.innerHTML = '';
+		restart.hidden = true;
+		progress(false);
+		start();
+	});
+
+	var saved = store('get');
+	if (saved && /^[0-9a-f]{64}$/.test(saved)) resume(saved); else start();
+})();
+</script>
