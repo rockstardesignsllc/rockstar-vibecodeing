@@ -4,71 +4,76 @@
     "file": "home.html",
     "title": "Home",
     "formEmbed": false,
-    "sticky": {
-      "label": "{{SERVICE_TIME}}",
-      "sub": "{{ADDRESS_SHORT}}",
-      "href": "https://localchurchgathering.com/contact-us#visit-info",
-      "btn": "Get Connected"
-    }
+    "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   },
   {
     "slug": "what-we-believe",
     "file": "what-we-believe.html",
     "title": "Beliefs",
     "formEmbed": false,
-    "sticky": {
-      "label": "{{SERVICE_TIME}}",
-      "sub": "{{ADDRESS_SHORT}}",
-      "href": "https://localchurchgathering.com/contact-us#visit-info",
-      "btn": "Get Connected"
-    }
+    "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   },
   {
     "slug": "contact-us",
     "file": "contact-us.html",
     "title": "Contact",
     "formEmbed": true,
-    "sticky": {
-      "label": "{{SERVICE_TIME}}",
-      "sub": "{{ADDRESS_SHORT}}",
-      "href": "#contact-form-section",
-      "btn": "Send a Message"
-    }
+    "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "#contact-form-section", "btn": "Send a Message" }
   },
   {
     "slug": "social",
     "file": "social.html",
     "title": "Social Media",
     "formEmbed": false,
-    "sticky": {
-      "label": "{{SERVICE_TIME}}",
-      "sub": "{{ADDRESS_SHORT}}",
-      "href": "https://localchurchgathering.com/contact-us#visit-info",
-      "btn": "Get Connected"
-    }
+    "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   },
   {
     "slug": "past-sermons",
     "file": "past-sermons.html",
     "title": "Messages",
     "formEmbed": false,
-    "sticky": {
-      "label": "{{SERVICE_TIME}}",
-      "sub": "{{ADDRESS_SHORT}}",
-      "href": "https://localchurchgathering.com/contact-us#visit-info",
-      "btn": "Get Connected"
-    }
+    "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   },
   {
     "slug": "pastor-mat",
     "file": "pastor-mat.html",
     "title": "Meet with Pastor Mat",
     "formEmbed": true,
-    "sticky": {
-      "label": "Meet with Pastor Mat",
-      "sub": "Pick a time that works for you",
-      "href": "#booking-section",
-      "btn": "Book a Time"
-    }
+    "sticky": { "label": "Meet with Pastor Mat", "sub": "Pick a time that works for you", "href": "#booking-section", "btn": "Book a Time" }
+  },
+  {
+    "slug": "resources",
+    "file": "resources.html",
+    "title": "Resources",
+    "formEmbed": false,
+    "sticky": { "label": "Church Resources", "sub": "Books for real-life faith", "href": "#books", "btn": "View" }
+  },
+  {
+    "slug": "generosity",
+    "file": "generosity.html",
+    "title": "Generosity",
+    "formEmbed": false,
+    "sticky": { "label": "Generosity", "sub": "Pray first. Give with joy.", "href": "#give-online", "btn": "Give" }
+  },
+  {
+    "slug": "meal",
+    "file": "meal.html",
+    "title": "Family Meal",
+    "formEmbed": true,
+    "sticky": { "label": "Family Meal", "sub": "Last Sunday after worship", "href": "#rsvp", "btn": "RSVP" }
+  },
+  {
+    "slug": "privacy-policy",
+    "file": "privacy-policy.html",
+    "title": "Privacy Policy",
+    "formEmbed": false,
+    "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
+  },
+  {
+    "slug": "terms-of-service",
+    "file": "terms-of-service.html",
+    "title": "Terms of Service",
+    "formEmbed": false,
+    "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   }
 ]

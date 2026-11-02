@@ -1,5 +1,12 @@
 # Changelog — church-site
 
+## v0.3 — 2026-11-02
+- Migrated the remaining pages: resources, generosity, meal, privacy-policy, terms-of-service. All eleven pages are now version-controlled and build from the shared config.
+- Folded each page's own CSS into the shared styles.css (resources, generosity, meal, privacy, terms, plus the shared scripture card). Shared chrome is reused; only page-specific layout was added.
+- Meal page cleaned for the location move (address/map tokens, "Right after the 10 AM gathering"); "Plan Your Visit" → "Get Connected".
+- Added `serviceTimeOnly` ("10 AM") for inline time phrasing.
+- Verified rendered layout for the complex pages (generosity, privacy, meal, resources).
+
 ## v0.2 — 2026-11-02
 - Migrated pages: home, contact-us, social, past-sermons, and the Pastor Mat booking page (Beliefs already in v0.1).
 - Location move to 273 Dry Creek Rd reflected in copy: removed "in the park", "family cookout", and "summertime" references; the gathering is indoors.

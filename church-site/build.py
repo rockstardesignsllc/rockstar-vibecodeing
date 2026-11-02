@@ -34,6 +34,7 @@ def tokens():
         "{{BRAND}}": c["brand"],
         "{{TAGLINE}}": c["tagline"],
         "{{SERVICE_TIME}}": c["serviceTime"],
+        "{{SERVICE_TIME_ONLY}}": c["serviceTimeOnly"],
         "{{ADDRESS}}": c["addressDisplay"],
         "{{ADDRESS_SHORT}}": c["addressShort"],
         "{{MAP_URL}}": c["mapUrl"],
