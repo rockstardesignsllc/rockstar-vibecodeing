@@ -7,9 +7,11 @@
  * Each audit lives in its own AuditSession Durable Object.
  *
  * The self-selling BDC demo (bdcdemo.aifordealers.com) uses the same routes under /demo:
+ *   GET /demo/embed.js (the demo page itself, see demo/embed.ts),
  *   POST /demo/sessions, GET /demo/sessions/<id>, POST /demo/sessions/<id>/messages, POST /demo/sessions/<id>/redeliver
  * Each demo lives in its own DemoSession Durable Object.
  */
+import { demoEmbed } from './demo/embed';
 import { DemoSession, type DemoResult } from './demo/session';
 import { AuditSession, MAX_MESSAGE_CHARS, type SessionResult } from './session';
 import type { Env } from './types';
@@ -68,6 +70,7 @@ const demo = (env: Env, id: string): DurableObjectStub<DemoSession> => env.DEMO_
 
 /** The BDC demo routes, the same shape as the audit's, under /demo. */
 async function handleDemo(request: Request, env: Env, parts: string[], origin: string | null): Promise<Response> {
+	if (parts.length === 1 && parts[0] === 'embed.js' && request.method === 'GET') return demoEmbed();
 	if (parts[0] !== 'sessions') return json(404, { error: 'not found' }, origin);
 	if (parts.length === 1) {
 		if (request.method !== 'POST') return json(405, { error: 'method not allowed' }, origin);

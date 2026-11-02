@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.6: The demo page updates itself
+- New `GET /demo/embed.js` on the Worker serves `pages/bdc-demo.html` (bundled as text). HighLevel now holds only `pages/bdc-demo-loader.html` (v2.0), so page changes on main go live with the automatic Worker deploy, no paste. Browser cache: 5 minutes.
+
 ## v1.5: Demo pricing script + heads-up note
 - Rex handles price pushback the way Mat sells: best vehicles at the best price, won't let a few dollars stop a deal, then side-by-side + two times. A second push gets "how close are we?", a few NEPQ-style questions, then the offer goes to the sales manager with a callback number confirmed (`worker/src/demo/prompt.ts`).
 - `pages/bdc-demo.html` v1.2: heads-up note above the chat (made-up vehicle details; the AI is customized to your sales process). On phones the note stays in view above the chat.
