@@ -1,5 +1,20 @@
 # Rockstar AI Audit changelog
 
+## v1.4: Rex BDC Demo
+- New self-selling demo at `https://bdcdemo.aifordealers.com` (`pages/bdc-demo.html` v1.0). Rex collects the dealership
+  name, name, email, mobile (with a contact consent line) and website, reads the homepage and About page, then counts
+  down 3, 2, 1 and role-plays as that dealership's AI agent. The dealer plays a shopper; Rex makes up the vehicle details
+  and prices (and says so upfront), gives a real number on price questions, qualifies, and works for an appointment.
+  After the mock appointment he steps out, asks what they thought, and offers a real demo with Mat (booking link plus
+  an inline calendar).
+- Same Worker as the audit, new `DemoSession` Durable Object (migration `v2`) under `/demo/sessions`. Same secrets.
+  `bdcdemo.aifordealers.com` and `aifordealers.com` added to `ALLOWED_ORIGINS`.
+- HighLevel: contact upsert (name, email, phone, company, website), Mat's existing fields AI Summary, Demo
+  Conversation, Demo business name, Demo business industry and Demo Thoughts, a contact note with next steps and the
+  transcript, and tags `ai demo started`, `ai demo completed`, `ai demo wants call`. A demo left idle for 30 minutes
+  after the details are in is sent anyway with the tag `ai demo incomplete`.
+- Mat's notification email: `emails/bdc-demo-notification.html`. Share image: `social/social-share-bdc-demo.png`.
+
 ## v1.3
 - `pages/audit.html` v1.3: on phones the chat is sized to the visible screen, so the reply box is always in view
   without scrolling, whatever the phone's height or the browser's address bar. It re-fits when the screen rotates or
