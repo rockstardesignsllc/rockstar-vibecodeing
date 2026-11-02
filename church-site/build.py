@@ -198,9 +198,18 @@ def scripts(meta):
     return "\n\n".join(out)
 
 
+PREPEND_OPEN = "<!--PREPEND-->"
+PREPEND_CLOSE = "<!--/PREPEND-->"
+
+
 def build_page(meta):
     body = (HERE / "pages" / meta["file"]).read_text().strip()
-    parts = [header(), "", "<main>", "", body, "", footer(), "</main>", "", sticky(meta), "", scripts(meta)]
+    prepend = ""
+    if body.startswith(PREPEND_OPEN):
+        _, rest = body.split(PREPEND_OPEN, 1)
+        prepend, body = rest.split(PREPEND_CLOSE, 1)
+        prepend, body = prepend.strip(), body.strip()
+    parts = [prepend, header(), "", "<main>", "", body, "", footer(), "</main>", "", sticky(meta), "", scripts(meta)]
     html = "\n".join(p for p in parts if p != "") + "\n"
     return fill(html)
 

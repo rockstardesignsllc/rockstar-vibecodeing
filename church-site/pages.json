@@ -1,5 +1,17 @@
 [
   {
+    "slug": "home",
+    "file": "home.html",
+    "title": "Home",
+    "formEmbed": false,
+    "sticky": {
+      "label": "{{SERVICE_TIME}}",
+      "sub": "{{ADDRESS_SHORT}}",
+      "href": "https://localchurchgathering.com/contact-us#visit-info",
+      "btn": "Get Connected"
+    }
+  },
+  {
     "slug": "what-we-believe",
     "file": "what-we-believe.html",
     "title": "Beliefs",
@@ -9,6 +21,54 @@
       "sub": "{{ADDRESS_SHORT}}",
       "href": "https://localchurchgathering.com/contact-us#visit-info",
       "btn": "Get Connected"
+    }
+  },
+  {
+    "slug": "contact-us",
+    "file": "contact-us.html",
+    "title": "Contact",
+    "formEmbed": true,
+    "sticky": {
+      "label": "{{SERVICE_TIME}}",
+      "sub": "{{ADDRESS_SHORT}}",
+      "href": "#contact-form-section",
+      "btn": "Send a Message"
+    }
+  },
+  {
+    "slug": "social",
+    "file": "social.html",
+    "title": "Social Media",
+    "formEmbed": false,
+    "sticky": {
+      "label": "{{SERVICE_TIME}}",
+      "sub": "{{ADDRESS_SHORT}}",
+      "href": "https://localchurchgathering.com/contact-us#visit-info",
+      "btn": "Get Connected"
+    }
+  },
+  {
+    "slug": "past-sermons",
+    "file": "past-sermons.html",
+    "title": "Messages",
+    "formEmbed": false,
+    "sticky": {
+      "label": "{{SERVICE_TIME}}",
+      "sub": "{{ADDRESS_SHORT}}",
+      "href": "https://localchurchgathering.com/contact-us#visit-info",
+      "btn": "Get Connected"
+    }
+  },
+  {
+    "slug": "pastor-mat",
+    "file": "pastor-mat.html",
+    "title": "Meet with Pastor Mat",
+    "formEmbed": true,
+    "sticky": {
+      "label": "Meet with Pastor Mat",
+      "sub": "Pick a time that works for you",
+      "href": "#booking-section",
+      "btn": "Book a Time"
     }
   }
 ]
