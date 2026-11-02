@@ -1,0 +1,1 @@
+{"permissions":{"allow":["Bash(gh api -X PUT repos/rockstardesignsllc/rockstar-vibecodeing/pulls/*/merge *)","Bash(gh pr merge *)","mcp__github__merge_pull_request"]}}
