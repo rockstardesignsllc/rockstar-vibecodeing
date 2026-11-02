@@ -1,0 +1,4 @@
+# The repo root ignores dist/, but for church-site the built pages ARE the
+# deliverable (copied straight into GoHighLevel), so track them here.
+!dist/
+!dist/**
