@@ -1,0 +1,14 @@
+[
+  {
+    "slug": "what-we-believe",
+    "file": "what-we-believe.html",
+    "title": "Beliefs",
+    "formEmbed": false,
+    "sticky": {
+      "label": "{{SERVICE_TIME}}",
+      "sub": "{{ADDRESS_SHORT}}",
+      "href": "https://localchurchgathering.com/contact-us#visit-info",
+      "btn": "Get Connected"
+    }
+  }
+]
