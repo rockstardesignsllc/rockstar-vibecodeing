@@ -1,5 +1,9 @@
 # Rockstar AI Audit changelog
 
+## v1.5: Demo pricing script + heads-up note
+- Rex handles price pushback the way Mat sells: best vehicles at the best price, won't let a few dollars stop a deal, then side-by-side + two times. A second push gets "how close are we?", a few NEPQ-style questions, then the offer goes to the sales manager with a callback number confirmed (`worker/src/demo/prompt.ts`).
+- `pages/bdc-demo.html` v1.2: heads-up note above the chat (made-up vehicle details; the AI is customized to your sales process). On phones the note stays in view above the chat.
+
 ## v1.4: Rex BDC Demo
 - New self-selling demo at `https://bdcdemo.aifordealers.com` (`pages/bdc-demo.html` v1.0). Rex collects the dealership
   name, name, email, mobile (with a contact consent line) and website, reads the homepage and About page, then counts

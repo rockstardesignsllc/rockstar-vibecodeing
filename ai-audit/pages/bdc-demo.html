@@ -1,4 +1,4 @@
-<!-- Rockstar page v1.1 | Updated 2026-11-02 19:50 UTC -->
+<!-- Rockstar page v1.2 | Updated 2026-11-02 20:40 UTC -->
 <!--
   RockstarAI BDC Demo  |  https://bdcdemo.aifordealers.com
   Self-selling demo: Rex collects the dealer's details, reads their homepage and About page, then role-plays as
@@ -13,6 +13,9 @@
 	font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--ink);max-width:720px;margin:0 auto;
 	box-sizing:border-box;line-height:1.45;-webkit-font-smoothing:antialiased}
 #rex-demo *,#rex-demo *::before,#rex-demo *::after{box-sizing:border-box}
+#rex-demo .rd-note{background:var(--white);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:14px;padding:12px 14px;margin:0 0 14px;
+	font-size:14px;line-height:1.5;color:#3a3a3c}
+#rex-demo .rd-note b{color:var(--ink)}
 #rex-demo .rd-steps{display:flex;gap:6px;justify-content:center;margin:0 0 12px;flex-wrap:wrap}
 #rex-demo .rd-step{font-size:12.5px;font-weight:700;color:var(--steel);background:var(--white);border:1px solid var(--line);border-radius:999px;padding:7px 12px;
 	display:flex;align-items:center;gap:6px;transition:all .3s ease}
@@ -88,6 +91,7 @@
 @keyframes rd-pop{0%{transform:scale(.4);opacity:0}25%{transform:scale(1.08);opacity:1}70%{transform:scale(1);opacity:1}100%{transform:scale(.92);opacity:.25}}
 @keyframes rd-pulse{0%,100%{opacity:1}50%{opacity:.55}}
 @media (max-width:520px){
+	#rex-demo .rd-note{font-size:13px;padding:10px 12px;margin-bottom:10px}
 	#rex-demo .rd-card{border-radius:16px;height:calc(100vh - 48px);height:calc(100svh - 48px);min-height:340px}
 	#rex-demo .rd-head{padding:12px 14px}
 	#rex-demo .rd-msg{max-width:90%}
@@ -98,6 +102,7 @@
 </style>
 
 <div id="rex-demo">
+	<div class="rd-note"><b>Heads up:</b> the vehicle you ask about will have made-up details and pricing, since your inventory isn't loaded. Watch how smoothly the conversation flows. And remember, we customize your AI to match your sales process and training, so it answers every customer the way you'd want, every time.</div>
 	<div class="rd-steps" aria-hidden="true">
 		<div class="rd-step on" data-step="intake"><b>1</b>Your info</div>
 		<div class="rd-step" data-step="demo"><b>2</b>Live demo</div>
@@ -182,11 +187,13 @@
 		if (window.innerWidth > 520) { card.style.height = ''; return; }
 		if (document.activeElement === input) return;
 		var screenH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+		/* the heads-up note and step pills stay in view above the chat */
+		var start = root.getBoundingClientRect().top + (window.pageYOffset || 0);
 		var top = card.getBoundingClientRect().top + (window.pageYOffset || 0);
 		var room = screenH - foot.offsetHeight - 8;
-		var nearTop = top <= screenH * 0.3;
-		card.style.height = Math.max(340, Math.round(nearTop ? room - top : room - 8)) + 'px';
-		if (!nearTop && !fitted) window.scrollTo(0, top - 8);
+		var nearTop = start <= screenH * 0.3;
+		card.style.height = Math.max(340, Math.round(nearTop ? room - top : room - (top - start) - 8)) + 'px';
+		if (!nearTop && !fitted) window.scrollTo(0, start - 8);
 		fitted = true;
 		scroll();
 	}
