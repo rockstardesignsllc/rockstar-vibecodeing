@@ -1,5 +1,10 @@
 # Rockstar AI Audit changelog
 
+## v1.7: Demo features and price-close order
+- Rex names the main features in plain words when asked (touchscreen, sound system, moonroof, heated and cooled seats, driver assists) and never quotes package codes like "502A".
+- No cash, finance, lease, trade or down payment questions until the shopper brings up price or payments.
+- On a second price push, Rex asks the commitment question first ("If we got to $X out the door, is there anything else that would keep you from moving forward?"). Only after a yes does he ask about a trade and cash vs. finance, saying it doesn't change the price (`worker/src/demo/prompt.ts`).
+
 ## v1.6: The demo page updates itself
 - New `GET /demo/embed.js` on the Worker serves `pages/bdc-demo.html` (bundled as text). HighLevel now holds only `pages/bdc-demo-loader.html` (v2.0), so page changes on main go live with the automatic Worker deploy, no paste. Browser cache: 5 minutes.
 
