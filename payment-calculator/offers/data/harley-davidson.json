@@ -1,8 +1,8 @@
 {
   "brand": "harley-davidson",
   "name": "Harley-Davidson",
-  "updated": "2026-10-31",
-  "sourceHash": "68cafdee8e1138fac5f2aa4e8e03cb29ce2dcbeaee795d9bbfdbd855f25fc051",
+  "updated": "2026-11-02",
+  "sourceHash": "5f40205999a0cff44a7c999a68862153b3856ffee055f0975da78055390ed544",
   "sources": [
     "https://www.harley-davidson.com/us/en/tools/offers.html",
     "https://www.harley-davidson.com/us/en/footer/utility/membership-terms.html",
@@ -13,58 +13,64 @@
   ],
   "offers": [
     {
-      "id": "b9c8e0cad677",
-      "title": "1.99% APR & No Money Down on select new Adventure Touring models",
+      "id": "56d00e3f7f2d",
+      "title": "2.99% APR and No Money Down Plus $1,500 Customer Cash",
       "type": "apr",
       "amount": null,
-      "apr": 1.99,
+      "apr": 2.99,
       "termMonths": null,
       "category": "Motorcycle",
       "modelYears": [],
-      "models": [],
+      "models": [
+        "Grand American Touring"
+      ],
       "start": null,
-      "end": "2026-10-31",
+      "end": "2026-12-30",
       "eligibility": "",
-      "combinable": "Offered together with $1,000 Customer Cash and $500 Hero Cash on select new Adventure Touring models",
-      "finePrint": "1.99% APR and no money down on select new Adventure Touring models. Limited-time offer.",
+      "combinable": "Offered together with $1,500 Customer Cash",
+      "finePrint": "Rates as low as 2.99% APR with no money down on select new Grand American Touring models. The page does not say which models qualify or what term applies.",
       "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
     },
     {
-      "id": "10312f600e4e",
-      "title": "1.99% APR and No Money Down on select new Cruiser, Grand American Touring, and Adventure Touring models",
-      "type": "apr",
-      "amount": null,
-      "apr": 1.99,
-      "termMonths": null,
-      "category": "Motorcycle",
-      "modelYears": [],
-      "models": [],
-      "start": null,
-      "end": "2026-10-31",
-      "eligibility": "",
-      "combinable": "",
-      "finePrint": "Rates as low as 1.99% APR with no money down on select new Cruiser, Grand American Touring, and Adventure Touring models. Limited-time offer.",
-      "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
-    },
-    {
-      "id": "e0480a81169a",
-      "title": "Financing for Active Military",
+      "id": "39153aaff451",
+      "title": "Get on a Sport for as Low as $157 per Month",
       "type": "apr",
       "amount": null,
       "apr": null,
-      "termMonths": null,
+      "termMonths": 84,
       "category": "Motorcycle",
       "modelYears": [],
-      "models": [],
+      "models": [
+        "Sport"
+      ],
       "start": null,
       "end": null,
-      "eligibility": "Active duty stateside military personnel",
+      "eligibility": "",
       "combinable": "",
-      "finePrint": "Active duty stateside military can get $0 down payment, reduced rates and flexible term options. Specific rate and terms not stated.",
-      "sourceUrl": "https://www.harley-davidson.com/us/en/tools/motorcycle-financing.html"
+      "finePrint": "Extended terms are available on all Sport models: as little as $157 per month with 10% down for 84 months. No APR is stated.",
+      "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
     },
     {
-      "id": "6a7d1c275c03",
+      "id": "6c0649f94dd8",
+      "title": "Get on Select Grand American Touring Models for Under $413 per Month",
+      "type": "apr",
+      "amount": null,
+      "apr": null,
+      "termMonths": 96,
+      "category": "Motorcycle",
+      "modelYears": [],
+      "models": [
+        "Grand American Touring"
+      ],
+      "start": null,
+      "end": null,
+      "eligibility": "",
+      "combinable": "",
+      "finePrint": "Extended terms are available on Grand American Touring models: as little as $413 per month with 10% down for 96 months. No APR is stated.",
+      "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
+    },
+    {
+      "id": "f6c6affa5238",
       "title": "Active Military & Veterans Get $500 Customer Cash",
       "type": "bonus",
       "amount": 500,
@@ -77,25 +83,17 @@
       ],
       "models": [
         "Street Glide",
-        "Street Glide Limited",
-        "Low Rider S",
-        "Low Rider ST",
-        "Fat Boy",
-        "Heritage Classic",
-        "Pan America 1250 Special",
-        "Pan America 1250 ST",
-        "Pan America 1250 Limited",
-        "CVO Pan America"
+        "Road Glide"
       ],
       "start": null,
-      "end": "2026-10-31",
+      "end": "2026-11-30",
       "eligibility": "Active military and veterans",
       "combinable": "",
-      "finePrint": "$500 customer cash for active military and veterans on listed 2026 and 2025 models.",
+      "finePrint": "$500 Customer Cash on 2026 and 2025 Street Glide and Road Glide motorcycles for active military and veterans.",
       "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
     },
     {
-      "id": "b492dfaf9b5b",
+      "id": "6099758472d2",
       "title": "First Responders Get $500 Customer Cash",
       "type": "bonus",
       "amount": 500,
@@ -108,55 +106,32 @@
       ],
       "models": [
         "Street Glide",
-        "Street Glide Limited",
-        "Low Rider S",
-        "Low Rider ST",
-        "Fat Boy",
-        "Heritage Classic",
-        "Pan America 1250 Special",
-        "Pan America 1250 ST",
-        "Pan America 1250 Limited",
-        "CVO Pan America"
+        "Road Glide"
       ],
       "start": null,
-      "end": "2026-10-31",
+      "end": "2026-11-30",
       "eligibility": "First responders",
       "combinable": "",
-      "finePrint": "$500 customer cash for first responders on listed 2026 and 2025 models.",
+      "finePrint": "$500 Customer Cash on 2026 and 2025 Street Glide and Road Glide motorcycles for first responders.",
       "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
     },
     {
-      "id": "debaa85e7466",
-      "title": "U.S. Military, Veterans, & First Responders Get an Add'l $500 Hero Cash on select new Adventure Touring models",
-      "type": "bonus",
-      "amount": 500,
-      "apr": null,
-      "termMonths": null,
-      "category": "Motorcycle",
-      "modelYears": [],
-      "models": [],
-      "start": null,
-      "end": "2026-10-31",
-      "eligibility": "U.S. military, veterans, and first responders",
-      "combinable": "Additional to 1.99% APR & no money down and $1,000 Customer Cash on select new Adventure Touring models",
-      "finePrint": "An additional $500 Hero Cash for U.S. military, veterans and first responders on select new Adventure Touring models. Limited-time offer.",
-      "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
-    },
-    {
-      "id": "40e75a88764a",
-      "title": "$1,000 Customer Cash on select new Adventure Touring models",
+      "id": "760f45f63388",
+      "title": "2.99% APR and No Money Down Plus $1,500 Customer Cash",
       "type": "cash",
-      "amount": 1000,
+      "amount": 1500,
       "apr": null,
       "termMonths": null,
       "category": "Motorcycle",
       "modelYears": [],
-      "models": [],
+      "models": [
+        "Grand American Touring"
+      ],
       "start": null,
-      "end": "2026-10-31",
-      "eligibility": "All retail buyers",
-      "combinable": "Offered together with 1.99% APR & no money down on select new Adventure Touring models",
-      "finePrint": "$1,000 customer cash on select new Adventure Touring models. Limited-time offer.",
+      "end": "2026-12-30",
+      "eligibility": "",
+      "combinable": "Offered together with 2.99% APR and no money down financing",
+      "finePrint": "$1,500 Customer Cash on select new Grand American Touring models. The page does not say which models qualify.",
       "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
     },
     {
@@ -173,7 +148,7 @@
       "end": "2026-12-31",
       "eligibility": "Active U.S. military and veterans",
       "combinable": "",
-      "finePrint": "$250 Genuine H-D parts and accessories credit with any new motorcycle purchase.",
+      "finePrint": "$250 Genuine H-D Parts & Accessories credit with any new motorcycle purchase.",
       "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
     },
     {
@@ -190,45 +165,7 @@
       "end": "2026-12-31",
       "eligibility": "First responders",
       "combinable": "",
-      "finePrint": "$250 Genuine H-D parts and accessories credit with any new motorcycle purchase.",
-      "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
-    },
-    {
-      "id": "6e132d1b7a3a",
-      "title": "Get on a Sport for as low as $157 per month",
-      "type": "other",
-      "amount": null,
-      "apr": null,
-      "termMonths": 84,
-      "category": "Motorcycle",
-      "modelYears": [],
-      "models": [
-        "Sport"
-      ],
-      "start": null,
-      "end": null,
-      "eligibility": "",
-      "combinable": "",
-      "finePrint": "Extended terms on all Sport models; payments as low as $157 per month with 10% down for 84 months. APR not stated.",
-      "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
-    },
-    {
-      "id": "6e95ae12807a",
-      "title": "Get on select Grand American Touring models for under $413 per month",
-      "type": "other",
-      "amount": null,
-      "apr": null,
-      "termMonths": 96,
-      "category": "Motorcycle",
-      "modelYears": [],
-      "models": [
-        "Grand American Touring"
-      ],
-      "start": null,
-      "end": null,
-      "eligibility": "",
-      "combinable": "",
-      "finePrint": "Extended terms on Grand American Touring models; payments as low as $413 per month with 10% down for 96 months. APR not stated.",
+      "finePrint": "$250 Genuine H-D Parts & Accessories credit with any new motorcycle purchase.",
       "sourceUrl": "https://www.harley-davidson.com/us/en/tools/offers.html"
     }
   ]
