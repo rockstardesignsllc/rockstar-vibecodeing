@@ -127,6 +127,30 @@ its AI Audit fields, a note and both tags, and the email should be in your inbox
 - **AI Gateway (optional):** set `ANTHROPIC_BASE_URL` to a Cloudflare AI Gateway URL to get request logs and cost
   tracking.
 
+## Rex BDC Demo (bdcdemo.aifordealers.com)
+
+A self-selling demo you send to dealers. It runs on this same Worker, under `/demo`, with its own Durable Object
+(`DemoSession`), so it shares the Claude key, the HighLevel token and the rate limits.
+
+1. Rex asks for the dealership name, first and last name, email, mobile (with a consent line) and website.
+2. He reads the homepage and the About page (no inventory, about 10 seconds at most) and mentions something from it.
+   The contact lands in HighLevel with the tag `ai demo started`.
+3. He explains the vehicle details will be made up, the screen counts down 3, 2, 1, and Rex becomes
+   "Rex with <dealership>". The dealer plays a shopper. Rex answers with believable details, gives a real price, asks a
+   qualifying question, and after a couple of answers says there are a few options and offers two appointment times.
+4. Once a time is set, the screen shows Demo Over and Rex asks what they thought, then offers a real demo with Mat.
+   A yes gets the booking link in chat, and the page shows a booking button and the calendar.
+5. About 30 seconds later the contact gets: AI Summary, Demo Conversation, Demo business name, Demo business industry,
+   Demo Thoughts, a note with Mat's next steps and the full chat, and the tags `ai demo completed` (plus
+   `ai demo wants call` on a yes). Idle for 30 minutes before finishing: the same fields with the tag `ai demo incomplete`.
+
+Setup: deploy the Worker again (`npx wrangler deploy`; no new secrets), paste `pages/bdc-demo.html` into the page
+(settings in `SEO.md`), and build the workflow: trigger **Contact Tag Added** `ai demo completed`, action **Internal
+Notification** email to `mat@rockstarinfo.com`, subject `AI Demo done: {{contact.demo_business_name}} ({{contact.first_name}} {{contact.last_name}})`,
+body `emails/bdc-demo-notification.html`. Rex's script is in `worker/src/demo/prompt.ts`.
+
+Resend a finished demo: `curl -X POST -H "x-admin-key: <ADMIN_KEY>" https://rockstar-ai-audit.rockstar-designs-llc.workers.dev/demo/sessions/<session id>/redeliver`
+
 ## Files
 
 | Path | What it is |
@@ -144,3 +168,6 @@ its AI Audit fields, a note and both tags, and the email should be in your inbox
 | `worker/src/report.ts` | Writes the structured report for Mat and the prospect email draft |
 | `worker/src/highlevel.ts` | HighLevel contact upsert, note and tags |
 | `worker/src/fields.ts` | The 27 HighLevel AI Audit field IDs and the tags |
+| `pages/bdc-demo.html` | The Rex BDC Demo page for bdcdemo.aifordealers.com |
+| `emails/bdc-demo-notification.html` | Mat's email body for the BDC demo workflow |
+| `worker/src/demo/` | The BDC demo: `session.ts` (Durable Object), `prompt.ts` (Rex's script), `tools.ts`, `highlevel.ts` (fields, tags, recap) |

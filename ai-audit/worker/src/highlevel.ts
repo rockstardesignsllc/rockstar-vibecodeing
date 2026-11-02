@@ -29,7 +29,7 @@ export class HighLevelError extends Error {
 
 export const highLevelReady = (env: Env): boolean => Boolean(env.HIGHLEVEL_TOKEN && env.HIGHLEVEL_LOCATION_ID);
 
-async function call(env: Env, path: string, body: object): Promise<unknown> {
+export async function call(env: Env, path: string, body: object): Promise<unknown> {
 	const response = await fetch(API + path, {
 		method: 'POST',
 		headers: {

@@ -160,3 +160,76 @@ export async function readWebsite(input: string): Promise<WebsiteSnapshot | Webs
 		return { ok: false, url: url.toString(), reason };
 	}
 }
+
+const ABOUT_LINK = /<a\b[^>]*href=["']([^"'#]+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+const ABOUT_WORDS = /about|why[-\s]?buy|our[-\s]?(story|dealership|team)|who[-\s]?we[-\s]?are/i;
+
+/** Finds the dealership's About page link on the homepage, on the same site. */
+export function findAboutUrl(html: string, base: string): string | null {
+	const home = new URL(base);
+	for (const match of html.matchAll(ABOUT_LINK)) {
+		const href = decode(match[1] ?? '').trim();
+		const label = clean(match[2] ?? '');
+		if (!ABOUT_WORDS.test(href) && !ABOUT_WORDS.test(label)) continue;
+		if (/^(mailto|tel|javascript):/i.test(href)) continue;
+		try {
+			const url = new URL(href, home);
+			if (url.hostname.replace(/^www\./, '') !== home.hostname.replace(/^www\./, '')) continue;
+			if (url.pathname === '/' || url.pathname === home.pathname) continue;
+			return url.toString();
+		} catch {
+			/* not a usable link */
+		}
+	}
+	return null;
+}
+
+async function fetchPage(url: string, timeoutMs: number): Promise<{ url: string; html: string } | WebsiteFailure> {
+	try {
+		const response = await fetch(url, {
+			redirect: 'follow',
+			signal: AbortSignal.timeout(timeoutMs),
+			headers: {
+				'user-agent': 'Mozilla/5.0 (compatible; RockstarAI-Demo/1.0; +https://aifordealers.com)',
+				accept: 'text/html,application/xhtml+xml'
+			}
+		});
+		if (!response.ok) return { ok: false, url, reason: `The site answered with HTTP ${response.status}.` };
+		const type = response.headers.get('content-type') ?? '';
+		if (!/html|text/i.test(type)) return { ok: false, url, reason: 'The address is not a web page.' };
+		return { url: response.url || url, html: await readCapped(response) };
+	} catch (error) {
+		const reason = error instanceof Error && error.name === 'TimeoutError' ? 'The site took too long to load.' : 'The site could not be reached.';
+		return { ok: false, url, reason };
+	}
+}
+
+export interface DealerSiteSnapshot {
+	ok: true;
+	homepage: Omit<WebsiteSnapshot, 'ok'>;
+	about_page: Omit<WebsiteSnapshot, 'ok'> | null;
+}
+
+const trimmed = (snap: WebsiteSnapshot, chars: number): Omit<WebsiteSnapshot, 'ok'> => {
+	const { ok: _ok, ...rest } = snap;
+	return { ...rest, text_excerpt: rest.text_excerpt.slice(0, chars) };
+};
+
+/**
+ * Quick read of a dealership site for the BDC demo: the homepage plus its About page, if it links one.
+ * No inventory pages. Capped at about 10 seconds in total so the chat never stalls.
+ */
+export async function readDealerSite(input: string): Promise<DealerSiteSnapshot | WebsiteFailure> {
+	const url = normalizeUrl(input);
+	if (!url) return { ok: false, url: input, reason: 'That does not look like a website address.' };
+	const home = await fetchPage(url.toString(), 6000);
+	if ('ok' in home) return home;
+	const homeSnap = snapshot(home.url, home.html);
+	const aboutUrl = findAboutUrl(home.html, home.url);
+	let about: Omit<WebsiteSnapshot, 'ok'> | null = null;
+	if (aboutUrl) {
+		const page = await fetchPage(aboutUrl, 4000);
+		if (!('ok' in page)) about = trimmed(snapshot(page.url, page.html), 3000);
+	}
+	return { ok: true, homepage: trimmed(homeSnap, 4000), about_page: about };
+}

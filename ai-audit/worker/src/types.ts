@@ -1,8 +1,10 @@
 import type Anthropic from '@anthropic-ai/sdk';
+import type { DemoSession } from './demo/session';
 import type { AuditSession } from './session';
 
 export interface Env {
 	AUDIT_SESSIONS: DurableObjectNamespace<AuditSession>;
+	DEMO_SESSIONS: DurableObjectNamespace<DemoSession>;
 	START_LIMITER: RateLimit;
 	MESSAGE_LIMITER: RateLimit;
 	ALLOWED_ORIGINS: string;

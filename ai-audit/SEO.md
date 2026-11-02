@@ -68,3 +68,31 @@ use those as the conversion events.
 
 The images are rendered from `social/social-share-audit.html` and `social/social-share-audit-complete.html` at
 1200 × 630. Edit the HTML, take a 1200 × 630 screenshot of each page, and save it over the matching PNG.
+
+## BDC Demo page (bdcdemo.aifordealers.com)
+
+One page in HighLevel, on the AiForDealers site, at the home page of the `bdcdemo` subdomain. Keep it out of Google
+(noindex), like the audit pages: it is a page you send to dealers, not one they search for.
+
+| | BDC Demo |
+|---|---|
+| HighLevel page name | `AI BDC Demo` |
+| Address | `https://bdcdemo.aifordealers.com` |
+| HighLevel path | `/` |
+| Paste into a Custom HTML/JS element | `pages/bdc-demo.html` |
+| Social sharing image | `social/social-share-bdc-demo.png` (1200 × 630) |
+
+**Title**
+```
+Live AI BDC Demo: Text With Rex | RockstarAI for Dealers
+```
+
+**Description**
+```
+Take Rex for a 3 minute test drive. He plays your dealership's AI agent, you play the customer, and you watch him answer questions and book the appointment.
+```
+
+**Keywords**
+```
+AI BDC, AI BDC demo, dealership AI, AI for car dealers, automotive AI chat, AI appointment setting, car dealer lead response, RockstarAI, Rockstar AI, aifordealers
+```
