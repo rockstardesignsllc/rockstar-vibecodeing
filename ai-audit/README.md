@@ -145,7 +145,7 @@ A self-selling demo you send to dealers. It runs on this same Worker, under `/de
    `ai demo wants call` on a yes). Idle for 30 minutes before finishing: the same fields with the tag `ai demo incomplete`.
 
 Setup: deploy the Worker again (`npx wrangler deploy`; no new secrets), paste `pages/bdc-demo.html` into the page
-(settings in `SEO.md`), and build the workflow: trigger **Contact Tag Added** `ai demo completed`, action **Internal
+(settings in `BDC-DEMO-SEO.md`), and build the workflow: trigger **Contact Tag Added** `ai demo completed`, action **Internal
 Notification** email to `mat@rockstarinfo.com`, subject `AI Demo done: {{contact.demo_business_name}} ({{contact.first_name}} {{contact.last_name}})`,
 body `emails/bdc-demo-notification.html`. Rex's script is in `worker/src/demo/prompt.ts`.
 
