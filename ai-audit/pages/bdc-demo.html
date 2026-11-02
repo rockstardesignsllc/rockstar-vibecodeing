@@ -1,0 +1,493 @@
+<!-- Rockstar page v1.1 | Updated 2026-11-02 19:50 UTC -->
+<!--
+  RockstarAI BDC Demo  |  https://bdcdemo.aifordealers.com
+  Self-selling demo: Rex collects the dealer's details, reads their homepage and About page, then role-plays as
+  their dealership's AI agent and works them for an appointment. At the end he offers a real demo with Mat.
+  Paste this whole file into a HighLevel "Custom HTML/JS" element on the page. Backend: ai-audit/worker (/demo routes).
+  SEO, schema and social sharing settings: ai-audit/BDC-DEMO-SEO.md
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+#rex-demo{--ink:#0b0b0d;--acc:#d70015;--acc-dark:#a80010;--paper:#f5f5f7;--line:#e3e3e8;--steel:#6e6e73;--white:#fff;--live:#0a84ff;
+	font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--ink);max-width:720px;margin:0 auto;
+	box-sizing:border-box;line-height:1.45;-webkit-font-smoothing:antialiased}
+#rex-demo *,#rex-demo *::before,#rex-demo *::after{box-sizing:border-box}
+#rex-demo .rd-steps{display:flex;gap:6px;justify-content:center;margin:0 0 12px;flex-wrap:wrap}
+#rex-demo .rd-step{font-size:12.5px;font-weight:700;color:var(--steel);background:var(--white);border:1px solid var(--line);border-radius:999px;padding:7px 12px;
+	display:flex;align-items:center;gap:6px;transition:all .3s ease}
+#rex-demo .rd-step b{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--line);color:var(--ink);font-size:11px}
+#rex-demo .rd-step.on{color:var(--white);background:var(--ink);border-color:var(--ink)}
+#rex-demo .rd-step.on b{background:var(--acc);color:var(--white)}
+#rex-demo .rd-step.done{color:var(--ink)}
+#rex-demo .rd-step.done b{background:#30d158;color:var(--white)}
+#rex-demo .rd-card{position:relative;background:var(--white);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;
+	height:min(680px,calc(100vh - 32px));min-height:460px;box-shadow:0 18px 50px rgba(11,11,13,.10)}
+#rex-demo .rd-head{background:var(--ink);color:var(--white);padding:16px 18px;display:flex;align-items:center;gap:12px;transition:background .4s ease}
+#rex-demo .rd-avatar{width:44px;height:44px;border-radius:50%;background:var(--acc);display:grid;place-items:center;font-weight:800;font-size:20px;flex:none;
+	box-shadow:0 0 0 3px rgba(255,255,255,.12);transition:background .4s ease}
+#rex-demo .rd-title{flex:1;min-width:0}
+#rex-demo .rd-name{font-weight:800;font-size:16px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rex-demo .rd-sub{font-size:12.5px;color:#c7c7cc;display:flex;align-items:center;gap:6px;white-space:nowrap}
+#rex-demo .rd-dot{width:8px;height:8px;border-radius:50%;background:#30d158;display:inline-block}
+#rex-demo .rd-live{display:none;background:var(--acc);color:var(--white);font-size:10.5px;font-weight:900;letter-spacing:.08em;padding:4px 8px;border-radius:6px;
+	animation:rd-pulse 1.6s infinite}
+#rex-demo.rd-in-demo .rd-live{display:inline-block}
+#rex-demo.rd-in-demo .rd-head{background:#1c1c1e}
+#rex-demo.rd-in-demo .rd-avatar{background:var(--live)}
+#rex-demo .rd-restart{background:none;border:1px solid rgba(255,255,255,.25);color:#e5e5ea;border-radius:999px;font:600 12px/1 inherit;font-family:inherit;
+	padding:8px 12px;cursor:pointer}
+#rex-demo .rd-restart:hover{border-color:var(--white);color:var(--white)}
+#rex-demo .rd-log{flex:1;overflow-y:auto;padding:18px 16px 8px;background:var(--paper);display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+#rex-demo .rd-msg{max-width:84%;padding:11px 14px;border-radius:18px;font-size:15px;white-space:pre-wrap;word-wrap:break-word;animation:rd-in .22s ease}
+#rex-demo .rd-rex{align-self:flex-start;background:var(--white);border:1px solid var(--line);border-bottom-left-radius:6px}
+#rex-demo .rd-rex.rd-role{border-color:#b9dcff;background:#eef6ff}
+#rex-demo .rd-me{align-self:flex-end;background:var(--ink);color:var(--white);border-bottom-right-radius:6px}
+#rex-demo .rd-msg a{color:var(--acc);font-weight:600;word-break:break-all}
+#rex-demo .rd-me a{color:#ff9aa5}
+#rex-demo .rd-divider{align-self:stretch;display:flex;align-items:center;gap:10px;margin:10px 0;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+	color:var(--steel);animation:rd-in .3s ease}
+#rex-demo .rd-divider::before,#rex-demo .rd-divider::after{content:'';flex:1;height:1px;background:var(--line)}
+#rex-demo .rd-divider.rd-start{color:var(--live)}
+#rex-demo .rd-divider.rd-start::before,#rex-demo .rd-divider.rd-start::after{background:#b9dcff}
+#rex-demo .rd-divider.rd-over{color:var(--acc)}
+#rex-demo .rd-error{align-self:center;background:#fff1f2;color:#9f1239;border:1px solid #fecdd3;font-size:13.5px;border-radius:12px;padding:10px 12px;
+	display:flex;gap:10px;align-items:center;max-width:92%}
+#rex-demo .rd-error button{background:var(--acc);color:var(--white);border:0;border-radius:999px;padding:6px 12px;font:700 12.5px/1 inherit;font-family:inherit;cursor:pointer}
+#rex-demo .rd-typing{align-self:flex-start;background:var(--white);border:1px solid var(--line);border-radius:18px;border-bottom-left-radius:6px;padding:14px 16px;display:flex;gap:5px}
+#rex-demo .rd-typing span{width:7px;height:7px;border-radius:50%;background:#aeaeb2;animation:rd-bounce 1.2s infinite}
+#rex-demo .rd-typing span:nth-child(2){animation-delay:.15s}
+#rex-demo .rd-typing span:nth-child(3){animation-delay:.3s}
+#rex-demo .rd-count{position:absolute;inset:0;background:rgba(11,11,13,.97);color:var(--white);display:none;flex-direction:column;align-items:center;justify-content:center;
+	text-align:center;z-index:5;padding:24px}
+#rex-demo .rd-count.on{display:flex}
+#rex-demo .rd-count-label{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#ff9aa5;margin-bottom:6px}
+#rex-demo .rd-count-dealer{font-size:20px;font-weight:800;letter-spacing:-.01em;margin-bottom:18px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+#rex-demo .rd-count-num{font-size:120px;line-height:1;font-weight:900;color:var(--white);animation:rd-pop .9s ease both}
+#rex-demo .rd-count-tip{margin-top:18px;font-size:14.5px;color:#d1d1d6;max-width:340px}
+#rex-demo .rd-finish{align-self:stretch;margin:8px 0 4px;background:var(--white);border:1px solid var(--line);border-radius:16px;padding:18px 16px;text-align:center}
+#rex-demo .rd-finish h3{margin:0 0 4px;font-size:18px;font-weight:800;letter-spacing:-.01em}
+#rex-demo .rd-finish p{margin:0 0 14px;color:var(--steel);font-size:14px}
+#rex-demo .rd-book{display:inline-block;background:var(--acc);color:var(--white);text-decoration:none;font-weight:800;font-size:15.5px;padding:14px 22px;border-radius:999px;
+	box-shadow:0 8px 22px rgba(215,0,21,.28)}
+#rex-demo .rd-book:hover{background:var(--acc-dark)}
+#rex-demo .rd-form{display:flex;gap:10px;align-items:flex-end;padding:12px;border-top:1px solid var(--line);background:var(--white)}
+#rex-demo .rd-input{flex:1;resize:none;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font:400 16px/1.4 inherit;font-family:inherit;color:var(--ink);
+	max-height:140px;min-height:48px;outline:none;background:var(--paper)}
+#rex-demo .rd-input:focus{border-color:var(--ink);background:var(--white)}
+#rex-demo .rd-send{width:48px;height:48px;border-radius:50%;border:0;background:var(--acc);color:var(--white);cursor:pointer;display:grid;place-items:center;flex:none}
+#rex-demo.rd-in-demo .rd-send{background:var(--live)}
+#rex-demo .rd-send:disabled{background:#c7c7cc;cursor:default}
+#rex-demo .rd-send svg{width:20px;height:20px}
+#rex-demo .rd-foot{text-align:center;font-size:11.5px;color:var(--steel);padding:8px 12px 2px}
+#rex-demo .rd-cal{margin-top:18px;background:var(--white);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 18px 50px rgba(11,11,13,.08)}
+#rex-demo .rd-cal h3{margin:0;padding:16px 18px;font-size:17px;font-weight:800;border-bottom:1px solid var(--line)}
+#rex-demo .rd-cal iframe{display:block;width:100%;height:760px;border:0}
+@keyframes rd-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes rd-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+@keyframes rd-pop{0%{transform:scale(.4);opacity:0}25%{transform:scale(1.08);opacity:1}70%{transform:scale(1);opacity:1}100%{transform:scale(.92);opacity:.25}}
+@keyframes rd-pulse{0%,100%{opacity:1}50%{opacity:.55}}
+@media (max-width:520px){
+	#rex-demo .rd-card{border-radius:16px;height:calc(100vh - 48px);height:calc(100svh - 48px);min-height:340px}
+	#rex-demo .rd-head{padding:12px 14px}
+	#rex-demo .rd-msg{max-width:90%}
+	#rex-demo .rd-restart{padding:7px 10px}
+	#rex-demo .rd-step{font-size:11.5px;padding:6px 10px}
+	#rex-demo .rd-count-num{font-size:96px}
+}
+</style>
+
+<div id="rex-demo">
+	<div class="rd-steps" aria-hidden="true">
+		<div class="rd-step on" data-step="intake"><b>1</b>Your info</div>
+		<div class="rd-step" data-step="demo"><b>2</b>Live demo</div>
+		<div class="rd-step" data-step="debrief"><b>3</b>Your take</div>
+	</div>
+	<div class="rd-card">
+		<div class="rd-head">
+			<div class="rd-avatar" aria-hidden="true">R</div>
+			<div class="rd-title">
+				<div class="rd-name">Rex · RockstarAI BDC</div>
+				<div class="rd-sub"><span class="rd-dot"></span><span class="rd-sub-text">Live demo · about 3 min</span><span class="rd-live">LIVE DEMO</span></div>
+			</div>
+			<button type="button" class="rd-restart" hidden>Start over</button>
+		</div>
+		<div class="rd-log" role="log" aria-live="polite"></div>
+		<form class="rd-form" autocomplete="on">
+			<textarea class="rd-input" rows="1" placeholder="Type your answer..." aria-label="Your message" maxlength="1000" disabled></textarea>
+			<button type="submit" class="rd-send" aria-label="Send" disabled>
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+			</button>
+		</form>
+		<div class="rd-count" aria-live="assertive">
+			<div class="rd-count-label">Demo starting</div>
+			<div class="rd-count-dealer"></div>
+			<div class="rd-count-num">3</div>
+			<div class="rd-count-tip">You're the customer now. Ask Rex anything you'd ask about a vehicle.</div>
+		</div>
+	</div>
+	<div class="rd-foot">Rex is an AI. Vehicle details and prices in the demo are made up. Your info goes to the Rockstar team only.</div>
+	<div class="rd-cal" hidden>
+		<h3>Pick a time for your real demo with Mat</h3>
+		<iframe title="Book a demo with Mat" loading="lazy"></iframe>
+	</div>
+</div>
+
+<script>
+(function () {
+	var CONFIG = {
+		apiUrl: 'https://rockstar-ai-audit.rockstar-designs-llc.workers.dev/demo',
+		storageKey: 'rockstar-bdc-demo-session',
+		bookingUrl: 'https://app.rockstarinfo.com/widget/bookings/rockstarai'
+	};
+
+	var root = document.getElementById('rex-demo');
+	if (!root || root.getAttribute('data-ready')) return;
+	root.setAttribute('data-ready', '1');
+
+	var log = root.querySelector('.rd-log');
+	var form = root.querySelector('.rd-form');
+	var input = root.querySelector('.rd-input');
+	var send = root.querySelector('.rd-send');
+	var restart = root.querySelector('.rd-restart');
+	var nameEl = root.querySelector('.rd-name');
+	var avatar = root.querySelector('.rd-avatar');
+	var subText = root.querySelector('.rd-sub-text');
+	var count = root.querySelector('.rd-count');
+	var countNum = root.querySelector('.rd-count-num');
+	var countDealer = root.querySelector('.rd-count-dealer');
+	var cal = root.querySelector('.rd-cal');
+	var sessionId = null;
+	var waiting = false;
+	var finished = false;
+	var mode = 'intake';
+	var dealership = '';
+
+	function store(action, value) {
+		try {
+			if (action === 'get') return window.localStorage.getItem(CONFIG.storageKey);
+			if (action === 'set') window.localStorage.setItem(CONFIG.storageKey, value);
+			if (action === 'clear') window.localStorage.removeItem(CONFIG.storageKey);
+		} catch (e) { /* storage blocked: the demo still works, it just will not resume after a reload */ }
+		return null;
+	}
+
+	function scroll() { log.scrollTop = log.scrollHeight; }
+
+	/* On phones, size the chat to the visible screen so the reply box is always in view without scrolling. */
+	var card = root.querySelector('.rd-card');
+	var foot = root.querySelector('.rd-foot');
+	var fitted = false;
+	function fit() {
+		if (window.innerWidth > 520) { card.style.height = ''; return; }
+		if (document.activeElement === input) return;
+		var screenH = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+		var top = card.getBoundingClientRect().top + (window.pageYOffset || 0);
+		var room = screenH - foot.offsetHeight - 8;
+		var nearTop = top <= screenH * 0.3;
+		card.style.height = Math.max(340, Math.round(nearTop ? room - top : room - 8)) + 'px';
+		if (!nearTop && !fitted) window.scrollTo(0, top - 8);
+		fitted = true;
+		scroll();
+	}
+	fit();
+	window.addEventListener('load', fit);
+	window.addEventListener('orientationchange', function () { setTimeout(fit, 250); });
+	(window.visualViewport || window).addEventListener('resize', fit);
+	input.addEventListener('focus', function () { setTimeout(scroll, 300); });
+
+	/* Header, step pills and colors follow the part of the demo the chat is in. */
+	function setMode(next) {
+		mode = next || 'intake';
+		root.classList.toggle('rd-in-demo', mode === 'demo');
+		var order = ['intake', 'demo', 'debrief'];
+		var at = order.indexOf(mode);
+		root.querySelectorAll('.rd-step').forEach(function (el) {
+			var i = order.indexOf(el.getAttribute('data-step'));
+			el.classList.toggle('on', i === at && !finished);
+			el.classList.toggle('done', i < at || finished);
+		});
+		if (mode === 'demo') {
+			nameEl.textContent = dealership || 'Your dealership';
+			avatar.textContent = (dealership || 'D').trim().charAt(0).toUpperCase() || 'D';
+			subText.textContent = 'AI Assistant';
+			input.placeholder = 'Text the dealership as a customer...';
+		} else {
+			nameEl.textContent = 'Rex · RockstarAI BDC';
+			avatar.textContent = 'R';
+			subText.textContent = mode === 'debrief' ? 'Demo complete' : 'Live demo · about 3 min';
+			input.placeholder = 'Type your answer...';
+		}
+	}
+
+	/* Builds message text as DOM nodes, turning URLs into links, so dealer or model text never runs as HTML. */
+	function fill(el, text) {
+		var parts = String(text).split(/(https?:\/\/[^\s<>"']+[^\s<>"'.,;:!?)])/g);
+		for (var i = 0; i < parts.length; i++) {
+			if (!parts[i]) continue;
+			if (i % 2 === 1) {
+				var a = document.createElement('a');
+				a.href = parts[i];
+				a.target = '_blank';
+				a.rel = 'noopener';
+				a.textContent = parts[i];
+				el.appendChild(a);
+			} else {
+				el.appendChild(document.createTextNode(parts[i]));
+			}
+		}
+	}
+
+	function bubble(speaker, text) {
+		var el = document.createElement('div');
+		el.className = 'rd-msg ' + (speaker === 'rex' ? 'rd-rex' + (mode === 'demo' ? ' rd-role' : '') : 'rd-me');
+		fill(el, text);
+		log.appendChild(el);
+		scroll();
+	}
+
+	function divider(kind, text) {
+		var el = document.createElement('div');
+		el.className = 'rd-divider ' + kind;
+		el.textContent = text;
+		log.appendChild(el);
+		scroll();
+	}
+
+	function typing(on) {
+		var existing = log.querySelector('.rd-typing');
+		if (!on) { if (existing) existing.remove(); return; }
+		if (existing) { log.appendChild(existing); return; }
+		var el = document.createElement('div');
+		el.className = 'rd-typing';
+		el.setAttribute('aria-label', 'Rex is typing');
+		el.innerHTML = '<span></span><span></span><span></span>';
+		log.appendChild(el);
+		scroll();
+	}
+
+	function showError(message, retry) {
+		var el = document.createElement('div');
+		el.className = 'rd-error';
+		var span = document.createElement('span');
+		span.textContent = message;
+		el.appendChild(span);
+		if (retry) {
+			var button = document.createElement('button');
+			button.type = 'button';
+			button.textContent = 'Try again';
+			button.addEventListener('click', function () { el.remove(); retry(); });
+			el.appendChild(button);
+		}
+		log.appendChild(el);
+		scroll();
+	}
+
+	function wait(ms) { return new Promise(function (resolve) { window.setTimeout(resolve, ms); }); }
+
+	/* The 3, 2, 1 countdown before Rex starts playing the dealership's agent. */
+	function countdown(name) {
+		countDealer.textContent = name || '';
+		count.classList.add('on');
+		var n = 3;
+		function tick() {
+			countNum.textContent = String(n);
+			countNum.style.animation = 'none';
+			void countNum.offsetWidth;
+			countNum.style.animation = '';
+		}
+		tick();
+		return new Promise(function (resolve) {
+			var timer = window.setInterval(function () {
+				n--;
+				if (n > 0) { tick(); return; }
+				window.clearInterval(timer);
+				count.classList.remove('on');
+				resolve();
+			}, 950);
+		});
+	}
+
+	/* Shows a reply one bubble at a time with a short typing pause, so Rex reads like a person texting. */
+	function play(items, live) {
+		var chain = Promise.resolve();
+		(items || []).forEach(function (item, index) {
+			chain = chain.then(function () {
+				if (item.kind === 'countdown') {
+					dealership = item.dealership || dealership;
+					divider('rd-start', 'Demo starts · You are the customer');
+					if (!live) { setMode('demo'); return; }
+					typing(false);
+					return countdown(dealership).then(function () { setMode('demo'); });
+				}
+				if (item.kind === 'demo_over') {
+					setMode('debrief');
+					divider('rd-over', 'Demo over');
+					return;
+				}
+				if (!live) { bubble('rex', item.text); return; }
+				var pause = index === 0 ? 250 : Math.min(1800, 500 + String(item.text).length * 14);
+				typing(true);
+				return wait(pause).then(function () { typing(false); bubble('rex', item.text); });
+			});
+		});
+		return chain;
+	}
+
+	function finish(reply) {
+		if (finished) return;
+		finished = true;
+		setMode('debrief');
+		var url = reply.booking_url || CONFIG.bookingUrl;
+		var box = document.createElement('div');
+		box.className = 'rd-finish';
+		var h = document.createElement('h3');
+		h.textContent = reply.wants_real_demo ? 'Let’s get your store set up' : 'Thanks for taking Rex for a spin!';
+		var p = document.createElement('p');
+		p.textContent = reply.wants_real_demo
+			? 'Grab a time with Mat, Rockstar’s founder, and see Rex working your real leads.'
+			: 'When you’re ready, grab a quick time with Mat to see Rex on your real leads.';
+		var a = document.createElement('a');
+		a.className = 'rd-book';
+		a.href = url;
+		a.target = '_blank';
+		a.rel = 'noopener';
+		a.textContent = 'Book my real demo with Mat';
+		box.appendChild(h);
+		box.appendChild(p);
+		box.appendChild(a);
+		log.appendChild(box);
+		scroll();
+		cal.querySelector('iframe').src = url;
+		cal.hidden = false;
+	}
+
+	function setWaiting(on) {
+		waiting = on;
+		typing(on);
+		input.disabled = on || !sessionId;
+		send.disabled = on || !sessionId || !input.value.trim();
+		if (!on && sessionId) input.focus({ preventScroll: true });
+	}
+
+	function apply(reply) {
+		if (reply.dealership_name) dealership = reply.dealership_name;
+		return play(reply.items, true).then(function () {
+			setMode(reply.mode);
+			if (reply.done) finish(reply);
+		});
+	}
+
+	function request(method, path, body) {
+		return fetch(CONFIG.apiUrl + path, {
+			method: method,
+			headers: body ? { 'content-type': 'application/json' } : {},
+			body: body ? JSON.stringify(body) : undefined
+		}).then(function (res) {
+			return res.json().catch(function () { return {}; }).then(function (data) {
+				if (!res.ok) {
+					var error = new Error(data.error || 'Something went wrong.');
+					error.status = res.status;
+					throw error;
+				}
+				return data;
+			});
+		});
+	}
+
+	function start() {
+		setWaiting(true);
+		request('POST', '/sessions').then(function (reply) {
+			sessionId = reply.session_id;
+			store('set', sessionId);
+			typing(false);
+			return apply(reply).then(function () { setWaiting(false); });
+		}).catch(function (error) {
+			setWaiting(false);
+			showError(error.message || 'Rex could not connect.', start);
+		});
+	}
+
+	function resume(id) {
+		setWaiting(true);
+		request('GET', '/sessions/' + encodeURIComponent(id)).then(function (view) {
+			sessionId = id;
+			if (view.dealership_name) dealership = view.dealership_name;
+			typing(false);
+			var chain = Promise.resolve();
+			(view.transcript || []).forEach(function (line) {
+				chain = chain.then(function () {
+					return play(line.markers_before, false).then(function () {
+						if (line.speaker === 'prospect') { bubble('prospect', line.text); return; }
+						String(line.text).split(/\n\s*\n/).forEach(function (part) { if (part.trim()) bubble('rex', part.trim()); });
+					});
+				});
+			});
+			return chain.then(function () { return play(view.items, false); }).then(function () {
+				restart.hidden = false;
+				setMode(view.mode);
+				setWaiting(false);
+				if (view.done) finish(view);
+			});
+		}).catch(function (error) {
+			setWaiting(false);
+			if (error.status === 404) { store('clear'); start(); return; }
+			showError(error.message || 'Rex could not connect.', function () { resume(id); });
+		});
+	}
+
+	function deliver(text) {
+		setWaiting(true);
+		request('POST', '/sessions/' + encodeURIComponent(sessionId) + '/messages', { text: text }).then(function (reply) {
+			typing(false);
+			waiting = true;
+			return apply(reply).then(function () { setWaiting(false); });
+		}).catch(function (error) {
+			setWaiting(false);
+			if (error.status === 404) {
+				showError('This demo expired. Tap Start over to begin a new one.');
+				return;
+			}
+			showError(error.message || 'Rex could not connect.', function () { deliver(text); });
+		});
+	}
+
+	function submit() {
+		var text = input.value.trim();
+		if (!text || waiting || !sessionId) return;
+		input.value = '';
+		resize();
+		bubble('prospect', text);
+		restart.hidden = false;
+		deliver(text);
+	}
+
+	function resize() {
+		input.style.height = 'auto';
+		input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+		send.disabled = waiting || !sessionId || !input.value.trim();
+	}
+
+	form.addEventListener('submit', function (e) { e.preventDefault(); submit(); });
+	input.addEventListener('input', resize);
+	input.addEventListener('keydown', function (e) {
+		if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); submit(); }
+	});
+	restart.addEventListener('click', function () {
+		if (waiting) return;
+		if (!finished && !window.confirm('Start the demo over? This chat will be cleared from this screen.')) return;
+		store('clear');
+		sessionId = null;
+		finished = false;
+		dealership = '';
+		log.innerHTML = '';
+		cal.hidden = true;
+		restart.hidden = true;
+		setMode('intake');
+		start();
+	});
+
+	var saved = store('get');
+	if (saved && /^[0-9a-f]{64}$/.test(saved)) resume(saved); else start();
+})();
+</script>
