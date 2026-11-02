@@ -69,7 +69,20 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
           git commit -m "Deal Desk offers: weekly update $(date -u +%F)"
-          git push origin HEAD:main
+          # main often moves while the collector runs (it takes several minutes), so replay this commit on the
+          # newest main before each push. Only data/ and reports/ change here, so the rebase is normally clean.
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            if ! git rebase FETCH_HEAD; then
+              git rebase --abort
+              echo "::error::Offers commit conflicts with main. Resolve payment-calculator/offers/data by hand."
+              exit 1
+            fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 5))
+          done
+          echo "::error::Could not push the offers commit to main after 4 attempts."
+          exit 1
 
   publish:
     needs: collect
