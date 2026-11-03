@@ -3,6 +3,11 @@
 The current version and date are also stamped at the top of every built page in
 `dist/` and at the top of `styles.css`.
 
+## v1.1 — 2026-11-03
+- Step 2 live-update pipeline: build now emits `hosted/` (shared CSS + one JS loader per page) and `loaders/` (the one-time GoHighLevel snippet).
+- Added `.github/workflows/church-publish.yml` — publishes `hosted/` to `church/` on the `site-assets` branch (Cloudflare → assets.rockstarinfo.com/church/) on every change to `main`.
+- After the one-time loader paste per page, all future content/CSS/schema/SEO changes go live with no re-paste.
+
 ## v1.0 — 2026-11-03
 - Added `Event` schema to the Meal page (free monthly community meal) and `Person` schema (Pastor Mat) to the booking page.
 - Every built page and the stylesheet now carry a version + "updated" date stamp at the top (driven by `version`/`updated` in `site.config.json`).

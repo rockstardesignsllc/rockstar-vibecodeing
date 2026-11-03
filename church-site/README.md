@@ -32,15 +32,33 @@ Use these inside `pages/*.html` and `pages.json` instead of hardcoding; `build.p
 3. Rebuild: `python3 church-site/build.py`
 4. The updated full page is in `dist/<slug>.html`.
 
-## Publishing to the live site
+## Publishing — auto-update (live)
 
-**Current:** copy `dist/<slug>.html` into that page's GoHighLevel Custom HTML element, and
-put `styles.css` in the site/page custom CSS.
+Each GoHighLevel page carries a **one-time loader snippet** (from `loaders/<slug>.html`):
 
-**Planned (step 2 — auto-update):** mirror the Rockstar `hosted/` + `site-assets` pipeline so
-each page's HTML/CSS is served from `assets.rockstarinfo.com/church/…` and every GoHighLevel
-page carries a one-time loader snippet. After that, a change here goes live with no re-paste.
-Not wired up yet — the pages are published by paste for now.
+```html
+<div id="lcg-app"></div>
+<script src="https://assets.rockstarinfo.com/church/<slug>.js"></script>
+```
+
+The loader pulls the page's HTML, the shared CSS, the JSON-LD schema, and any form/give
+embeds from `assets.rockstarinfo.com/church/`. After that snippet is pasted once per page,
+**every future change here goes live with no re-paste.**
+
+How a change reaches the live site:
+
+1. Edit `site.config.json` or a `pages/<slug>.html` and rebuild (`python3 church-site/build.py`).
+2. Commit; when it lands on `main`, `.github/workflows/church-publish.yml` builds `hosted/`
+   and copies it to `church/` on the `site-assets` branch, which Cloudflare Pages serves at
+   `https://assets.rockstarinfo.com/church/` (live within ~a minute, Cloudflare busts cache
+   on deploy).
+3. Every GoHighLevel page using the loader updates automatically.
+
+Build outputs:
+- `hosted/` — what gets published: `styles.css` + one `<slug>.js` loader per page.
+- `loaders/` — the one-time snippet to paste into each GoHighLevel page (reference).
+- `dist/` — full standalone pages (schema + scripts inline). Backup / paste-the-whole-page
+  fallback if you ever want a page without the loader.
 
 ## Pages
 

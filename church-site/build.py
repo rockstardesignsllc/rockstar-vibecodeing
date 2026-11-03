@@ -15,11 +15,16 @@ Run: python3 church-site/build.py
 """
 import json
 import pathlib
+import re
+import shutil
 
 HERE = pathlib.Path(__file__).resolve().parent
 CONFIG = json.loads((HERE / "site.config.json").read_text())
 PAGES = json.loads((HERE / "pages.json").read_text())
 DIST = HERE / "dist"
+HOSTED = HERE / "hosted"
+LOADERS = HERE / "loaders"
+ASSETS_BASE = "https://assets.rockstarinfo.com/church"
 
 FB_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg>'
 IG_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="5.2"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>'
@@ -252,7 +257,7 @@ def person_node():
     }
 
 
-def schema_block(meta):
+def schema_json(meta):
     graph = [org_node(), website_node(), webpage_node(meta), breadcrumb_node(meta)]
     if meta.get("schema") == "books":
         graph.append(books_node())
@@ -261,7 +266,11 @@ def schema_block(meta):
     if meta["slug"] == "pastor-mat":
         graph.append(person_node())
     data = {"@context": "https://schema.org", "@graph": graph}
-    return '<script type="application/ld+json">\n' + json.dumps(data, indent=2, ensure_ascii=False) + "\n</script>"
+    return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+def schema_block(meta):
+    return '<script type="application/ld+json">\n' + schema_json(meta) + "\n</script>"
 
 
 def sticky(meta):
@@ -308,25 +317,76 @@ PREPEND_OPEN = "<!--PREPEND-->"
 PREPEND_CLOSE = "<!--/PREPEND-->"
 
 
-def build_page(meta):
+def read_body(meta):
     body = (HERE / "pages" / meta["file"]).read_text().strip()
     prepend = ""
     if body.startswith(PREPEND_OPEN):
         _, rest = body.split(PREPEND_OPEN, 1)
         prepend, body = rest.split(PREPEND_CLOSE, 1)
         prepend, body = prepend.strip(), body.strip()
-    stamp = f'<!-- {CONFIG["seoName"]} ({CONFIG["brand"]}) — {meta["slug"]} — v{CONFIG["version"]} · updated {CONFIG["updated"]} -->'
-    parts = [stamp, prepend, header(), "", "<main>", "", body, "", footer(), "</main>", "", sticky(meta), "", schema_block(meta), "", scripts(meta)]
-    html = "\n".join(p for p in parts if p != "") + "\n"
-    return fill(html)
+    return prepend, body
+
+
+def stamp_comment(meta):
+    return f'<!-- {CONFIG["seoName"]} ({CONFIG["brand"]}) — {meta["slug"]} — v{CONFIG["version"]} · updated {CONFIG["updated"]} -->'
+
+
+def build_page(meta):
+    """Full standalone page (dist/) — paste-the-whole-thing fallback / backup."""
+    prepend, body = read_body(meta)
+    parts = [stamp_comment(meta), prepend, header(), "", "<main>", "", body, "", footer(), "</main>", "", sticky(meta), "", schema_block(meta), "", scripts(meta)]
+    return fill("\n".join(p for p in parts if p != "") + "\n")
+
+
+def visible_html(meta):
+    """Markup only (no <script> tags) — what the hosted loader injects."""
+    prepend, body = read_body(meta)
+    parts = [prepend, header(), "", "<main>", "", body, "", footer(), "</main>", "", sticky(meta)]
+    html = fill("\n".join(p for p in parts if p != ""))
+    return re.sub(r"<script\b[^>]*>.*?</script>", "", html, flags=re.S)
+
+
+def build_loader(meta):
+    """The JS served at assets.rockstarinfo.com/church/<slug>.js — injects CSS + HTML + schema + embeds."""
+    forms = "add('https://link.localchurchgathering.com/js/form_embed.js');" if meta.get("formEmbed") else ""
+    tith = "add('https://static.tithely.com/give/give.js');" if meta["slug"] == "generosity" else ""
+    return (
+        f"/* {CONFIG['seoName']} — {meta['slug']} — v{CONFIG['version']} · {CONFIG['updated']} */\n"
+        "(function(){\n"
+        f"  var A='{ASSETS_BASE}';\n"
+        f"  if(!document.getElementById('lcg-css')){{var l=document.createElement('link');l.id='lcg-css';l.rel='stylesheet';l.href=A+'/styles.css?v={CONFIG['version']}';document.head.appendChild(l);}}\n"
+        "  var mount=document.getElementById('lcg-app'); if(!mount){return;}\n"
+        "  mount.innerHTML=" + json.dumps(visible_html(meta)) + ";\n"
+        "  var ld=" + json.dumps(schema_json(meta)) + ";\n"
+        "  if(ld){var s=document.createElement('script');s.type='application/ld+json';s.text=ld;document.head.appendChild(s);}\n"
+        "  var t=mount.querySelector('.nav-toggle'),m=mount.querySelector('.mobile-nav');\n"
+        "  if(t&&m){t.addEventListener('click',function(){var o=m.classList.toggle('is-open');t.setAttribute('aria-expanded',o?'true':'false');m.setAttribute('aria-hidden',o?'false':'true');});}\n"
+        "  function add(src){var e=document.createElement('script');e.src=src;e.async=true;document.body.appendChild(e);}\n"
+        f"  {forms}\n"
+        f"  {tith}\n"
+        "})();\n"
+    )
+
+
+def loader_snippet(meta):
+    return (
+        f"<!-- {CONFIG['seoName']} — {meta['slug']} — paste once into this page's Custom HTML. Future updates are automatic. -->\n"
+        '<div id="lcg-app"></div>\n'
+        f'<script src="{ASSETS_BASE}/{meta["slug"]}.js"></script>\n'
+    )
 
 
 def main():
-    DIST.mkdir(exist_ok=True)
+    for d in (DIST, HOSTED, LOADERS):
+        d.mkdir(exist_ok=True)
+    # Shared stylesheet served from the asset host.
+    shutil.copyfile(HERE / "styles.css", HOSTED / "styles.css")
     for meta in PAGES:
-        out = DIST / f"{meta['slug']}.html"
-        out.write_text(build_page(meta))
-        print(f"built {out.relative_to(HERE)}")
+        (DIST / f"{meta['slug']}.html").write_text(build_page(meta))
+        (HOSTED / f"{meta['slug']}.js").write_text(build_loader(meta))
+        (LOADERS / f"{meta['slug']}.html").write_text(loader_snippet(meta))
+        print(f"built {meta['slug']}: dist + hosted/{meta['slug']}.js + loader")
+    print(f"done — {len(PAGES)} pages")
 
 
 if __name__ == "__main__":
