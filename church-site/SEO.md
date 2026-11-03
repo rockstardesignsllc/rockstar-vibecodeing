@@ -68,3 +68,23 @@ the visual brand stays "Church."
 - **SEO Title:** Terms of Service | Local Church Gathering, Smithville TN
 - **Meta Description:** The terms for using the Local Church Gathering website and communications, for our church family in and around Smithville, TN.
 - **Share image:** `og/og-terms-of-service.png`
+
+---
+
+## Structured data (Schema.org / JSON-LD)
+
+Every built page in `dist/` already includes a `<script type="application/ld+json">`
+block — you don't paste this separately; it travels with the page HTML. It describes:
+
+- **Church** — name (Local Church Gathering), the real postal address (273 Dry Creek Rd,
+  Dowelltown, TN — accurate so Google Maps / the knowledge panel match your location),
+  geo coordinates, phone, email, Sunday 10:00 service time, social profiles (`sameAs`),
+  and Mat & Dara as founders.
+- **areaServed: Smithville, Tennessee** — the area we market to, so search ties the
+  church to Smithville even though the street address is in Dowelltown.
+- **WebSite**, **WebPage**, and a **BreadcrumbList** on every page.
+- **Resources** also lists the five books (ItemList of Book).
+
+It's generated from `site.config.json` + `pages.json`, so updating the address, phone,
+service time, or socials there updates the schema on every page on the next build.
+After publishing, check a page in Google's **Rich Results Test** to confirm it parses.

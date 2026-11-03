@@ -26,3 +26,8 @@
 ## v0.4 — 2026-11-03
 - Added per-page social sharing (OG) images for all 11 pages in `og/` (1200x630).
 - Added `SEO.md`: SEO title + meta description + share image for every page, with location messaging focused on Smithville, TN.
+
+## v0.5 — 2026-11-03
+- Added Schema.org JSON-LD to every page (Church, WebSite, WebPage, BreadcrumbList; Resources adds a Book ItemList), generated from config.
+- Church schema uses the real postal address + geo for maps accuracy, with areaServed = Smithville, TN for marketing.
+- pages.json now also holds each page's SEO title/description/path (single source for SEO + schema).

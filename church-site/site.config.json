@@ -10,6 +10,15 @@
   "phone": "931-616-3131",
   "phoneTel": "19316163131",
   "email": "contact@localchurchgathering.com",
+  "seoName": "Local Church Gathering",
+  "image": "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/vOKVK27hJRmtIEDt0rX1/media/698a2ced7bc5a99a3500d41b.png",
+  "areaServed": "Smithville, Tennessee",
+  "geo": { "lat": 36.002969, "lng": -85.928132 },
+  "address": { "street": "273 Dry Creek Rd", "locality": "Dowelltown", "region": "TN", "postal": "37059", "country": "US" },
+  "founders": [
+    { "name": "Mat Koenig", "jobTitle": "Pastor" },
+    { "name": "Dara Koenig", "jobTitle": "Pastor" }
+  ],
   "merchUrl": "https://www.stickermule.com/church",
   "giveUrl": "https://localchurchgathering.com/generosity",
   "social": {

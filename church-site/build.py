@@ -159,6 +159,76 @@ def footer():
   </footer>'''
 
 
+BOOKS = [
+    ("For This Reason", "Mat & Dara Koenig", "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https%3A//assets.cdn.filesafe.space/vOKVK27hJRmtIEDt0rX1/media/66170b4e09955f35b2bb1add.jpeg"),
+    ("Filled Book 1: Hopeless to Hope Filled", "Dara Koenig", "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https%3A//assets.cdn.filesafe.space/vOKVK27hJRmtIEDt0rX1/media/66170b4eff043e789bd7bb31.jpeg"),
+    ("Filled Book 2: UnLoved to Unconditionally Loved", "Dara Koenig", "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https%3A//assets.cdn.filesafe.space/vOKVK27hJRmtIEDt0rX1/media/66170b4eb97918021004436f.jpeg"),
+    ("Now I See", "Mat Koenig", "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https%3A//assets.cdn.filesafe.space/vOKVK27hJRmtIEDt0rX1/media/66170b4ec39a24fe8c464d6b.jpeg"),
+    ("ManUP", "Mat Koenig", "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https%3A//assets.cdn.filesafe.space/vOKVK27hJRmtIEDt0rX1/media/66170b4edb7ee5fcd1cdaf54.jpeg"),
+]
+
+
+def page_url(meta):
+    base = CONFIG["siteUrl"]
+    return base + "/" if meta["path"] == "/" else base + meta["path"]
+
+
+def org_node():
+    c = CONFIG
+    a = c["address"]
+    return {
+        "@type": "Church",
+        "@id": c["siteUrl"] + "/#church",
+        "name": c["seoName"],
+        "alternateName": c["brand"],
+        "url": c["siteUrl"] + "/",
+        "description": "A relaxed, family-style church serving Smithville, Tennessee. Come as you are — Sundays at 10 AM. A place to breathe, belong, and grow.",
+        "telephone": "+1-" + c["phone"],
+        "email": c["email"],
+        "image": c["image"],
+        "address": {"@type": "PostalAddress", "streetAddress": a["street"], "addressLocality": a["locality"], "addressRegion": a["region"], "postalCode": a["postal"], "addressCountry": a["country"]},
+        "geo": {"@type": "GeoCoordinates", "latitude": c["geo"]["lat"], "longitude": c["geo"]["lng"]},
+        "hasMap": c["mapUrl"],
+        "areaServed": {"@type": "City", "name": c["areaServed"]},
+        "sameAs": [c["social"]["facebook"], c["social"]["instagram"], c["social"]["youtube"], c["social"]["tiktok"]],
+        "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": "https://schema.org/Sunday", "opens": "10:00", "closes": "11:00"}],
+        "founder": [{"@type": "Person", "name": f["name"], "jobTitle": f["jobTitle"]} for f in c["founders"]],
+    }
+
+
+def website_node():
+    c = CONFIG
+    return {"@type": "WebSite", "@id": c["siteUrl"] + "/#website", "url": c["siteUrl"] + "/", "name": c["seoName"], "publisher": {"@id": c["siteUrl"] + "/#church"}, "inLanguage": "en-US"}
+
+
+def webpage_node(meta):
+    url = page_url(meta)
+    return {"@type": "WebPage", "@id": url + "#webpage", "url": url, "name": meta.get("seoTitle", meta["title"]), "description": meta.get("description", ""), "isPartOf": {"@id": CONFIG["siteUrl"] + "/#website"}, "about": {"@id": CONFIG["siteUrl"] + "/#church"}, "inLanguage": "en-US", "breadcrumb": {"@id": url + "#breadcrumb"}}
+
+
+def breadcrumb_node(meta):
+    url = page_url(meta)
+    items = [{"@type": "ListItem", "position": 1, "name": "Home", "item": CONFIG["siteUrl"] + "/"}]
+    if meta["path"] != "/":
+        items.append({"@type": "ListItem", "position": 2, "name": meta["title"], "item": url})
+    return {"@type": "BreadcrumbList", "@id": url + "#breadcrumb", "itemListElement": items}
+
+
+def books_node():
+    items = []
+    for i, (name, author, img) in enumerate(BOOKS):
+        items.append({"@type": "ListItem", "position": i + 1, "item": {"@type": "Book", "name": name, "author": {"@type": "Person", "name": author}, "image": img, "publisher": {"@id": CONFIG["siteUrl"] + "/#church"}}})
+    return {"@type": "ItemList", "name": "Books by Mat & Dara Koenig", "itemListElement": items}
+
+
+def schema_block(meta):
+    graph = [org_node(), website_node(), webpage_node(meta), breadcrumb_node(meta)]
+    if meta.get("schema") == "books":
+        graph.append(books_node())
+    data = {"@context": "https://schema.org", "@graph": graph}
+    return '<script type="application/ld+json">\n' + json.dumps(data, indent=2, ensure_ascii=False) + "\n</script>"
+
+
 def sticky(meta):
     st = meta.get("sticky")
     if not st:
@@ -210,7 +280,7 @@ def build_page(meta):
         _, rest = body.split(PREPEND_OPEN, 1)
         prepend, body = rest.split(PREPEND_CLOSE, 1)
         prepend, body = prepend.strip(), body.strip()
-    parts = [prepend, header(), "", "<main>", "", body, "", footer(), "</main>", "", sticky(meta), "", scripts(meta)]
+    parts = [prepend, header(), "", "<main>", "", body, "", footer(), "</main>", "", sticky(meta), "", schema_block(meta), "", scripts(meta)]
     html = "\n".join(p for p in parts if p != "") + "\n"
     return fill(html)
 

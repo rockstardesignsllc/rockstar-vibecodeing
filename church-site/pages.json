@@ -1,79 +1,68 @@
 [
   {
-    "slug": "home",
-    "file": "home.html",
-    "title": "Home",
-    "formEmbed": false,
+    "slug": "home", "file": "home.html", "title": "Home", "path": "/", "formEmbed": false,
+    "seoTitle": "Local Church Gathering | A Church in Smithville, TN",
+    "description": "A relaxed, family-style church in Smithville, TN. Come as you are, Sundays at 10 AM. A place to breathe, belong, and grow — plan your first visit.",
     "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   },
   {
-    "slug": "what-we-believe",
-    "file": "what-we-believe.html",
-    "title": "Beliefs",
-    "formEmbed": false,
+    "slug": "what-we-believe", "file": "what-we-believe.html", "title": "Beliefs", "path": "/what-we-believe", "formEmbed": false,
+    "seoTitle": "What We Believe | Local Church Gathering, Smithville TN",
+    "description": "What our Smithville, TN church believes about God, Jesus, the Bible, and following Him in everyday life. Simple, Bible-rooted, Jesus-centered faith.",
     "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   },
   {
-    "slug": "contact-us",
-    "file": "contact-us.html",
-    "title": "Contact",
-    "formEmbed": true,
+    "slug": "contact-us", "file": "contact-us.html", "title": "Contact", "path": "/contact-us", "formEmbed": true,
+    "seoTitle": "Contact & Plan a Visit | Church in Smithville, TN",
+    "description": "Questions or planning your first visit to our Smithville, TN church? Reach out — Sundays at 10 AM. No pressure, real community. We'd love to meet you.",
     "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "#contact-form-section", "btn": "Send a Message" }
   },
   {
-    "slug": "social",
-    "file": "social.html",
-    "title": "Social Media",
-    "formEmbed": false,
+    "slug": "social", "file": "social.html", "title": "Social Media", "path": "/social", "formEmbed": false,
+    "seoTitle": "Social Media | Local Church Gathering, Smithville TN",
+    "description": "Follow our Smithville, TN church on Facebook, Instagram, YouTube, and TikTok for messages, encouragement, and updates throughout the week.",
     "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   },
   {
-    "slug": "past-sermons",
-    "file": "past-sermons.html",
-    "title": "Messages",
-    "formEmbed": false,
+    "slug": "past-sermons", "file": "past-sermons.html", "title": "Messages", "path": "/past-sermons", "formEmbed": false,
+    "seoTitle": "Messages | Local Church Gathering, Smithville TN",
+    "description": "Watch and catch up on recent messages from our church in Smithville, TN. New teaching every week — follow along and keep growing all week long.",
     "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   },
   {
-    "slug": "pastor-mat",
-    "file": "pastor-mat.html",
-    "title": "Meet with Pastor Mat",
-    "formEmbed": true,
+    "slug": "pastor-mat", "file": "pastor-mat.html", "title": "Meet with Pastor Mat", "path": "/pastor-mat", "formEmbed": true,
+    "seoTitle": "Meet with Pastor Mat | Church in Smithville, TN",
+    "description": "Book a time to talk with Pastor Mat. Questions about faith, or just need someone to talk to? A low-pressure conversation in Smithville, TN.",
     "sticky": { "label": "Meet with Pastor Mat", "sub": "Pick a time that works for you", "href": "#booking-section", "btn": "Book a Time" }
   },
   {
-    "slug": "resources",
-    "file": "resources.html",
-    "title": "Resources",
-    "formEmbed": false,
+    "slug": "resources", "file": "resources.html", "title": "Resources", "path": "/resources", "formEmbed": false, "schema": "books",
+    "seoTitle": "Books & Resources | Local Church Gathering, Smithville TN",
+    "description": "Practical, Biblical books and resources from Mat & Dara Koenig to help you grow in faith, marriage, and everyday life — from our Smithville, TN church.",
     "sticky": { "label": "Church Resources", "sub": "Books for real-life faith", "href": "#books", "btn": "View" }
   },
   {
-    "slug": "generosity",
-    "file": "generosity.html",
-    "title": "Generosity",
-    "formEmbed": false,
+    "slug": "generosity", "file": "generosity.html", "title": "Generosity", "path": "/generosity", "formEmbed": false,
+    "seoTitle": "Give | Generosity at Local Church Gathering, Smithville TN",
+    "description": "Give online or in person to our church in Smithville, TN. Generosity is worship — pray first, give with joy. Safe, simple online giving.",
     "sticky": { "label": "Generosity", "sub": "Pray first. Give with joy.", "href": "#give-online", "btn": "Give" }
   },
   {
-    "slug": "meal",
-    "file": "meal.html",
-    "title": "Family Meal",
-    "formEmbed": true,
+    "slug": "meal", "file": "meal.html", "title": "Family Meal", "path": "/meal", "formEmbed": true,
+    "seoTitle": "Community Family Meal | Church in Smithville, TN",
+    "description": "Join our monthly community meal in Smithville, TN — the last Sunday of every month, right after the 10 AM gathering. Always free. RSVP today.",
     "sticky": { "label": "Family Meal", "sub": "Last Sunday after worship", "href": "#rsvp", "btn": "RSVP" }
   },
   {
-    "slug": "privacy-policy",
-    "file": "privacy-policy.html",
-    "title": "Privacy Policy",
-    "formEmbed": false,
+    "slug": "privacy-policy", "file": "privacy-policy.html", "title": "Privacy Policy", "path": "/privacy-policy", "formEmbed": false,
+    "seoTitle": "Privacy Policy | Local Church Gathering, Smithville TN",
+    "description": "How Local Church Gathering in Smithville, TN collects, uses, and protects your information, including your text messaging preferences.",
     "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   },
   {
-    "slug": "terms-of-service",
-    "file": "terms-of-service.html",
-    "title": "Terms of Service",
-    "formEmbed": false,
+    "slug": "terms-of-service", "file": "terms-of-service.html", "title": "Terms of Service", "path": "/terms-of-service", "formEmbed": false,
+    "seoTitle": "Terms of Service | Local Church Gathering, Smithville TN",
+    "description": "The terms for using the Local Church Gathering website and communications, for our church family in and around Smithville, TN.",
     "sticky": { "label": "{{SERVICE_TIME}}", "sub": "{{ADDRESS_SHORT}}", "href": "https://localchurchgathering.com/contact-us#visit-info", "btn": "Get Connected" }
   }
 ]
