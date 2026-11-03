@@ -1,3 +1,4 @@
+/* Local Church Gathering (Church.) — shared styles — v1.0 · updated 2026-11-03 */
 :root {
     --bg: #f5f3ef;
     --surface: #ffffff;
@@ -2184,4 +2185,22 @@ a {
     .terms-hero h1 { font-size: 38px; }
     .terms-card { padding: 28px 20px; }
     .terms-bottom-cta h2 { font-size: 32px; }
+}
+
+/* ── RESOURCES: books note ───────────────────────────────────────── */
+.books-note {
+    margin: 26px 0 0;
+    text-align: center;
+    font-size: 1.02rem;
+    line-height: 1.6;
+    color: var(--text-soft);
+}
+
+.books-note a {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.books-note a:hover {
+    text-decoration: underline;
 }

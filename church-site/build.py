@@ -221,10 +221,45 @@ def books_node():
     return {"@type": "ItemList", "name": "Books by Mat & Dara Koenig", "itemListElement": items}
 
 
+def event_node():
+    c = CONFIG
+    return {
+        "@type": "Event",
+        "@id": c["siteUrl"] + "/meal#event",
+        "name": "Community Family Meal",
+        "description": "A free community meal on the last Sunday of every month, right after the 10 AM gathering.",
+        "eventSchedule": {"@type": "Schedule", "repeatFrequency": "P1M", "byDay": "https://schema.org/Sunday", "byMonthWeek": -1, "startTime": "11:15", "duration": "PT1H30M", "scheduleTimezone": "America/Chicago"},
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "location": {"@id": c["siteUrl"] + "/#church"},
+        "organizer": {"@id": c["siteUrl"] + "/#church"},
+        "image": c["image"],
+        "isAccessibleForFree": True,
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": c["siteUrl"] + "/meal"},
+    }
+
+
+def person_node():
+    c = CONFIG
+    return {
+        "@type": "Person",
+        "@id": c["siteUrl"] + "/#mat-koenig",
+        "name": "Mat Koenig",
+        "jobTitle": "Pastor",
+        "worksFor": {"@id": c["siteUrl"] + "/#church"},
+        "image": c["image"],
+        "url": c["siteUrl"] + "/pastor-mat",
+    }
+
+
 def schema_block(meta):
     graph = [org_node(), website_node(), webpage_node(meta), breadcrumb_node(meta)]
     if meta.get("schema") == "books":
         graph.append(books_node())
+    if meta["slug"] == "meal":
+        graph.append(event_node())
+    if meta["slug"] == "pastor-mat":
+        graph.append(person_node())
     data = {"@context": "https://schema.org", "@graph": graph}
     return '<script type="application/ld+json">\n' + json.dumps(data, indent=2, ensure_ascii=False) + "\n</script>"
 
@@ -280,7 +315,8 @@ def build_page(meta):
         _, rest = body.split(PREPEND_OPEN, 1)
         prepend, body = rest.split(PREPEND_CLOSE, 1)
         prepend, body = prepend.strip(), body.strip()
-    parts = [prepend, header(), "", "<main>", "", body, "", footer(), "</main>", "", sticky(meta), "", schema_block(meta), "", scripts(meta)]
+    stamp = f'<!-- {CONFIG["seoName"]} ({CONFIG["brand"]}) — {meta["slug"]} — v{CONFIG["version"]} · updated {CONFIG["updated"]} -->'
+    parts = [stamp, prepend, header(), "", "<main>", "", body, "", footer(), "</main>", "", sticky(meta), "", schema_block(meta), "", scripts(meta)]
     html = "\n".join(p for p in parts if p != "") + "\n"
     return fill(html)
 

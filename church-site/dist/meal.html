@@ -1,3 +1,4 @@
+<!-- Local Church Gathering (Church.) — meal — v1.0 · updated 2026-11-03 -->
 <!-- HEADER -->
 <header class="site-header">
   <div class="site-header__inner">
@@ -399,6 +400,38 @@
           "item": "https://localchurchgathering.com/meal"
         }
       ]
+    },
+    {
+      "@type": "Event",
+      "@id": "https://localchurchgathering.com/meal#event",
+      "name": "Community Family Meal",
+      "description": "A free community meal on the last Sunday of every month, right after the 10 AM gathering.",
+      "eventSchedule": {
+        "@type": "Schedule",
+        "repeatFrequency": "P1M",
+        "byDay": "https://schema.org/Sunday",
+        "byMonthWeek": -1,
+        "startTime": "11:15",
+        "duration": "PT1H30M",
+        "scheduleTimezone": "America/Chicago"
+      },
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "location": {
+        "@id": "https://localchurchgathering.com/#church"
+      },
+      "organizer": {
+        "@id": "https://localchurchgathering.com/#church"
+      },
+      "image": "https://images.leadconnectorhq.com/image/f_webp/q_80/r_1200/u_https://assets.cdn.filesafe.space/vOKVK27hJRmtIEDt0rX1/media/698a2ced7bc5a99a3500d41b.png",
+      "isAccessibleForFree": true,
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": "https://localchurchgathering.com/meal"
+      }
     }
   ]
 }
