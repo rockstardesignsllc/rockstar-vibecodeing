@@ -22,3 +22,7 @@
 - Footer now includes Privacy Policy and Terms of Service links.
 - Church address updated to 273 Dry Creek Rd, Dowelltown, TN 37059, linked to the new Google Maps location.
 - First page migrated: `what-we-believe`.
+
+## v0.4 — 2026-11-03
+- Added per-page social sharing (OG) images for all 11 pages in `og/` (1200x630).
+- Added `SEO.md`: SEO title + meta description + share image for every page, with location messaging focused on Smithville, TN.
