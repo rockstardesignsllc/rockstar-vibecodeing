@@ -3,7 +3,8 @@
 import os, sys, pathlib
 from PIL import Image
 src = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else '/tmp/guide-shots')
-dst = pathlib.Path(__file__).resolve().parent.parent / 'img'
+dst = pathlib.Path(sys.argv[2]) if len(sys.argv) > 2 else pathlib.Path(__file__).resolve().parent.parent / 'img'
+dst.mkdir(parents=True, exist_ok=True)
 crops = {'s2-list': (0, 0, 2560, 1090), 's1-login': (0, 0, 2560, 1200)}
 for f in src.glob('*.png'):
     if '-full' in f.name: continue

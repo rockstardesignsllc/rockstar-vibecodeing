@@ -29,7 +29,7 @@ def data_uri(path):
     return f'data:{mime};base64,' + base64.b64encode(p.read_bytes()).decode()
 
 
-def build_html(kind, dealer, logo, site, stamp):
+def build_html(kind, dealer, logo, site, stamp, shots=IMG, accent=''):
     k = KINDS[kind]
     c = k['code']
     STD, SUB, PS = kind == 'standard', kind == 'subprime', kind == 'powersports'
@@ -39,7 +39,7 @@ def build_html(kind, dealer, logo, site, stamp):
     vehicle_word = 'unit' if PS else 'vehicle'
 
     def img(name, caption='', width=None, cls=''):
-        f = IMG / f'{c}-{name}.jpg'
+        f = pathlib.Path(shots) / f'{c}-{name}.jpg'
         if not f.exists():
             raise SystemExit(f'missing screenshot {f.name}')
         style = f' style="max-width:{width}"' if width else ''
@@ -590,6 +590,8 @@ def build_html(kind, dealer, logo, site, stamp):
 </section>''')
 
     css = (HERE / 'guide.css').read_text()
+    if accent:
+        css += f':root {{ --acc:{accent}; }}'
     return f'''<!-- Rockstar dealer guide: {e(k["title"])} v{GUIDE_VERSION} | Updated {stamp} UTC -->
 <!doctype html><html><head><meta charset="utf-8"><title>{D} {e(k["title"])} Guide</title>
 <style>{css}</style></head><body data-kind="{c}">
@@ -605,6 +607,8 @@ def main():
     ap.add_argument('--site', default='[your-site].rockstarcrm.app')
     ap.add_argument('--out', default='')
     ap.add_argument('--outdir', default=str(HERE / 'out'))
+    ap.add_argument('--img-dir', default=str(IMG), help='screenshots shot with this dealer\'s settings (default: master screenshots)')
+    ap.add_argument('--accent', default='', help='dealer brand color for headings and steps, for example #003478')
     a = ap.parse_args()
     stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M')
     outdir = pathlib.Path(a.outdir); outdir.mkdir(parents=True, exist_ok=True)
@@ -613,7 +617,7 @@ def main():
         k = KINDS[kind]
         name = a.out if (a.out and len(a.kind or []) == 1) else f'rockstar-{kind}-calculator-guide-v{GUIDE_VERSION}.pdf'
         htmlf = outdir / (pathlib.Path(name).stem + '.html')
-        htmlf.write_text(build_html(kind, a.dealer, a.logo, a.site, stamp))
+        htmlf.write_text(build_html(kind, a.dealer, a.logo, a.site, stamp, a.img_dir, a.accent))
         jobs.append(dict(html=str(htmlf), pdf=str(outdir / name), header=f'{a.dealer} · {k["title"]} Guide',
                          footer=f'Guide v{GUIDE_VERSION} · Updated {stamp} UTC'))
     subprocess.run(['node', str(HERE / 'pdf.cjs'), json.dumps(jobs)], check=True)

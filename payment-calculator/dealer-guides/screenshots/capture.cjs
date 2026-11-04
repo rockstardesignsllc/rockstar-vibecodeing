@@ -1,5 +1,5 @@
 const h=require('./harness.cjs');const fs=require('fs');const {devices}=require('playwright');
-const kind=process.argv[2];const client={std:'guide-standard',sub:'guide-subprime',ps:'guide-powersports'}[kind];
+const kind=process.argv[2];const client=process.env.GUIDE_CLIENT||{std:'guide-standard',sub:'guide-subprime',ps:'guide-powersports'}[kind];
 const OUT=(process.env.OUT_DIR||'/tmp/guide-shots')+'/';fs.mkdirSync(OUT,{recursive:true});
 const now=Date.now();
 const fakeQuotes={dealer:'your-dealership',quotes:[
