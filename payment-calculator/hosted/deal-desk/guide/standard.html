@@ -1,0 +1,389 @@
+<!-- Rockstar dealer guide (live page): Payment Calculator v1.0 | Updated 2026-11-05 00:08 UTC -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>Payment Calculator How-to Guide</title>
+<style>@page { size: Letter; margin: 0.75in 0.7in 0.7in 0.7in; }
+:root { --red:#d70015; --acc:#d70015; --ink:#0b0b0d; --mute:#5b5f66; --line:#e3e4e8; --soft:#f4f4f6; }
+* { box-sizing:border-box; }
+html,body { margin:0; font-family:'Inter',Arial,sans-serif; color:var(--ink); font-size:11.5pt; line-height:1.5; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+section { page-break-before:always; }
+section:first-child, section.cont { page-break-before:auto; }
+section.cont { margin-top:14px; }
+h1,h2,h3 { line-height:1.15; margin:0; letter-spacing:-0.01em; }
+h2 { font-size:24pt; font-weight:800; margin:2px 0 12px; }
+h3 { font-size:14pt; font-weight:800; margin:18px 0 8px; break-after:avoid; }
+p { margin:0 0 10px; }
+.kicker { color:var(--acc); font-weight:800; font-size:9pt; letter-spacing:.14em; text-transform:uppercase; }
+.lead { font-size:12.5pt; color:var(--mute); }
+.fine { font-size:9pt; color:var(--mute); }
+figure { margin:10px 0 14px; text-align:center; break-inside:avoid; }
+figure img { max-width:100%; max-height:4.3in; width:auto; border:1px solid var(--line); border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,.06); }
+figcaption { font-size:9pt; color:var(--mute); margin-top:5px; }
+ol.steps { counter-reset:s; list-style:none; padding:0; margin:8px 0 12px; }
+ol.steps li { counter-increment:s; position:relative; padding:6px 0 6px 40px; break-inside:avoid; }
+ol.steps li::before { content:counter(s); position:absolute; left:0; top:4px; width:27px; height:27px; border-radius:50%; background:var(--acc); color:#fff; font-weight:800; font-size:11pt; display:flex; align-items:center; justify-content:center; }
+.callout { border-radius:12px; padding:10px 14px 4px 14px; margin:12px 0; break-inside:avoid; border-left:6px solid; }
+.callout > b { display:block; font-size:9.5pt; letter-spacing:.08em; text-transform:uppercase; margin-bottom:2px; }
+.callout.tip { background:#eef7f0; border-color:#1f8a43; } .callout.tip b { color:#1f8a43; }
+.callout.warn { background:#fff1f2; border-color:var(--red); } .callout.warn b { color:var(--red); }
+table { width:100%; border-collapse:collapse; margin:10px 0 14px; font-size:10.5pt; break-inside:avoid; }
+th { background:var(--ink); color:#fff; text-align:left; padding:8px 10px; font-size:9.5pt; letter-spacing:.04em; }
+td { padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+tr:nth-child(even) td { background:var(--soft); }
+table.buttons td:first-child { width:38%; }
+.two { display:grid; grid-template-columns: 0.8fr 1.2fr; gap:18px; align-items:start; }
+.phones { display:flex; gap:18px; justify-content:center; align-items:flex-start; }
+.phones figure { flex:0 1 46%; }
+.phones figure img { max-height:5.2in; }
+ul.checks { list-style:none; padding:0; margin:6px 0; }
+ul.checks li { padding:4px 0 4px 26px; position:relative; }
+ul.checks li::before { content:'✓'; position:absolute; left:2px; color:var(--acc); font-weight:900; }
+ol.toc { columns:2; column-gap:30px; padding-left:20px; margin:6px 0; }
+ol.toc li { margin:3px 0; }
+dl.faq dt { font-weight:800; margin-top:10px; break-after:avoid; }
+dl.faq dd { margin:2px 0 0 0; color:#30333a; }
+dl.gloss { display:grid; grid-template-columns: 1.6in 1fr; gap:6px 14px; margin:8px 0; }
+dl.gloss dt { font-weight:800; } dl.gloss dd { margin:0; }
+.pill { display:inline-block; padding:2px 10px; border-radius:999px; background:#ececf0; font-weight:700; font-size:9.5pt; margin:1px 0; }
+.pill.hot { background:var(--red); color:#fff; }
+.help { margin-top:20px; padding:14px 18px; border-radius:14px; background:var(--soft); border:2px dashed var(--line); }
+/* cover */
+.cover { height:9.4in; display:flex; flex-direction:column; justify-content:space-between; padding:0.1in 0; }
+.cover-top { display:flex; justify-content:space-between; align-items:center; }
+.brand-mark { display:flex; align-items:center; gap:10px; font-weight:800; font-size:16pt; }
+.brand-mark img { width:46px; }
+.brand-wordmark { height:52px; }
+.cover-ver { font-size:9.5pt; font-weight:700; color:var(--mute); border:1px solid var(--line); padding:4px 10px; border-radius:999px; }
+.cover-dealer { display:flex; flex-direction:column; align-items:flex-start; gap:12px; margin-top:20px; }
+.logo-slot { width:3.4in; height:1.1in; border:3px dashed var(--red); border-radius:14px; display:flex; align-items:center; justify-content:center; color:var(--red); font-weight:800; letter-spacing:.12em; font-size:13pt; }
+.dealer-logo { max-width:3.6in; max-height:1.3in; }
+.dealer-name { font-size:20pt; font-weight:800; }
+.cover-title h1 { font-size:40pt; font-weight:900; letter-spacing:-0.02em; margin:8px 0 14px; }
+.cover-title .lead { font-size:14pt; max-width:5.6in; }
+.cover-box { background:var(--ink); color:#fff; border-radius:18px; padding:18px 22px; display:grid; gap:10px; border-bottom:6px solid var(--acc); }
+.cover-box small { display:block; color:#ff5a6a; font-weight:800; font-size:8.5pt; letter-spacing:.14em; text-transform:uppercase; }
+.cover-box b { font-size:13pt; }
+.cover-foot { font-size:9pt; color:var(--mute); text-align:center; }
+/* live guide page (screen); print keeps the PDF layout from guide.css */
+@media screen {
+  body.web { background:#f4f4f6; font-size:16px; }
+  .web main { max-width:880px; margin:0 auto; padding:24px 16px 60px; }
+  .web section { background:#fff; border-radius:20px; padding:36px 40px; margin:0 0 20px; page-break-before:auto; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+  .web section.cont { margin-top:-20px; border-radius:0 0 20px 20px; padding-top:8px; }
+  .web .cover { height:auto; gap:28px; }
+  .web h2 { scroll-margin-top:70px; }
+  .web .dg-bar { position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--ink); color:#fff; padding:12px 20px; font-size:14px; }
+  .web .dg-bar button { font:inherit; font-weight:700; background:var(--acc); color:#fff; border:0; border-radius:999px; padding:8px 16px; cursor:pointer; }
+  .web ol.toc a { color:var(--ink); text-decoration:none; border-bottom:1px solid var(--line); }
+  .web ol.toc a:hover { color:var(--acc); }
+  .web .logo-slot:empty { display:none; }
+  .web figure img { max-height:none; }
+  .web .phones figure img { max-height:none; }
+}
+@media screen and (max-width:640px) {
+  .web section { padding:24px 18px; }
+  .web .two { grid-template-columns:1fr; }
+  .web .phones { flex-direction:column; align-items:center; }
+  .web .phones figure { flex:none; width:100%; }
+  .web ol.toc { columns:1; }
+  .web dl.gloss { grid-template-columns:1fr; gap:2px; }
+  .web dl.gloss dd { margin-bottom:8px; }
+  .web .cover-title h1 { font-size:32pt; }
+  .web table { font-size:13px; }
+  .web .dg-bar b { font-size:13px; }
+  .web .cover-top { flex-wrap:wrap; gap:10px; }
+  .web .brand-wordmark { height:40px; }
+}
+@media print { .web .dg-bar { display:none; } .web main { padding:0; } .web .logo-slot:empty { display:none; } }
+</style></head><body data-kind="std" class="web">
+<div class="dg-bar"><b><span data-dg="dn">Your dealership</span> &middot; How-to Guide</b><button type="button" onclick="window.print()">Print or save as PDF</button></div>
+<main>
+<section class="cover">
+  <div class="cover-top"><div class="brand-mark"><img src="img/logo.png" alt=""><span>RockstarAI</span></div><span class="cover-ver">Guide v1.0</span></div>
+  <div class="cover-dealer"><div class="logo-slot" data-dg="logo"></div><div class="dealer-name"><span data-dg="dn">Your dealership</span></div></div>
+  <div class="cover-title">
+    <div class="kicker">Dealer training guide</div>
+    <h1>How to use your<br>Payment Calculator</h1>
+    <p class="lead">Build a payment quote, send it to your customer, and close the deal. Step by step, in plain English.</p>
+  </div>
+  <div class="cover-box">
+    <div><small>Your dealer page</small><b>https://<span data-dg="site">your-site</span>/home</b></div>
+    <div><small>Your saved quotes</small><b>https://<span data-dg="site">your-site</span>/saved-quotes</b></div>
+  </div>
+  <div class="cover-foot">Powered by RockstarAI &middot; Rockstar Deal Desk &middot; Updated 2026-11-05 00:08 UTC</div>
+</section>
+<section>
+  <div class="kicker">Start here</div>
+  <h2 id="quick-start-your-first-quote-in-5-minutes">Quick start: your first quote in 5 minutes</h2>
+  <p class="lead">Do these steps in order. Each one is explained in detail later in this guide.</p>
+  <ol class="steps"><li>Open your dealer page: <b>https://<span data-dg="site">your-site</span>/home</b>. Bookmark it.</li><li>Type <b>your name, your cell number and your email</b> in the Salesperson section. You only do this once per computer or phone.</li><li>Type the <b>customer's first and last name</b>. Both are required. Add their phone, email, address, state and ZIP code.</li><li>Type the <b>vehicle</b>: stock number, year, make, model and trim.</li><li>Type the <b>purchase price</b>, the fees, and the down payment. Sales tax fills in by itself from the customer's state and ZIP.</li><li>If they have a trade, type what it is worth and what they still owe on it.</li><li>Look at the black box on the right. That is the payment. Check it makes sense.</li><li>Press <b>Copy customer link</b>. Paste it in a text or email to the customer. Done.</li></ol>
+  <div class="callout tip"><b>Tip</b><p>Want to sit with the customer instead? Press <b>Copy desking link</b> and open it on your screen. See "Work a deal at the desk".</p></div>
+  <h3>What is in this guide</h3>
+  <ol class="toc"><li><a href="#quick-start-your-first-quote-in-5-minutes">Quick start: your first quote in 5 minutes</a></li><li><a href="#the-three-pages-you-will-use">The three pages you will use</a></li><li><a href="#one-time-setup">One-time setup</a></li><li><a href="#build-a-quote-section-by-section">Build a quote, section by section</a></li><li><a href="#choose-how-payments-look">Choose how payments look</a></li><li><a href="#set-the-interest-rate">Set the interest rate</a></li><li><a href="#set-the-terms">Set the terms</a></li><li><a href="#show-a-lease">Show a lease</a></li><li><a href="#send-the-quote">Send the quote</a></li><li><a href="#what-your-customer-sees">What your customer sees</a></li><li><a href="#when-a-customer-says-yes">When a customer says yes</a></li><li><a href="#work-a-deal-at-the-desk">Work a deal at the desk</a></li><li><a href="#find-old-quotes-saved-quotes">Find old quotes (Saved quotes)</a></li><li><a href="#mistakes-to-avoid">Mistakes to avoid</a></li><li><a href="#faq">FAQ</a></li><li><a href="#glossary">Glossary</a></li></ol>
+</section>
+<section>
+  <div class="kicker">The basics</div>
+  <h2 id="the-three-pages-you-will-use">The three pages you will use</h2>
+  <table class="pages">
+    <tr><th>Page</th><th>Address</th><th>Who uses it</th><th>What it is for</th></tr>
+    <tr><td><b>Dealer page</b></td><td>https://<span data-dg="site">your-site</span>/home</td><td>You and your team</td><td>Build the quote and send the link. Customers never see this page.</td></tr>
+    <tr><td><b>Customer quote page</b></td><td>https://<span data-dg="site">your-site</span>/quote</td><td>Your customer</td><td>Opens from the link you send. The customer sees their offer, plays with the payment, and locks it in.</td></tr>
+    <tr><td><b>Saved quotes</b></td><td>https://<span data-dg="site">your-site</span>/saved-quotes</td><td>You and your team</td><td>Every quote from the last 90 days. Search it and reopen any quote.</td></tr>
+  </table>
+  <p>The top of your dealer page looks like this. The <b>Saved quotes</b> button in the top right corner takes you to your saved quotes.</p>
+  <figure class=""><img src="img/std-d00-top.jpg" alt="" loading="lazy"><figcaption>Top of the dealer page</figcaption></figure>
+  <div class="callout tip"><b>Good to know</b><p>Updates are automatic. When Rockstar improves the calculator, your pages update by themselves. You never need to reinstall anything.</p></div>
+</section>
+<section>
+  <div class="kicker">Do this once</div>
+  <h2 id="one-time-setup">One-time setup</h2>
+  <h3>Dealership</h3>
+  <p>Your dealership name, logo and colors are already set up by Rockstar. They show as "(set in code settings)" and you cannot change them here. If something is wrong, contact Rockstar support.</p>
+  <figure class=""><img src="img/std-d01-dealership.jpg" style="max-width:78%" alt="" loading="lazy"><figcaption>Dealership section: already filled in for you</figcaption></figure>
+  <h3>Salesperson</h3>
+  <ol class="steps"><li><b>Salesperson name</b>: your name. The customer sees it on their quote.</li><li><b>Salesperson cell</b>: your cell number. This adds a <b>Text</b> button to the customer's quote so they can text you in one tap.</li><li><b>Salesperson notification email</b>: where your quote alerts and "I want this deal" emails go. Use an email you check.</li></ol>
+  <figure class=""><img src="img/std-d02-salesperson.jpg" style="max-width:78%" alt="" loading="lazy"><figcaption>Salesperson section</figcaption></figure>
+  <div class="callout tip"><b>Tip</b><p>These fields are saved on <b>this computer or phone</b> as you type. You will not need to type them again on this device. Using a different device? Type them once there too.</p></div>
+  <div class="callout warn"><b>Shared computer</b><p>Sharing a computer with another salesperson? Click <b>Forget saved info</b> at the top of the Dealership section, then type your own details. Otherwise your customers will get the other person's name and number.</p></div>
+</section>
+<section>
+  <div class="kicker">Build a quote</div>
+  <h2 id="build-a-quote-section-by-section">Build a quote, section by section</h2>
+  <p class="lead">Work from top to bottom. The payment on the right updates as you type.</p>
+  <h3>Step 1. Customer</h3>
+  <ol class="steps"><li>Type the <b>First name</b> and <b>Last name</b>. These are <b>required</b>. Without them the link will not copy and the quote cannot be found later.</li><li>Type the <b>Email</b> and <b>Phone</b>.</li><li>Type the <b>Street address</b>, <b>City</b>, <b>State</b> and <b>ZIP code</b>. Use the 2-letter state, like TN.</li></ol>
+  <figure class=""><img src="img/std-d03-customer.jpg" style="max-width:82%" alt="" loading="lazy"><figcaption>Customer section</figcaption></figure>
+  <div class="callout warn"><b>Why state and ZIP matter</b><p>The <b>State and ZIP code</b> are what the sales tax is worked out from. Use the <b>customer's</b> home address, not the dealership's. An out-of-state buyer gets their own state's tax.</p></div>
+</section>
+<section>
+  <h3>Step 2. Vehicle</h3>
+  <p>Type the stock number, VIN (17 characters), year, make, model and trim, and the Odometer (miles).</p>
+  <figure class=""><img src="img/std-d04-vehicle.jpg" style="max-width:82%" alt="" loading="lazy"><figcaption>Vehicle section</figcaption></figure>
+  
+  
+</section>
+<section>
+  <h3>Step 3. Pricing</h3>
+  <p>Enter whole dollar amounts. Do not type "$" or commas.</p>
+  <ol class="steps"><li><b>Purchase price</b>: the selling price. Whole dollars only, no commas or $ sign.</li><li><b>Total sales tax in dollars</b>: fills in by itself (see the next page). Only type here if you switched to "Enter tax by hand".</li><li><b>Title, registration and dealer fees in dollars</b>: all of those fees added together, in dollars.</li><li><b>Of those fees, the dealer doc fee</b>: how much of the fees above is your doc fee. It is used only to work out the tax, because some states tax the doc fee.</li><li><b>Vehicle is</b>: choose <b>New</b> or <b>Used</b>. Some states treat trade-ins differently on new vehicles.</li><li><b>Starting down payment</b>: the down payment the quote opens with. The customer can change it.</li><li><b>Rebate</b>: any rebate in dollars. Leave it blank if there is none.</li></ol>
+  <figure class=""><img src="img/std-d05-pricing.jpg" style="max-width:86%" alt="" loading="lazy"><figcaption>Pricing section</figcaption></figure>
+</section>
+<section>
+  <h3>Automatic sales tax</h3>
+  <p>The sales tax works itself out from the customer's <b>state and ZIP code</b>. It uses that state's vehicle tax rules, local tax rates, trade-in credit, and doc fee rules. The gray box under the tax field shows the math, so you can check it.</p>
+  <figure class=""><img src="img/std-d05b-taxbox.jpg" style="max-width:62%" alt="" loading="lazy"><figcaption>The tax box shows how the tax was worked out</figcaption></figure>
+  <ol class="steps"><li>Fill in the customer's <b>State</b> and <b>ZIP code</b> first.</li><li>Fill in the price, fees, doc fee, New or Used, and the trade.</li><li>Read the tax box. The top line is the tax amount. The lines below show how it was worked out.</li><li>Confirm the tax before you sign any contract. It is an estimate.</li></ol>
+  <h3>Typing the tax yourself</h3>
+  <p>Click <b>Enter tax by hand</b> to turn the automatic tax off and type the total tax in dollars. Click <b>Calculate tax from customer ZIP</b> to turn it back on. Your choice is remembered on this device.</p>
+  <figure class=""><img src="img/std-d05c-taxmanual.jpg" style="max-width:62%" alt="" loading="lazy"><figcaption>Automatic tax turned off</figcaption></figure>
+  <div class="callout warn"><b>Dollars, not percent</b><p>Type the tax in <b>dollars</b>, not a percentage. If you type 7 for 7%, the page warns you: "That looks like a percentage."</p></div>
+  <div class="callout warn"><b>If the tax does not load</b><p>If you see "Tax rates could not load", refresh the page. If it keeps happening, use Enter tax by hand and tell Rockstar support.</p></div>
+</section>
+<section>
+  <h3>Step 4. Trade</h3>
+  <p>No trade? Leave the amounts at 0 and the vehicle fields blank.</p>
+  <ol class="steps"><li><b>Trade allowance</b>: what you are giving the customer for their trade.</li><li><b>Trade balance owed</b>: what the customer still owes on it (their payoff).</li><li>Read the colored line under the amounts. Green means positive equity, which lowers the amount financed. If they owe more than it is worth, it shows <b>negative equity</b>, which is added to the amount financed.</li><li>Fill in the trade year, make, model, trim, VIN and odometer.</li></ol>
+  <figure class=""><img src="img/std-d06-trade.jpg" style="max-width:82%" alt="" loading="lazy"><figcaption>Trade section</figcaption></figure>
+</section>
+<section>
+  <div class="kicker">Payments</div>
+  <h2 id="choose-how-payments-look">Choose how payments look</h2>
+  <p>Pick one of two layouts. Click the box to choose it. The red outline shows which one is on.</p>
+  <figure class=""><img src="img/std-d07-layout.jpg" style="max-width:82%" alt="" loading="lazy"><figcaption>Payment layout choice</figcaption></figure>
+  <table class="compare">
+    <tr><th></th><th>Adjustable</th><th>Multi-Payment grid</th></tr>
+    <tr><td>What the customer sees</td><td>Sliders for the payment, down payment and term.</td><td>A table of 9 payments: 3 terms across, 3 down payments down.</td></tr>
+    <tr><td>Best for</td><td>Customers who want to play with the numbers.</td><td>Quick "pick one" choices. Great for printing.</td></tr>
+    <tr><td>Rate</td><td>Credit score slider, fixed or hidden</td><td>One fixed rate, shown or hidden</td></tr>
+    <tr><td>Print this offer</td><td>Not available</td><td>Available</td></tr>
+  </table>
+  <h3>Setting up the grid</h3>
+  <ol class="steps"><li>Click <b>Multi-Payment grid</b>.</li><li>In <b>Interest rate</b>, choose <b>Fixed rate</b> (shown) or <b>Hidden rate</b>, and type the APR.</li><li>In <b>Payment grid</b>, pick <b>Term 1, Term 2 and Term 3</b>.</li><li>Type <b>Down payment 1, 2 and 3</b>.</li><li>Check the grid on the right. The highlighted payment is the one the customer starts on.</li></ol>
+  <figure class=""><img src="img/std-d12b-grid-terms.jpg" style="max-width:82%" alt="" loading="lazy"><figcaption>Payment grid settings</figcaption></figure>
+  <div class="callout tip"><b>Tip</b><p>If a down payment is bigger than the amount being financed, the page caps it and tells you. Lower that down payment.</p></div>
+  <div class="callout tip"><b>Tip</b><p>Your layout, grid terms and grid down payments are remembered on this device.</p></div>
+</section>
+<section>
+  <h2 id="set-the-interest-rate">Set the interest rate</h2>
+  
+  <p>Pick how the rate works. Click the box to choose it.</p>
+  <table class="compare">
+    <tr><th>Choice</th><th>What the customer sees</th><th>When to use it</th></tr>
+    <tr><td><b>Credit score slider</b></td><td>A slider for their credit score. The rate changes with the score.</td><td>Before you have pulled credit. Lets the customer see how credit affects the payment.</td></tr>
+    <tr><td><b>Fixed rate</b></td><td>The rate, which they cannot change.</td><td>You know the rate, for example a lender approval or a factory special.</td></tr>
+    <tr><td><b>Hidden rate</b></td><td>The payment only. No rate shown.</td><td>You do not want to show the rate.</td></tr>
+  </table>
+  <h3>Credit score slider</h3>
+  <ol class="steps"><li>Click <b>Credit score slider</b>.</li><li>Type the APR for each of the 5 credit tiers: 781+ (Excellent), 721 to 780 (Very good), 661 to 720 (Good), 601 to 660 (Fair), and 600 and below (Rebuilding).</li><li>Type the <b>Starting credit score</b>, the score the quote opens on. 720 is the default.</li></ol>
+  <figure class=""><img src="img/std-d08-rate.jpg" style="max-width:82%" alt="" loading="lazy"><figcaption>Credit score slider with the 5 tier rates</figcaption></figure>
+  <div class="callout tip"><b>Tip</b><p>Your tier rates are saved on this device, so you set them once.</p></div>
+  <h3>Fixed or hidden rate</h3>
+  <ol class="steps"><li>Click <b>Fixed rate</b> or <b>Hidden rate</b>.</li><li>Type the APR. With Hidden rate, the rate is used for the payment but never shown.</li></ol>
+  <figure class=""><img src="img/std-d08c-rate-hidden.jpg" style="max-width:82%" alt="" loading="lazy"><figcaption>Hidden rate</figcaption></figure>
+</section>
+<section>
+  <h2 id="set-the-terms">Set the terms</h2>
+  <p>With the Adjustable layout, you choose which terms the customer can pick from. Terms run 24 to 84 months (24, 36, 48, 60, 72 and 84).</p>
+  <ol class="steps"><li>Check the box on every term the customer may choose. Uncheck the ones you do not want to offer.</li><li>Want to <b>lock the term</b>? Check only <b>one</b> box. The customer then sees "Term set by <span data-dg="dn">Your dealership</span>" and cannot change it.</li><li>Pick the <b>Starting term</b>, the term the quote opens on.</li></ol>
+  <figure class=""><img src="img/std-d09-term.jpg" style="max-width:86%" alt="" loading="lazy"><figcaption>Finance term choices</figcaption></figure>
+  
+</section>
+<section>
+  <h2 id="show-a-lease">Show a lease</h2>
+  <p>You can show a lease option under the purchase payment. The lease and the purchase never change each other.</p>
+  <div class="callout warn"><b>You supply the lease numbers</b><p>The calculator does <b>not</b> work out the lease payment. You type in the lease payments from your lease worksheet or lender.</p></div>
+  <ol class="steps"><li>Check <b>Present Lease</b>.</li><li>Type the <b>Lease down payment</b> your lease payments are based on.</li><li>Type the <b>Annual mileage</b>, for example 12000.</li><li>Type <b>Term 1</b> in months and its <b>monthly payment</b>.</li><li>Optional: type <b>Term 2</b> and its payment. Leave Term 2 blank to show only one lease.</li></ol>
+  <figure class=""><img src="img/std-d11-lease.jpg" style="max-width:82%" alt="" loading="lazy"><figcaption>Lease settings</figcaption></figure>
+  <div class="callout tip"><b>Tip</b><p>If the customer moves the lease down payment slider, each lease payment changes by the difference divided by the number of months. It is a quick estimate, so confirm the final lease with your lender.</p></div>
+</section>
+<section>
+  <div class="kicker">Send it</div>
+  <h2 id="send-the-quote">Send the quote</h2>
+  <p>The black box on the right of the dealer page shows the payment and the deal math. Below it are your buttons.</p>
+  <div class="two">
+    <div><figure class=""><img src="img/std-d10-sidebar.jpg" alt="" loading="lazy"><figcaption>Payment summary and buttons</figcaption></figure></div>
+    <div>
+      <table class="buttons">
+        <tr><td><b>Copy customer link</b></td><td>Copies the link for the customer. Paste it into a text or email. <b>This is the one you will use most.</b></td></tr>
+        <tr><td><b>Copy desking link</b></td><td>Copies a link for you to open at the desk with the customer. See "Work a deal at the desk".</td></tr>
+        <tr><td><b>Print this offer</b></td><td>Prints a worksheet with every grid payment for the customer to circle and sign. Only shows with the Multi-Payment grid.</td></tr>
+        <tr><td><b>Preview customer view</b></td><td>Opens the customer's page in a new tab so you can check it. It sends no alerts.</td></tr>
+      </table>
+    </div>
+  </div>
+  <ol class="steps"><li>Check the payment and the numbers in the black box.</li><li>Click <b>Preview customer view</b> and look it over.</li><li>Click <b>Copy customer link</b>. The button says "Copied".</li><li>Open your texting app or email, paste the link, and send it.</li></ol>
+  <div class="callout warn"><b>Link will not copy?</b><p>If the button will not copy and you see "Enter the customer's first and last name first", fill in both names at the top.</p></div>
+  <div class="callout tip"><b>Tip</b><p>Each new version of a deal gets its own <b>quote ID</b> (shown under the buttons). Changed the numbers? Copy and send a new link. The old link still shows the old numbers.</p></div>
+</section>
+<section>
+  <h3>Printing the offer (grid layout only)</h3>
+  <figure class=""><img src="img/std-d12c-grid-sidebar.jpg" style="max-width:46%" alt="" loading="lazy"><figcaption>With the grid layout, Print this offer appears</figcaption></figure>
+  <ol class="steps"><li>Choose the <b>Multi-Payment grid</b> layout.</li><li>Click <b>Print this offer</b>.</li><li>Print it, or choose "Save as PDF" in the print window.</li><li>Page 1 has the customer, vehicle and pricing. Page 2 has all 9 payments, with "Circle the payment that works best for you", blank lines for the down payment, term and payment they choose, and a signature box.</li></ol>
+  <h3>What sends an alert</h3>
+  <p>Copying a link or printing sends the quote to your dealership's system and saves it to Saved quotes. Preview and desking views never send alerts.</p>
+  <table class="compare">
+    <tr><th>When this happens</th><th>You get</th></tr>
+    <tr><td>You copy a customer or desking link, or print</td><td>The quote is saved ("Link sent" or "Printed offer")</td></tr>
+    <tr><td>The customer opens the link</td><td>A "quote opened" alert</td></tr>
+    <tr><td>The customer taps Lock in (purchase or lease)</td><td>A "locked in" alert, and an email from the customer to your notification email</td></tr>
+    <tr><td>The customer taps a Text button</td><td>A "text clicked" alert</td></tr>
+  </table>
+  <div class="callout tip"><b>Tip</b><p>Where these alerts land (email, text, your CRM) depends on how your dealership was set up by Rockstar. Ask your manager if you are not getting them.</p></div>
+</section>
+<section>
+  <div class="kicker">Your customer's side</div>
+  <h2 id="what-your-customer-sees">What your customer sees</h2>
+  <p>The link opens a page with your dealership's logo and colors. It works on phones, tablets and computers.</p>
+  <div class="phones">
+    <figure class="phone"><img src="img/std-c1-hero.jpg" alt="" loading="lazy"><figcaption>Top: their name, the vehicle and total price</figcaption></figure>
+    <figure class="phone"><img src="img/std-c1-paybox.jpg" alt="" loading="lazy"><figcaption>Their payment and the main buttons</figcaption></figure>
+  </div>
+  <h3>What the customer can do</h3>
+  <ul class="checks">
+    <li><b>Slide the target monthly payment.</b> The down payment changes to match.</li>
+    <li><b>Change the down payment</b> with the slider or by typing it.</li>
+    <li><b>Tap a term</b> to choose it (if you offered more than one).</li>
+    <li><b>Slide their credit score</b> to see the rate change (credit score slider only).</li>
+    <li><b>Pick a payment from the grid</b> (grid layout only).</li>
+    <li><b>Lock in this payment</b>: tells you they want this deal.</li>
+    <li><b>Text this deal to my salesperson</b>: texts you the deal. Shows only on phones and tablets, and only if you entered your cell.</li>
+    <li><b>Save this offer as a PDF</b>: saves or prints their offer.</li>
+  </ul>
+</section>
+<section>
+  <div class="phones">
+    <figure class="phone"><img src="img/std-c1-controls.jpg" alt="" loading="lazy"><figcaption>Adjustable layout: rate, term, down payment and trade</figcaption></figure>
+    <figure class="phone"><img src="img/std-c2-controls.jpg" alt="" loading="lazy"><figcaption>Grid layout: tap a payment to choose it</figcaption></figure>
+  </div>
+  <p>Further down, the customer sees their deal details, the full deal breakdown (price, tax, fees, trade, down payment, amount financed, rate and term), your name and number, and the financing disclosure.</p>
+  <div class="callout warn"><b>Edited links are flagged</b><p>If anyone changes the numbers inside a link, the page shows: "Heads up: this offer link was changed after it was sent." Always confirm the numbers before you contract.</p></div>
+</section>
+<section>
+  <h3>The lease option on the customer's page</h3>
+  <div class="phones"><figure class="phone"><img src="img/std-c3-lease.jpg" alt="" loading="lazy"><figcaption>Lease option: tap a lease, then Lock in this lease</figcaption></figure></div>
+  <p>The customer can move the lease down payment, tap the lease term they want, then tap <b>Lock in this lease</b> or <b>Text this lease to my salesperson</b>.</p>
+</section>
+<section>
+  <h2 id="when-a-customer-says-yes">When a customer says yes</h2>
+  <p>When the customer taps <b>Lock in this payment</b> or Lock in this lease:</p>
+  <ol class="steps"><li>Their email app opens with a message to your notification email that says which deal they want. They press Send.</li><li>You get a "locked in" alert, and the quote shows as <b>Locked in payment</b> or <b>Locked in lease</b> in Saved quotes.</li><li>If their email app did not open, the page offers <b>Copy my offer</b>, <b>Text</b> you, or <b>Email</b> the dealership.</li></ol>
+  <div class="phones"><figure class="phone"><img src="img/std-c1-fallback.jpg" alt="" loading="lazy"><figcaption>If the email app did not open</figcaption></figure></div>
+  <h3>What you do next</h3>
+  <ol class="steps"><li><b>Call or text the customer right away.</b> Speed wins the deal.</li><li>Open the quote from Saved quotes to see exactly what they picked.</li><li>Confirm credit, the rate, tax, fees and rebates before you write the contract.</li></ol>
+</section>
+<section>
+  <h2 id="work-a-deal-at-the-desk">Work a deal at the desk</h2>
+  <p>The desking link opens the customer's page for you to work at the desk with the customer sitting next to you.</p>
+  <ol class="steps"><li>Build the quote on your dealer page.</li><li>Click <b>Copy desking link</b>.</li><li>Paste it into your browser's address bar and press Enter. Turn the screen toward the customer.</li><li>Move the sliders together until the payment works for them.</li><li>Click <b>Save this offer as a PDF</b> to print it. The desking printout has a "Lock in Your Deal" box for the customer to print their name, sign and date.</li></ol>
+  <div class="callout tip"><b>Tip</b><p>The desking view hides the Lock in and Text buttons, because you are right there with the customer. Opening it does not send a "quote opened" alert.</p></div>
+</section>
+<section>
+  <div class="kicker">Follow up</div>
+  <h2 id="find-old-quotes-saved-quotes">Find old quotes (Saved quotes)</h2>
+  <p>Every quote your team sent, printed or got locked in is saved for <b>90 days</b>.</p>
+  <h3>Sign in</h3>
+  <ol class="steps"><li>Go to <b>https://<span data-dg="site">your-site</span>/saved-quotes</b>, or click <b>Saved quotes</b> at the top of your dealer page.</li><li>Type your dealership's <b>access code</b> (it looks like XXXX-XXXX-XXXX-XXXX). If asked, also type the dealership name exactly as it shows on your quotes.</li><li>Click <b>Show my quotes</b>. This device stays signed in until you click <b>Sign out</b>.</li></ol>
+  <figure class=""><img src="img/std-s1-login.jpg" style="max-width:70%" alt="" loading="lazy"><figcaption>Saved quotes sign in</figcaption></figure>
+  <h3>Use the list</h3>
+  <figure class=""><img src="img/std-s2-list.jpg" alt="" loading="lazy"><figcaption>Saved quotes list (sample data)</figcaption></figure>
+  <ol class="steps"><li>Newest quotes are at the top. Each row shows the customer, vehicle, payment, status, salesperson and date.</li><li>Type in the <b>search box</b> to find a quote by name, phone, vehicle, stock number or salesperson.</li><li>Click <b>Open quote</b> to see the full offer and pick the deal back up.</li><li>Click <b>Refresh</b> to load new quotes.</li></ol>
+  <table class="compare">
+    <tr><th>Status</th><th>Meaning</th></tr>
+    <tr><td><span class="pill hot">Locked in payment</span> <span class="pill hot">Locked in lease</span></td><td>The customer said yes. Call them now.</td></tr>
+    <tr><td><span class="pill">Link sent</span></td><td>You copied a link. Follow up if they have not locked in.</td></tr>
+    <tr><td><span class="pill">Printed offer</span></td><td>You printed the offer.</td></tr>
+  </table>
+  <h3>Forgot your access code?</h3>
+  <ol class="steps"><li>Scroll to the bottom of your dealer page.</li><li>Click <b>Forgot your saved quotes code?</b></li><li>Type your email and click <b>Email my code</b>. One code email can be sent every 5 minutes.</li></ol>
+  <figure class=""><img src="img/std-d15-forgot.jpg" style="max-width:60%" alt="" loading="lazy"><figcaption>Email yourself the access code</figcaption></figure>
+  <div class="callout warn"><b>90 days</b><p>Quotes are deleted 90 days after they were last saved. Need to keep a deal longer? Save the PDF to the customer's file.</p></div>
+</section>
+<section>
+  <h2 id="mistakes-to-avoid">Mistakes to avoid</h2>
+  <table class="compare">
+    <tr><th>Mistake</th><th>Do this instead</th></tr>
+    <tr><td>Using the dealership's ZIP code instead of the customer's.</td><td>Tax is based on where the customer lives. Use their home state and ZIP.</td></tr><tr><td>Typing tax as a percentage.</td><td>The tax field is in dollars. Leave it on automatic, or type the dollar amount.</td></tr><tr><td>Typing "$" or commas in amounts.</td><td>Type numbers only, like 32995.</td></tr><tr><td>Leaving the customer's last name blank.</td><td>First and last name are both required to copy a link.</td></tr><tr><td>Changing numbers but sending the old link.</td><td>Every change makes a new quote. Copy and send the new link.</td></tr><tr><td>Sending the desking link to a customer.</td><td>The desking link has no Lock in button. Send the customer link.</td></tr><tr><td>Wrong name on the quote after sharing a computer.</td><td>Click Forget saved info, then type your own details.</td></tr>
+  </table>
+</section>
+<section>
+  <h2 id="faq">FAQ</h2>
+  <dl class="faq"><dt>Do I need to install anything?</dt><dd>No. It all runs in your web browser on any computer, phone or tablet.</dd><dt>Why did my name and number disappear?</dt><dd>Your details are saved on each device. On a new device, or after clearing your browser, type them once more.</dd><dt>Is the sales tax exact?</dt><dd>It is an estimate from the customer's state rules and ZIP code tax tables. Always confirm the tax before you contract.</dd><dt>The customer lives in another state. What tax do I use?</dt><dd>Type their home state and ZIP. The calculator uses their state's rules.</dd><dt>Does the calculator work out lease payments?</dt><dd>No. You type the lease payments from your lease worksheet or lender.</dd><dt>Can the customer change the price?</dt><dd>No. They can only change the payment, down payment, term and credit score within what you allowed.</dd><dt>Why is there no Text button on the customer's quote?</dt><dd>It only shows on phones and tablets, and only if you typed your salesperson cell number.</dd><dt>Why is there no Print this offer button?</dt><dd>It only shows with the Multi-Payment grid layout. With Adjustable, use Save this offer as a PDF on the customer page.</dd><dt>I changed the deal. Does the old link update?</dt><dd>No. Each version gets its own quote ID. Send the new link.</dd><dt>How long are quotes kept?</dt><dd>90 days after they were last saved.</dd><dt>Where do the alerts go?</dt><dd>To your dealership's system as set up by Rockstar, and the customer's "lock in" email goes to the salesperson notification email.</dd></dl>
+</section>
+<section>
+  <h2 id="glossary">Glossary</h2>
+  <dl class="gloss"><dt>Amount financed</dt><dd>What the customer borrows: total price, minus trade equity, rebate and down payment.</dd><dt>APR</dt><dd>Annual percentage rate. The yearly interest rate on the loan.</dd><dt>Credit tier</dt><dd>A credit score range with its own rate, for example 661 to 720 = Good.</dd><dt>Customer link</dt><dd>The link you send the customer. Opens their personal quote.</dd><dt>Desking link</dt><dd>A link for you to open at the desk with the customer. No Lock in button, no alerts.</dd><dt>Doc fee</dt><dd>Your dealer documentation fee. Some states tax it.</dd><dt>Down payment</dt><dd>Cash the customer puts down.</dd><dt>Fixed rate</dt><dd>A rate you set that the customer can see but not change.</dd><dt>Hidden rate</dt><dd>A rate used for the payment but never shown to the customer.</dd><dt>Lease</dt><dd>A payment option to rent the vehicle for a set term and mileage.</dd><dt>Lock in</dt><dd>The customer tapping the button that says they want the deal.</dd><dt>Multi-Payment grid</dt><dd>A table of 9 payments: 3 terms by 3 down payments.</dd><dt>Negative equity</dt><dd>When the customer owes more on the trade than it is worth. Added to the amount financed.</dd><dt>Quote ID</dt><dd>A short code for one version of a deal, like Q1A2B3C4.</dd><dt>Rebate</dt><dd>Money off from the manufacturer or dealer.</dd><dt>Term</dt><dd>How many months the loan lasts.</dd><dt>Trade allowance</dt><dd>What you give the customer for their trade.</dd><dt>Trade balance owed</dt><dd>What the customer still owes on their trade (the payoff).</dd><dt>Trade equity</dt><dd>Trade allowance minus balance owed. Positive equity lowers the amount financed.</dd></dl>
+  <div class="help">
+    <h3>Need help?</h3>
+    <p>Talk to your manager first. For problems with the calculator itself, contact Rockstar support through your Rockstar account rep.</p>
+    <p class="fine">Payments, rates, tax, fees, rebates and offers shown by the calculator are estimates. Confirm everything before contracting.</p>
+  </div>
+</section></main>
+<script>(function () {
+  var q = new URLSearchParams(location.search);
+  var client = (q.get('client') || '').replace(/[^a-z0-9-]/g, '');
+  var site = (q.get('site') || '').replace(/[^a-z0-9.:-]/gi, '');
+  function fill(key, value) {
+    document.querySelectorAll('[data-dg="' + key + '"]').forEach(function (n) { n.textContent = value; });
+  }
+  if (site) fill('site', site);
+  if (!client) return;
+  fetch('../clients/' + client + '.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (c) {
+      if (!c) return;
+      var name = String(c.dealerName || '').trim();
+      if (name) { fill('dn', name); document.title = name + ' · ' + document.title; }
+      if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(String(c.accentColor || '').trim())) document.documentElement.style.setProperty('--acc', c.accentColor.trim());
+      var slot = document.querySelector('[data-dg="logo"]');
+      if (slot && /^(https:\/\/|data:image\/)/.test(String(c.dealerLogo || ''))) {
+        var img = new Image();
+        img.className = 'dealer-logo';
+        img.alt = name;
+        img.onerror = function () { img.remove(); };
+        img.src = c.dealerLogo;
+        slot.replaceWith(img);
+      }
+    })
+    .catch(function () { /* the guide still reads fine without the dealer's name and logo */ });
+})();
+</script>
+</body></html>

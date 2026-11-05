@@ -5,6 +5,7 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
 ## Ask first, in this order, and wait for the answers
 
 1. **Is this a standard calculator or subprime?**
+   - Also ask: **auto or powersports?** Powersports sets `vertical: "powersports"`: 24 to 144 month terms, Freight and Setup lines, a miles or hours choice, factory offers, no lease. There is no subprime powersports build.
 2. **What is the HighLevel webhook URL?**
 3. **Did you attach the logo?** It is used on the pages and in the social sharing images.
 4. **What is the dealer's website URL?** Use it to match their colors. If the site cannot be reached from the session, take the colors from the logo and say so.
@@ -40,6 +41,7 @@ Use this whenever the user asks for a new calculator ("let's build a new calcula
 1. Create `<slug>/config.json` (one folder per calculator, next to `rockstar-master/`). Keys:
    - `label`
    - `calculatorType` (`standard` or `subprime`)
+   - `vertical` (`powersports`, or leave it out for auto)
    - `dealerName`
    - `dealerLogo` (a HighLevel media URL, or a compressed data URI made from the attached logo)
    - `accentColor`

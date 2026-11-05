@@ -1,0 +1,31 @@
+/* live guide page (screen); print keeps the PDF layout from guide.css */
+@media screen {
+  body.web { background:#f4f4f6; font-size:16px; }
+  .web main { max-width:880px; margin:0 auto; padding:24px 16px 60px; }
+  .web section { background:#fff; border-radius:20px; padding:36px 40px; margin:0 0 20px; page-break-before:auto; box-shadow:0 1px 3px rgba(0,0,0,.05); }
+  .web section.cont { margin-top:-20px; border-radius:0 0 20px 20px; padding-top:8px; }
+  .web .cover { height:auto; gap:28px; }
+  .web h2 { scroll-margin-top:70px; }
+  .web .dg-bar { position:sticky; top:0; z-index:5; display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--ink); color:#fff; padding:12px 20px; font-size:14px; }
+  .web .dg-bar button { font:inherit; font-weight:700; background:var(--acc); color:#fff; border:0; border-radius:999px; padding:8px 16px; cursor:pointer; }
+  .web ol.toc a { color:var(--ink); text-decoration:none; border-bottom:1px solid var(--line); }
+  .web ol.toc a:hover { color:var(--acc); }
+  .web .logo-slot:empty { display:none; }
+  .web figure img { max-height:none; }
+  .web .phones figure img { max-height:none; }
+}
+@media screen and (max-width:640px) {
+  .web section { padding:24px 18px; }
+  .web .two { grid-template-columns:1fr; }
+  .web .phones { flex-direction:column; align-items:center; }
+  .web .phones figure { flex:none; width:100%; }
+  .web ol.toc { columns:1; }
+  .web dl.gloss { grid-template-columns:1fr; gap:2px; }
+  .web dl.gloss dd { margin-bottom:8px; }
+  .web .cover-title h1 { font-size:32pt; }
+  .web table { font-size:13px; }
+  .web .dg-bar b { font-size:13px; }
+  .web .cover-top { flex-wrap:wrap; gap:10px; }
+  .web .brand-wordmark { height:40px; }
+}
+@media print { .web .dg-bar { display:none; } .web main { padding:0; } .web .logo-slot:empty { display:none; } }

@@ -5,6 +5,6 @@
 	"r2_buckets": [{ "binding": "QUOTES", "bucket_name": "rockstar-deal-desk-quotes" }],
 	"vars": {
 		// Comma separated origins allowed to save and read quotes: each dealer's subdomain hosts its /home, /quote and /saved-quotes pages
-		"ALLOWED_ORIGINS": "https://payments.rockstarcrm.app,https://kellyford.rockstarcrm.app,https://redemption.rockstarcrm.app,https://wildcatdesk.rockstarcrm.app"
+		"ALLOWED_ORIGINS": "https://payments.rockstarcrm.app,https://kellyford.rockstarcrm.app,https://redemption.rockstarcrm.app,https://wildcatdesk.rockstarcrm.app,https://powerdesk.rockstarcrm.app"
 	}
 }
