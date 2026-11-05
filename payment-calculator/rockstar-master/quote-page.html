@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.16  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
+  Rockstar Deal Desk v3.17  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
   Paste this into a GHL "Custom HTML/JS" element on your /quote page
   (must match CONFIG.quotePagePath in file 1).
   This is the "Here's your personalized vehicle offer" page your customer sees,
@@ -301,7 +301,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '3.16';
+  const VERSION = '3.17';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -966,7 +966,7 @@ setTimeout(function () {
       const source = /^https:\/\//.test(o.sourceUrl) ? ' <a href="' + esc(o.sourceUrl) + '" target="_blank" rel="noopener">Source</a>' : '';
       let btn = '';
       if (o.type === 'apr' && o.apr != null) btn = '<button type="button" class="ec-textbtn" data-offer-apr="' + esc(o.id) + '">' + (d.rm === 't' ? 'Use this rate (switches to a fixed rate)' : 'Use this rate') + '</button>';
-      else if (o.type !== 'apr' && o.amount) btn = '<button type="button" class="ec-textbtn" data-offer="' + esc(o.id) + '">' + (picked.has(o.id) ? 'Remove from rebate' : 'Add to rebate') + '</button>';
+      else if ((o.type === 'cash' || o.type === 'bonus') && o.amount) btn = '<button type="button" class="ec-textbtn" data-offer="' + esc(o.id) + '">' + (picked.has(o.id) ? 'Remove from rebate' : 'Add to rebate') + '</button>';
       return '<div class="ec-fo' + (picked.has(o.id) ? ' on' : '') + '">' + (value ? '<span class="ec-amt">' + esc(value) + '</span>' : '') + '<b>' + esc(o.title) + '</b>' +
         (meta ? '<br><span class="ec-fine">' + esc(meta) + '</span>' : '') +
         '<details><summary>Fine print</summary>' + esc(o.finePrint || 'See the manufacturer\'s offer page.') + source + '</details>' + btn + '</div>';

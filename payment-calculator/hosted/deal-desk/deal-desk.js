@@ -1,4 +1,4 @@
-/* Rockstar Deal Desk v3.16 | dealer and quote pages | hosted engine
+/* Rockstar Deal Desk v3.17 | dealer and quote pages | hosted engine
    Served from https://assets.rockstarinfo.com/deal-desk/ . Built by payment-calculator/build_hosted.py. Do not edit here. */
 (function () {
   var root = document.getElementById('rsec');
@@ -46,7 +46,7 @@
   Object.assign(CONFIG, (window.__RSDD && window.__RSDD.cfg) || {});
   /* =============================================================== */
 
-  const VERSION = '3.16';
+  const VERSION = '3.17';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -711,7 +711,7 @@
       const source = /^https:\/\//.test(o.sourceUrl) ? ' <a href="' + esc(o.sourceUrl) + '" target="_blank" rel="noopener">Source</a>' : '';
       let btn = '';
       if (o.type === 'apr' && o.apr != null) btn = '<button type="button" class="ec-textbtn" data-offer-apr="' + esc(o.id) + '">' + (d.rm === 't' ? 'Use this rate (switches to a fixed rate)' : 'Use this rate') + '</button>';
-      else if (o.type !== 'apr' && o.amount) btn = '<button type="button" class="ec-textbtn" data-offer="' + esc(o.id) + '">' + (picked.has(o.id) ? 'Remove from rebate' : 'Add to rebate') + '</button>';
+      else if ((o.type === 'cash' || o.type === 'bonus') && o.amount) btn = '<button type="button" class="ec-textbtn" data-offer="' + esc(o.id) + '">' + (picked.has(o.id) ? 'Remove from rebate' : 'Add to rebate') + '</button>';
       return '<div class="ec-fo' + (picked.has(o.id) ? ' on' : '') + '">' + (value ? '<span class="ec-amt">' + esc(value) + '</span>' : '') + '<b>' + esc(o.title) + '</b>' +
         (meta ? '<br><span class="ec-fine">' + esc(meta) + '</span>' : '') +
         '<details><summary>Fine print</summary>' + esc(o.finePrint || 'See the manufacturer\'s offer page.') + source + '</details>' + btn + '</div>';

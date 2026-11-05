@@ -4,6 +4,9 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.17
+- Factory offers: only cash and group bonus offers (military, first responder, loyalty) have **Add to rebate**. Parts and accessories credits, warranty and other non-cash offers still show with their amount but can no longer be added to the Rebate field, so they never lower the vehicle price.
+
 ## v3.16
 - **How-to Guide.** The dealer page has a "How-to Guide" button next to "Saved quotes" in its top bar. It opens the dealer instructions at `https://assets.rockstarinfo.com/deal-desk/guide/?client=<slug>&site=<dealer site>`, which picks the right guide (standard, sub-prime or powersports) from the calculator's settings and shows the dealer's name, logo and color. The button only shows on the live loader pages, not on the full pages pasted on a dealer's own site, and customers never see it.
 - The guide pages are built from `dealer-guides/build_guides.py --web` (the same text as the PDF guides) and published with the rest of `hosted/deal-desk/`. Update the guide in the same change whenever a dealer page feature changes.
