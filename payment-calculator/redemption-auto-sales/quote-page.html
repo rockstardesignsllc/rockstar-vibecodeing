@@ -1,5 +1,5 @@
 <!--
-  Rockstar Deal Desk v3.15 (Redemption Auto Sales · Subprime)  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
+  Rockstar Deal Desk v3.16 (Redemption Auto Sales · Subprime)  |  FILE 2 of 2: CUSTOMER RESULTS PAGE
   Paste this into a GHL "Custom HTML/JS" element on your /quote page
   (must match CONFIG.quotePagePath in file 1).
   This is the "Here's your personalized vehicle offer" page your customer sees,
@@ -54,6 +54,7 @@ setTimeout(function () {
 #rsec .ec-top span{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.14em;color:#a1a1a6;text-transform:uppercase}
 #rsec .ec-toplink{margin-left:14px;padding:7px 14px;border:1.5px solid rgba(255,255,255,.5);border-radius:999px;color:#fff;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
 #rsec .ec-toplink:hover{background:#fff;color:var(--ink)}
+#rsec .ec-toplink+.ec-toplink{margin-left:0}
 #rsec .ec-shell{background:var(--paper);border-radius:0 0 22px 22px;padding:34px 28px}
 #rsec .ec-intro{max-width:720px;margin-bottom:28px}
 #rsec .ec-intro h1{font-size:40px;line-height:1.08;font-weight:900;letter-spacing:-.04em;margin-bottom:12px}
@@ -260,7 +261,9 @@ setTimeout(function () {
   #rsec .ec-gtab{border-spacing:4px}
   #rsec .ec-gtab td button{font-size:15px;padding:12px 1px}
   #rsec .ec-top span,#rsec .ec-bar span{display:none}
+  #rsec .ec-top{flex-wrap:wrap}
   #rsec .ec-toplink{margin-left:auto}
+  #rsec .ec-toplink+.ec-toplink{margin-left:0}
   #rsec .ec-hero{display:block;padding:28px 18px 24px}
   #rsec .ec-hero h1{font-size:34px}
   #rsec .ec-total{text-align:left;margin-top:18px}
@@ -298,7 +301,7 @@ setTimeout(function () {
   };
   /* =============================================================== */
 
-  const VERSION = '3.15';
+  const VERSION = '3.16';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -469,6 +472,9 @@ setTimeout(function () {
 
   /* ---------- shared data from assets.rockstarinfo.com: each file is fetched once, then state.onLoad redraws ---------- */
   const ASSET_URL = 'https://assets.rockstarinfo.com/deal-desk';
+  /* the How-to Guide matches this calculator's settings, so it only shows on the hosted (live loader) pages */
+  const GUIDE_CLIENT = window.__RSDD && window.__RSDD.client ? String(window.__RSDD.client) : '';
+  const GUIDE_URL = GUIDE_CLIENT ? ASSET_URL + '/guide/?client=' + encodeURIComponent(GUIDE_CLIENT) + '&site=' + encodeURIComponent(location.host) : '';
   function assetFetch(state, path, done) {
     if (state.pending[path]) return;
     state.pending[path] = true;
@@ -802,6 +808,7 @@ setTimeout(function () {
     const allDealerLocked = ['dn', 'de', 'dl', 'ac', 'wh'].every(isLocked);
     root.innerHTML =
       '<div class="ec-top"><img src="' + LOGO_WHITE + '" alt="Rockstar Designs"><b>Rockstar ' + (POWERSPORTS ? 'Powersports ' : '') + 'Deal Desk</b><span>Dealer workspace &middot; v' + VERSION + '</span>' +
+        (GUIDE_URL ? '<a class="ec-toplink" href="' + esc(GUIDE_URL) + '" target="_blank" rel="noopener">How-to Guide</a>' : '') +
         (isHttps(STORE_URL) ? '<a class="ec-toplink" href="' + esc(savedPath()) + '">Saved quotes</a>' : '') + '</div>' +
       '<div class="ec-shell">' +
         '<div class="ec-intro"><div class="ec-kicker">Build the deal. Send the link. Get the yes.</div>' +

@@ -4,6 +4,10 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.16
+- **How-to Guide.** The dealer page has a "How-to Guide" button next to "Saved quotes" in its top bar. It opens the dealer instructions at `https://assets.rockstarinfo.com/deal-desk/guide/?client=<slug>&site=<dealer site>`, which picks the right guide (standard, sub-prime or powersports) from the calculator's settings and shows the dealer's name, logo and color. The button only shows on the live loader pages, not on the full pages pasted on a dealer's own site, and customers never see it.
+- The guide pages are built from `dealer-guides/build_guides.py --web` (the same text as the PDF guides) and published with the rest of `hosted/deal-desk/`. Update the guide in the same change whenever a dealer page feature changes.
+
 ## v3.15
 - **Rockstar Powersports Deal Desk.** New calculator `rockstar-powersports/` (pages for powerdesk.rockstarcrm.app) built from the same engine with the new `vertical: "powersports"` setting:
   - Terms run 24 to 144 months.
