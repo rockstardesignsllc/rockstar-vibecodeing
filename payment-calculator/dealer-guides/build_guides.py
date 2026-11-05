@@ -14,7 +14,7 @@ import argparse, base64, datetime, html, json, mimetypes, pathlib, re, shutil, s
 
 HERE = pathlib.Path(__file__).resolve().parent
 IMG = HERE / 'img'
-GUIDE_VERSION = '1.0'
+GUIDE_VERSION = '1.1'
 
 KINDS = {
     'standard': dict(code='std', title='Payment Calculator', short='Standard', tool='Rockstar Deal Desk'),
@@ -584,8 +584,7 @@ def build_html(kind, dealer, logo, site, stamp, shots=IMG, accent='', web=None):
     if SUB:
         gl.append(('Sub-prime', 'Financing for customers with lower or rebuilding credit. Payments are subject to lender approval.'))
     gl.sort(key=lambda x: x[0].lower())
-    SUPPORT = ('contact Rockstar support through your Rockstar account rep.' if web
-               else 'contact Rockstar support: <b>[SUPPORT EMAIL / PHONE]</b>.')
+    SUPPORT = 'email Rockstar support at <a href="mailto:support@mail.rockstarinfo.com"><b>support@mail.rockstarinfo.com</b></a>.'
     P.append(f'''
 <section>
   <h2>Glossary</h2>
