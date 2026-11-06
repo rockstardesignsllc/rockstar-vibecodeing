@@ -79,7 +79,8 @@ def engine(css, script, root_id, default_mode, version, label):
     var st = document.createElement('style');
     st.id = 'rsdd-css-{root_id}';
     st.textContent = {json.dumps(css)};
-    document.head.appendChild(st);
+    // Put the style next to the page element, not in <head>: HighLevel rewrites <head> and drops added tags.
+    root.parentNode.insertBefore(st, root);
   }}
 
   function start(cfg) {{

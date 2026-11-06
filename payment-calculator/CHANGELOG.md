@@ -4,6 +4,9 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.18
+- Fix: the live loader pages put the calculator's styles next to the calculator instead of in the page `<head>`. HighLevel rewrites `<head>` and can drop added tags, which would leave the calculator unstyled (the same problem found and fixed on localchurchgathering.com). Nothing changes on screen.
+
 ## v3.17
 - Factory offers: only cash and group bonus offers (military, first responder, loyalty) have **Add to rebate**. Parts and accessories credits, warranty and other non-cash offers still show with their amount but can no longer be added to the Rebate field, so they never lower the vehicle price.
 
