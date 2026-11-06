@@ -1,0 +1,20 @@
+# Church Captions (churchcaptions.com)
+
+> Live sermon captions and real time translation for Christian churches. People scan a QR code and follow along with the pastor on their own phone or tablet, in their own language. 100% free for churches in need, with an ask to pay it forward through a donation.
+
+Church Captions is for Christian churches only. Setup is 100% self serve: a church signs up, sets it up instantly and can start using it right away.
+
+## What it does
+
+- Live captions: people scan a QR code and read what the pastor is saying in real time on their phone. Built to help people who are hearing impaired.
+- Real time translation: the same QR code lets people choose from 13 languages. Translation is provided by Google Translate and is not always 100% accurate.
+- Listen in your language: people can put in headphones and tap the audio icon to hear the message in their native language.
+- ProPresenter overlay: churches can run Church Captions as a live transcription overlay in ProPresenter while the pastor preaches.
+
+## Cost
+
+- Free for churches in need. Churches are asked to pay it forward with a donation, which covers the cost of running the tool and keeps it improving.
+
+## Pages
+
+- [Home](https://churchcaptions.com/): What Church Captions does, how it works, FAQ and the free signup form.
