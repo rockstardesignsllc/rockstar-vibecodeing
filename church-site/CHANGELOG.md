@@ -3,6 +3,9 @@
 The current version and date are also stamped at the top of every built page in
 `dist/` and at the top of `styles.css`.
 
+## v1.2 — 2026-11-06
+- Fix: the loader now injects the stylesheet **inside the page body** instead of `<head>`. GoHighLevel rewrites `<head>` and was dropping the injected stylesheet link, so pages loaded their content but unstyled. CSS now persists.
+
 ## v1.1 — 2026-11-03
 - Step 2 live-update pipeline: build now emits `hosted/` (shared CSS + one JS loader per page) and `loaders/` (the one-time GoHighLevel snippet).
 - Added `.github/workflows/church-publish.yml` — publishes `hosted/` to `church/` on the `site-assets` branch (Cloudflare → assets.rockstarinfo.com/church/) on every change to `main`.
