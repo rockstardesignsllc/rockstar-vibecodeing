@@ -1,0 +1,55 @@
+# Publishes the Local Church Gathering site to assets.rockstarinfo.com/church/.
+# Runs whenever church-site changes land on main. Builds the hosted loaders + CSS
+# and copies them to the church/ folder on the site-assets branch (served by
+# Cloudflare Pages). Only the church folder on site-assets is touched.
+name: Publish church site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'church-site/**'
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Branch or commit to publish from'
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-assets-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+
+      - name: Build the hosted church assets
+        run: python3 church-site/build.py
+
+      - uses: actions/checkout@v4
+        with:
+          ref: site-assets
+          path: site
+
+      - name: Copy to site-assets and push
+        run: |
+          mkdir -p site/site-assets/church
+          rsync -a --delete church-site/hosted/ site/site-assets/church/
+          cd site
+          git add site-assets/church
+          if git diff --cached --quiet; then echo "Church assets already up to date."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Church site: publish ${GITHUB_SHA::7}"
+          git push origin HEAD:site-assets
