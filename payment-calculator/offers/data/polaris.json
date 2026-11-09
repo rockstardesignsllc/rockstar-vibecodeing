@@ -1,8 +1,8 @@
 {
   "brand": "polaris",
   "name": "Polaris",
-  "updated": "2026-11-02",
-  "sourceHash": "435920fdae3229030d68886b871b224bb8ce2b173460e1e912b8ba68400b996e",
+  "updated": "2026-11-09",
+  "sourceHash": "1a8d4249aa67c149f839c35bf9730839e6044000ff3a98a99224aa68c0368386",
   "sources": [
     "https://www.polaris.com/en-us/off-road/special-offers/",
     "https://www.polaris.com/en-us/snowmobiles/special-offers/",
@@ -15,8 +15,8 @@
   ],
   "offers": [
     {
-      "id": "7f28825f4d1b",
-      "title": "Ag & Business Fleet Program - Rebate up to $1,250 per 850/1000cc Sportsman",
+      "id": "b03a75a823ba",
+      "title": "Ag & Business Fleet Program - rebate up to $1,250 per 850/1000cc Sportsman",
       "type": "bonus",
       "amount": 1250,
       "apr": null,
@@ -28,18 +28,18 @@
         2027
       ],
       "models": [
-        "Sportsman 850/1000CC"
+        "850/1000CC Sportsman"
       ],
       "start": null,
       "end": null,
       "eligibility": "Qualified Ag & Business Fleet customers purchasing two or more qualifying models in a single transaction",
       "combinable": "Cannot be combined with other Polaris promotional offers or promotional financing",
-      "finePrint": "Tiered rebate per unit when buying 2 or more qualifying models, up to $1,250 per vehicle at 6 or more. Youth models excluded.",
+      "finePrint": "Tiered rebate per unit when purchasing two or more qualifying models, up to $1,250 per vehicle when purchasing six or more; youth models excluded.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "8214a52fbe60",
-      "title": "Ag & Business Fleet Program - Rebate up to $750 per 450/570cc Sportsman",
+      "id": "24c305c2cd6a",
+      "title": "Ag & Business Fleet Program - rebate up to $750 per 450/570cc Sportsman",
       "type": "bonus",
       "amount": 750,
       "apr": null,
@@ -51,18 +51,18 @@
         2027
       ],
       "models": [
-        "Sportsman 450/570CC"
+        "450/570CC Sportsman"
       ],
       "start": null,
       "end": null,
       "eligibility": "Qualified Ag & Business Fleet customers purchasing two or more qualifying models in a single transaction",
       "combinable": "Cannot be combined with other Polaris promotional offers or promotional financing",
-      "finePrint": "Tiered rebate per unit when buying 2 or more qualifying models, up to $750 per vehicle at 6 or more. Youth models excluded.",
+      "finePrint": "Tiered rebate per unit when purchasing two or more qualifying models, up to $750 per vehicle when purchasing six or more; youth models excluded.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "7f4b46723f4e",
-      "title": "1.99% APR for 36 Months on select 2025 & 2026 ATV and RANGER models",
+      "id": "c75c0bebdcd3",
+      "title": "1.99% APR for 36 months on select 2025 & 2026 ATV and RANGER models",
       "type": "apr",
       "amount": null,
       "apr": 1.99,
@@ -80,12 +80,12 @@
       "end": "2026-11-30",
       "eligibility": "Subject to credit approval; minimum amount financed $1,500",
       "combinable": "Offer in lieu of rebate",
-      "finePrint": "Available on select 2025 and 2026 ATV and RANGER models purchased 11/1/2026-11/30/2026 from a participating dealer. Youth models excluded.",
+      "finePrint": "Available on select 2025 and 2026 ATV and RANGER models purchased 11/1/2026-11/30/2026 from a participating dealer; youth models excluded. Example: $7,500 financed, 36 monthly payments of $214.79.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "720cba544f59",
-      "title": "6.99% APR for 36 Months",
+      "id": "40a521781450",
+      "title": "6.99% APR for 36 months",
       "type": "apr",
       "amount": null,
       "apr": 6.99,
@@ -95,35 +95,39 @@
       "models": [],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Subject to credit approval; amount financed $1,500-$75,000",
+      "eligibility": "Subject to credit approval; amount financed $1,500 to $75,000",
       "combinable": "",
-      "finePrint": "Financing on eligible units purchased from a participating dealer 11/1/2026-11/30/2026. Offers may vary by bank.",
+      "finePrint": "Offer effective on eligible and qualified units purchased from a participating dealer between 11/1/2026 and 11/30/2026; offers may vary by bank. Example: $7,500 financed, 36 monthly payments of $231.54.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "413ab9c94b36",
-      "title": "0.00% APR for 60 Months on select 2026 GENERAL models",
-      "type": "apr",
-      "amount": null,
-      "apr": 0,
-      "termMonths": 60,
-      "category": "Side-by-Side",
+      "id": "55c0ecec5c41",
+      "title": "Ag & Business Fleet Program - rebate up to $1,750 per vehicle",
+      "type": "bonus",
+      "amount": 1750,
+      "apr": null,
+      "termMonths": null,
+      "category": "Off-Road",
       "modelYears": [
-        2026
+        2025,
+        2026,
+        2027
       ],
       "models": [
-        "GENERAL"
+        "RANGER",
+        "GENERAL",
+        "RZR"
       ],
-      "start": "2026-11-01",
-      "end": "2026-11-30",
-      "eligibility": "Subject to credit approval; minimum amount financed $1,500",
-      "combinable": "Offer in lieu of rebate",
-      "finePrint": "Available on select 2026 GENERAL models (listed on GENERAL XP 1000 and XP 4 1000) purchased 11/1/2026-11/30/2026 from a participating dealer. Youth models excluded.",
+      "start": null,
+      "end": null,
+      "eligibility": "Qualified Ag & Business Fleet customers purchasing two or more qualifying models in a single transaction",
+      "combinable": "Cannot be combined with other Polaris promotional offers or promotional financing",
+      "finePrint": "Tiered rebate per vehicle when purchasing two or more qualifying new and unused models, up to $1,750 per vehicle when purchasing six or more; youth models excluded.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "b63d22c595f0",
-      "title": "0.99% APR for 36 Months on select 2026 RZR models",
+      "id": "57a94337a48a",
+      "title": "0.99% APR for 36 months on select 2026 RZR models",
       "type": "apr",
       "amount": null,
       "apr": 0.99,
@@ -139,12 +143,12 @@
       "end": "2026-11-30",
       "eligibility": "Subject to credit approval; minimum amount financed $1,500",
       "combinable": "Offer in lieu of rebate",
-      "finePrint": "Available on select 2026 RZR models purchased 11/1/2026-11/30/2026 from a participating dealer. Youth models excluded.",
+      "finePrint": "Available on select 2026 RZR models purchased 11/1/2026-11/30/2026 from a participating dealer; youth models excluded. Example: $7,500 financed, 36 monthly payments of $211.53.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "13535fc70b8f",
-      "title": "3.99% APR for 36 Months on select 2027 RANGER and Polaris XPEDITION models",
+      "id": "d611a6b48331",
+      "title": "3.99% APR for 36 months on select 2027 RANGER and Polaris XPEDITION models",
       "type": "apr",
       "amount": null,
       "apr": 3.99,
@@ -161,79 +165,33 @@
       "end": "2026-11-30",
       "eligibility": "Subject to credit approval; minimum amount financed $1,500",
       "combinable": "Offer in lieu of rebate",
-      "finePrint": "Available on select 2027 RANGER and Polaris XPEDITION models purchased 11/1/2026-11/30/2026 from a participating dealer. Youth models excluded.",
+      "finePrint": "Available on select 2027 RANGER and Polaris XPEDITION models purchased 11/1/2026-11/30/2026 from a participating dealer; youth models excluded. Example: $7,500 financed, 36 monthly payments of $221.40.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "197a66076309",
-      "title": "$3,000 Trade-In Credit on 2025 RANGER XD 1500 NorthStar",
-      "type": "bonus",
-      "amount": 3000,
-      "apr": null,
-      "termMonths": null,
-      "category": "Side-by-Side",
-      "modelYears": [
-        2025
-      ],
-      "models": [
-        "RANGER XD 1500 NorthStar"
-      ],
-      "start": null,
-      "end": null,
-      "eligibility": "Buyers who trade in a vehicle at purchase",
-      "combinable": "",
-      "finePrint": "Additional savings when a vehicle is traded in at purchase of an eligible model.",
-      "sourceUrl": "https://www.polaris.com/en-us/off-road/shopping-tools/trade-in/"
-    },
-    {
-      "id": "34d270b1e3e1",
-      "title": "$2,000 Trade-In Credit on 2026 RANGER XD 1500 NorthStar",
-      "type": "bonus",
-      "amount": 2000,
-      "apr": null,
-      "termMonths": null,
+      "id": "94c702f1ff50",
+      "title": "Financing as low as 0.00% for 60 months on select 2026 GENERAL models",
+      "type": "apr",
+      "amount": null,
+      "apr": 0,
+      "termMonths": 60,
       "category": "Side-by-Side",
       "modelYears": [
         2026
       ],
       "models": [
-        "RANGER XD 1500 NorthStar"
+        "GENERAL"
       ],
-      "start": null,
-      "end": null,
-      "eligibility": "Buyers who trade in a vehicle at purchase",
-      "combinable": "",
-      "finePrint": "Additional savings when a vehicle is traded in at purchase of an eligible model.",
-      "sourceUrl": "https://www.polaris.com/en-us/off-road/shopping-tools/trade-in/"
-    },
-    {
-      "id": "fa58b196d36f",
-      "title": "Ag & Business Fleet Program - Rebate up to $1,750 per vehicle",
-      "type": "bonus",
-      "amount": 1750,
-      "apr": null,
-      "termMonths": null,
-      "category": "Side-by-Side",
-      "modelYears": [
-        2025,
-        2026,
-        2027
-      ],
-      "models": [
-        "RANGER",
-        "GENERAL",
-        "RZR"
-      ],
-      "start": null,
-      "end": null,
-      "eligibility": "Qualified Ag & Business Fleet customers purchasing two or more qualifying models in a single transaction",
-      "combinable": "Cannot be combined with other Polaris promotional offers or promotional financing",
-      "finePrint": "Tiered rebate per vehicle when buying 2 or more qualifying new and unused models, up to $1,750 per vehicle at 6 or more. Youth models excluded.",
+      "start": "2026-11-01",
+      "end": "2026-11-30",
+      "eligibility": "Subject to credit approval; minimum amount financed $1,500",
+      "combinable": "Offer in lieu of rebate",
+      "finePrint": "Available on select 2026 GENERAL models purchased 11/1/2026-11/30/2026 from a participating dealer; youth models excluded. Example: $7,500 financed, 60 monthly payments of $125.00.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "2db29c891f40",
-      "title": "Ag Advantage Program - $1,000 off + $250 off accessories + 2-Year Limited Warranty on select 2027 RANGER NorthStar models",
+      "id": "90db535ab24b",
+      "title": "Ag Advantage Program - $1,000 off + $250 off accessories + 2-year limited warranty on select 2027 RANGER NorthStar models",
       "type": "bonus",
       "amount": 1000,
       "apr": null,
@@ -248,13 +206,13 @@
       ],
       "start": null,
       "end": "2026-12-31",
-      "eligibility": "Farmers and ranchers with proof of registered agricultural operation (farm site number, ag tax exempt form, co-op membership or similar)",
+      "eligibility": "Farmers and ranchers with proof of registered farm site number, agriculture tax exempt form, ag co-op membership or other proof of registered agricultural operation",
       "combinable": "Can be stacked with national rebates, promotional financing and other stackable coupons",
-      "finePrint": "$1,000 off a new and unregistered 2027 RANGER XP 1000 or XD 1500 NorthStar, plus $250 off with at least $250 in accessories and a 2-year promotional limited warranty. Valid through 12/31/2026.",
+      "finePrint": "$1,000 off a new and unregistered eligible model, $250 off with at least $250 in accessories, and a 2-year promotional limited warranty (12-month factory + 12-month promotional). Valid through December 31, 2026.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "eeb45be39af1",
+      "id": "50bc9fbdcde1",
       "title": "Rebates up to $4,000 on 2026 GENERAL XP 1000 and GENERAL XP 4 1000",
       "type": "cash",
       "amount": 4000,
@@ -265,19 +223,23 @@
         2026
       ],
       "models": [
-        "GENERAL XP 1000",
-        "GENERAL XP 4 1000"
+        "GENERAL XP 1000 Premium",
+        "GENERAL XP 1000 Sport",
+        "GENERAL XP 1000 Ultimate",
+        "GENERAL XP 4 1000 Premium",
+        "GENERAL XP 4 1000 Sport",
+        "GENERAL XP 4 1000 Ultimate"
       ],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Retail buyers of select new and unregistered models",
+      "eligibility": "Retail buyers of new and unregistered units",
       "combinable": "Promotional financing is offered in lieu of the rebate",
-      "finePrint": "Rebates on select new and unregistered 2024-2027 Sportsman, Scrambler, RANGER, RZR, GENERAL and Polaris XPEDITION models purchased 11/1/2026-11/30/2026. Offers vary by model; see dealer.",
+      "finePrint": "Rebates are available on select new and unregistered 2024-2027 Sportsman, Scrambler, RANGER, RZR, GENERAL and Polaris XPEDITION models purchased 11/1/2026-11/30/2026. Offers vary by model; see dealer for details.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "fbc042b5e000",
-      "title": "2-Year Promotional Limited Warranty on 2026 RANGER and select 2027 RANGER NorthStar and Polaris XPEDITION models",
+      "id": "02653843ae59",
+      "title": "2-Year Promotional Limited Warranty Coverage",
       "type": "other",
       "amount": null,
       "apr": null,
@@ -288,7 +250,7 @@
         2027
       ],
       "models": [
-        "RANGER",
+        "RANGER (excluding RANGER 500)",
         "RANGER NorthStar",
         "Polaris XPEDITION"
       ],
@@ -296,7 +258,7 @@
       "end": "2026-11-30",
       "eligibility": "Buyers of new and unregistered eligible models",
       "combinable": "",
-      "finePrint": "12 months of promotional coverage added to the 12-month factory warranty; excludes RANGER 500. $50 deductible, transferable, does not apply to previous purchases.",
+      "finePrint": "Valid on 2026 RANGER models (excluding RANGER 500) and select 2027 RANGER NorthStar and Polaris XPEDITION models; 12 months promotional coverage plus 12-month factory warranty. $50 deductible, transferable.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
@@ -315,12 +277,12 @@
       "end": "2026-11-30",
       "eligibility": "Buyers of new and unregistered RANGER XP Kinetic models",
       "combinable": "",
-      "finePrint": "48 months of promotional battery warranty added to the 12-month factory warranty for 60 months total. $50 deductible, transferable, valid through 11/30/2026.",
+      "finePrint": "48 months of promotional battery warranty plus 12-month factory warranty for 60 months total. $50 deductible, transferable, does not apply to previous purchases.",
       "sourceUrl": "https://www.polaris.com/en-us/off-road/special-offers/"
     },
     {
-      "id": "c33c5b418b84",
-      "title": "Rates as low as 1.99% for 36 Months on select 2025-2026 snowmobiles",
+      "id": "1af8a30745c3",
+      "title": "Rates as low as 1.99% for 36 months on select 2025-2026 snowmobiles",
       "type": "apr",
       "amount": null,
       "apr": 1.99,
@@ -333,14 +295,14 @@
       "models": [],
       "start": "2026-11-01",
       "end": "2026-12-31",
-      "eligibility": "Approved credit through Sheffield Financial; rate based on minimum bureau score of 730; amount financed $1,500-$75,000",
+      "eligibility": "Subject to credit approval (Sheffield rate based on minimum bureau score 730; amount financed $1,500-$75,000); participating authorized U.S. dealers",
       "combinable": "In lieu of any rebate offers; may not be combined with certain other offers",
-      "finePrint": "Valid on select new 2025-2026 snowmobiles from participating authorized U.S. dealers 11/1/2026-12/31/2026. Model and year exclusions apply.",
+      "finePrint": "Valid on select new 2025-2026 snowmobiles purchased 11/1/2026-12/31/2026; model and year exclusions apply. Example: $15,000 financed, 36 payments of $429.57.",
       "sourceUrl": "https://www.polaris.com/en-us/snowmobiles/special-offers/"
     },
     {
-      "id": "d738c7e8f76e",
-      "title": "Rates as low as 5.99% for 36 Months on select 2027 snowmobiles",
+      "id": "f7b6ce1d7e4f",
+      "title": "Rates as low as 5.99% for 36 months on select 2027 snowmobiles",
       "type": "apr",
       "amount": null,
       "apr": 5.99,
@@ -352,9 +314,9 @@
       "models": [],
       "start": "2026-11-01",
       "end": "2026-12-31",
-      "eligibility": "Subject to credit approval",
+      "eligibility": "Subject to credit approval; participating authorized U.S. dealers",
       "combinable": "In lieu of any rebate offers; may not be combined with certain other offers",
-      "finePrint": "Valid on select new 2027 snowmobiles from participating authorized U.S. dealers 11/1/2026-12/31/2026. Model and year exclusions apply.",
+      "finePrint": "Valid on select new 2027 snowmobiles purchased 11/1/2026-12/31/2026; model and year exclusions apply.",
       "sourceUrl": "https://www.polaris.com/en-us/snowmobiles/special-offers/"
     },
     {
@@ -374,9 +336,9 @@
       ],
       "start": "2026-11-01",
       "end": "2026-12-31",
-      "eligibility": "Buyers at participating Polaris dealers; valid only in select states",
+      "eligibility": "Purchasers from a participating Polaris dealer; valid only in select states",
       "combinable": "Cannot be combined with 2-year PLW; promotional financing is in lieu of rebate",
-      "finePrint": "Rebate on select new 2025-2027 snowmobiles purchased 11/1/2026-12/31/2026; amounts vary by model. Rebates are paid to the dealer and the offer has no cash value to the customer.",
+      "finePrint": "Rebate valid on select new 2025-2027 snowmobiles purchased 11/1/2026-12/31/2026; amounts vary by model. Rebates are paid to the dealer and have no cash value to the customer.",
       "sourceUrl": "https://www.polaris.com/en-us/snowmobiles/special-offers/"
     },
     {
@@ -400,14 +362,14 @@
       ],
       "start": "2026-11-01",
       "end": "2026-12-31",
-      "eligibility": "Buyers at participating Polaris dealers; valid only in select states",
+      "eligibility": "Purchasers from a participating Polaris dealer; valid only in select states",
       "combinable": "Cannot be combined with 2-year PLW; promotional financing is in lieu of rebate",
-      "finePrint": "Rebate on select new 2025-2027 snowmobiles purchased 11/1/2026-12/31/2026; amounts vary by model. Rebates are paid to the dealer and the offer has no cash value to the customer.",
+      "finePrint": "Rebate valid on select new 2025-2027 snowmobiles purchased 11/1/2026-12/31/2026; amounts vary by model. Rebates are paid to the dealer and have no cash value to the customer.",
       "sourceUrl": "https://www.polaris.com/en-us/snowmobiles/special-offers/"
     },
     {
-      "id": "d97b2e618097",
-      "title": "2-Year Promotional Limited Warranty on select 2025-2027 snowmobiles",
+      "id": "d4182e5ad98c",
+      "title": "2-Year Promotional Limited Warranty on select snowmobiles",
       "type": "other",
       "amount": null,
       "apr": null,
@@ -422,13 +384,13 @@
       "start": "2026-11-01",
       "end": "2026-12-31",
       "eligibility": "US buyers of select new snowmobiles",
-      "combinable": "Cannot be combined with rebate offers",
-      "finePrint": "Standard 12-month factory warranty plus 12 months extended coverage for 24 months total. US only, while supplies last.",
+      "combinable": "2-year PLW and rebate offers cannot be combined",
+      "finePrint": "Standard 12-month factory warranty plus 12 months extended coverage for 24 months total on select new 2025-2027 snowmobiles. Valid only in US; while supplies last.",
       "sourceUrl": "https://www.polaris.com/en-us/snowmobiles/special-offers/"
     },
     {
-      "id": "6d19c7abe47f",
-      "title": "Polaris Ride Assurance Promotion - additional 12 months warranty",
+      "id": "7da2d21ff416",
+      "title": "Polaris Ride Assurance Promotion",
       "type": "other",
       "amount": null,
       "apr": null,
@@ -442,9 +404,9 @@
       "models": [],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Purchasers of a new, unregistered snowmobile in November 2026; SnowCheck units and Indy 200 youth models excluded",
+      "eligibility": "Purchasers of new, unregistered snowmobiles from a participating dealer during November 2026; SnowCheck units and Indy 200 youth models excluded",
       "combinable": "",
-      "finePrint": "If the sled has fewer than 100 miles as of 3/31/2027 and is presented to a dealer for verification 4/1/2027-5/15/2027, buyer may receive 12 more months of Promotional Limited Warranty, subject to Polaris approval.",
+      "finePrint": "If the snowmobile has fewer than 100 miles as of March 31, 2027 and is presented for verification between April 1 and May 15, 2027, the buyer may receive an additional 12 months of promotional limited warranty. Subject to Polaris approval.",
       "sourceUrl": "https://www.polaris.com/en-us/snowmobiles/special-offers/"
     }
   ]

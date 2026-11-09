@@ -1,20 +1,20 @@
 {
   "brand": "kawasaki",
   "name": "Kawasaki",
-  "updated": "2026-10-31",
-  "sourceHash": "491a45db4ef75707e80c5b5a59a195fba4f63eb02c258cfa05177caa5d1546c1",
+  "updated": "2026-11-09",
+  "sourceHash": "bdff3f255e15dc5e4e2a20e76364696f3b21d06736b49d1f337b39bc918d1aba",
   "sources": [
     "https://www.kawasaki.com/en-us/research-tools/current-offers",
     "https://www.kawasaki.com/en-us/research-tools/retail-finance",
     "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event",
+    "https://www.kawasaki.com/en-us/holiday-cash",
     "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=motorcycle_kx~motorcycle_klx",
     "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=motorcycle_ninja~motorcycle_z~motorcycle_versys~motorcycle_eliminator~motorcycle_w~motorcycle_vulcan~motorcycle_klr~motorcycle_klx",
     "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=electrification_ninja~electrification_z~electrification_elektrode",
     "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=atv_brute-force~atv_kfx",
     "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=side-x-side_ridge",
     "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=side-x-side_mule~side-x-side_ridge~side-x-side_teryx",
-    "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=nav-ptv_nav",
-    "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=watercraft_jet-ski"
+    "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=nav-ptv_nav"
   ],
   "offers": [
     {
@@ -46,9 +46,9 @@
       "models": [],
       "start": "2026-10-01",
       "end": "2026-12-31",
-      "eligibility": "Subject to credit approval by Kawasaki Motors Retail Finance, LLC",
+      "eligibility": "Subject to credit approval by Kawasaki Motors Retail Finance, LLC; rate of 8.95%-22.95% assigned",
       "combinable": "",
-      "finePrint": "Rate of 8.95%-22.95% assigned with 0%-15% down; minimum amount financed $5,000 on select new unregistered models. Model and year exclusions apply.",
+      "finePrint": "Minimum amount financed $5,000 with 0%-15% down on select new unregistered models. Example: $20.73 per $1,000 financed at 8.95% over 60 months.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -63,27 +63,34 @@
       "models": [],
       "start": "2026-10-01",
       "end": "2026-12-31",
-      "eligibility": "Subject to credit approval by Kawasaki Motors Retail Finance, LLC",
+      "eligibility": "Subject to credit approval by Kawasaki Motors Retail Finance, LLC; rate of 9.95%-14.95% assigned",
       "combinable": "",
-      "finePrint": "Rate of 9.95%-14.95% assigned with 0%-15% down; minimum amount financed $5,000 on select new unregistered models. Model and year exclusions apply.",
+      "finePrint": "Minimum amount financed $5,000 with 0%-15% down on select new unregistered models. Example: $18.50 per $1,000 financed at 9.95% over 72 months.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "65f562dd0e5b",
-      "title": "Military Discount",
+      "id": "79d305fd9dbe",
+      "title": "$100 Holiday Cash Bonus on Youth ATVs",
       "type": "bonus",
-      "amount": null,
+      "amount": 100,
       "apr": null,
       "termMonths": null,
-      "category": "All",
-      "modelYears": [],
-      "models": [],
+      "category": "ATV",
+      "modelYears": [
+        2025,
+        2026,
+        2027
+      ],
+      "models": [
+        "KFX 50",
+        "KFX 90"
+      ],
       "start": null,
       "end": "2026-12-31",
-      "eligibility": "",
-      "combinable": "",
-      "finePrint": "Listed on the current offers page as valid through Dec 31, 2026; no details given.",
-      "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers"
+      "eligibility": "US residents 13 or older who complete the Holiday Cash form and present the redemption code at a participating dealer",
+      "combinable": "Can be combined with up to $300 factory-direct-incentive",
+      "finePrint": "$100 off new, unregistered 2025-2027 KFX50 and KFX90. Must complete Holiday Cash form submission; valid through 12/31/2026.",
+      "sourceUrl": "https://www.kawasaki.com/en-us/holiday-cash"
     },
     {
       "id": "74be992a5d9a",
@@ -101,7 +108,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -120,7 +127,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -139,12 +146,36 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "854ef01092ea",
-      "title": "Financing as low as 2.95% for 36 months on KLE500",
+      "id": "a9707afe9cdf",
+      "title": "Up to $300 Factory-Direct-Incentive on KFX50 and KFX90",
+      "type": "cash",
+      "amount": 300,
+      "apr": null,
+      "termMonths": null,
+      "category": "ATV",
+      "modelYears": [
+        2025,
+        2026,
+        2027
+      ],
+      "models": [
+        "KFX®50",
+        "KFX®90"
+      ],
+      "start": null,
+      "end": "2026-12-31",
+      "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
+      "combinable": "May be combined with promotional retail financing rates; stacks with Holiday Cash bonus",
+      "finePrint": "2025-2027 KFX50 and KFX90 eligible for up to $300 FDI. Model and year exclusions apply; valid through 12/31/2026.",
+      "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers"
+    },
+    {
+      "id": "e0e39eebef8d",
+      "title": "Financing as Low as 2.95% for 36 Months on Select Models",
       "type": "apr",
       "amount": null,
       "apr": 2.95,
@@ -156,14 +187,40 @@
       ],
       "start": null,
       "end": "2026-12-31",
-      "eligibility": "Subject to credit approval; amount financed of $2,500 or more",
+      "eligibility": "Subject to credit approval; APR of 2.95%, 16.45% or 22.95% assigned",
       "combinable": "",
-      "finePrint": "APR of 2.95%, 16.45% or 22.95% assigned with 0%-15% down based on credit. Model and year exclusions apply.",
+      "finePrint": "Amount financed of $2,500 or more on select new unregistered models; 0%-15% down payment required. Example: $30.40 per $1,000 financed at 2.95% for 36 months.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "c7d8d97b596a",
-      "title": "Up to $4,000 Savings on Ninja 7 Hybrid and Z7 Hybrid",
+      "id": "818d3211a075",
+      "title": "$200 Holiday Cash Bonus on Youth Motorcycles",
+      "type": "bonus",
+      "amount": 200,
+      "apr": null,
+      "termMonths": null,
+      "category": "Motorcycle",
+      "modelYears": [
+        2025,
+        2026,
+        2027
+      ],
+      "models": [
+        "KX 65",
+        "KX 85",
+        "KX 112",
+        "KLX 140R"
+      ],
+      "start": null,
+      "end": "2026-12-31",
+      "eligibility": "US residents 13 or older who complete the Holiday Cash form and present the redemption code at a participating dealer",
+      "combinable": "Can be combined with up to $700 factory-direct-incentive",
+      "finePrint": "$200 off new, unregistered 2025-2027 KX65, KX85, KX112 and KLX140R. Must complete Holiday Cash form submission; valid through 12/31/2026.",
+      "sourceUrl": "https://www.kawasaki.com/en-us/holiday-cash"
+    },
+    {
+      "id": "10ddbd4384ee",
+      "title": "Up to $4,000 Savings on Hybrid Motorcycles",
       "type": "cash",
       "amount": 4000,
       "apr": null,
@@ -178,7 +235,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -198,12 +255,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "fc8adf61968e",
-      "title": "Up to $2,500 Savings on KX250F, KX450SR and KX250FX",
+      "id": "1dea7b6c50e4",
+      "title": "Up to $2,500 Savings on Select KX Models",
       "type": "cash",
       "amount": 2500,
       "apr": null,
@@ -219,7 +276,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -238,12 +295,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "a0b87084f646",
-      "title": "Up to $1,000 Savings on Z900, Z900RS and KLR650",
+      "id": "d16348354ac3",
+      "title": "Up to $1,000 Savings on Select Motorcycles",
       "type": "cash",
       "amount": 1000,
       "apr": null,
@@ -259,7 +316,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -278,29 +335,34 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "56cac29279df",
-      "title": "Up to $700 Savings on KX65, KX85 and KX112",
+      "id": "8243c70377b7",
+      "title": "Up to $700 Factory-Direct-Incentive on Youth Motorcycles",
       "type": "cash",
       "amount": 700,
       "apr": null,
       "termMonths": null,
       "category": "Motorcycle",
-      "modelYears": [],
+      "modelYears": [
+        2025,
+        2026,
+        2027
+      ],
       "models": [
         "KX™65",
         "KX™85",
-        "KX™112"
+        "KX™112",
+        "KLX®140R"
       ],
       "start": null,
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
-      "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
-      "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
+      "combinable": "May be combined with promotional retail financing rates; stacks with Holiday Cash bonus",
+      "finePrint": "2025-2027 KX65, KX85, KX112 and KLX140R eligible for up to $700 FDI. Model and year exclusions apply; valid through 12/31/2026.",
+      "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers"
     },
     {
       "id": "f57d416844d6",
@@ -318,11 +380,11 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "cd78f4d55008",
+      "id": "8d2b7956605e",
       "title": "Up to $500 Savings on Select Motorcycles",
       "type": "cash",
       "amount": 500,
@@ -338,7 +400,6 @@
         "Z650RS",
         "VERSYS® 650",
         "VULCAN® S",
-        "KLX®140R",
         "KLX®230R",
         "KLX®230",
         "KLX®230SM",
@@ -348,7 +409,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -367,7 +428,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -386,12 +447,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "6bc13aedc4ad",
-      "title": "Financing as low as 2.95% for 36 months on NAV 4e",
+      "id": "2bd8cfaf6569",
+      "title": "Financing as Low as 2.95% for 36 Months on NAV 4e",
       "type": "apr",
       "amount": null,
       "apr": 2.95,
@@ -403,10 +464,10 @@
       ],
       "start": null,
       "end": "2026-12-31",
-      "eligibility": "Subject to credit approval; amount financed of $2,500 or more",
+      "eligibility": "Subject to credit approval; APR of 2.95%, 16.45% or 22.95% assigned",
       "combinable": "",
-      "finePrint": "APR of 2.95%, 16.45% or 22.95% assigned with 0%-15% down based on credit. Model and year exclusions apply.",
-      "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
+      "finePrint": "Amount financed of $2,500 or more on select new unregistered models; 0%-15% down payment required. Model and year exclusions apply.",
+      "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event?filtermodel=nav-ptv_nav"
     },
     {
       "id": "85f99510bb08",
@@ -424,7 +485,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -443,12 +504,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "dc0f3c7a6f13",
-      "title": "Up to $3,000 Savings on Teryx KRX 1000, Teryx KRX4 1000 and Teryx4/5 H2",
+      "id": "368cb92bb742",
+      "title": "Up to $3,000 Savings on Select Teryx Models",
       "type": "cash",
       "amount": 3000,
       "apr": null,
@@ -464,12 +525,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "39705dd5f636",
-      "title": "Up to $2,500 Savings on Mule Pro-FXT 1000",
+      "id": "dac7035680f5",
+      "title": "Up to $2,500 Savings on MULE PRO-FXT 1000",
       "type": "cash",
       "amount": 2500,
       "apr": null,
@@ -483,12 +544,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "060a3e1f2d76",
-      "title": "Up to $2,000 Savings on Mule Pro-FXR 1000",
+      "id": "c671e1a82005",
+      "title": "Up to $2,000 Savings on MULE PRO-FXR 1000",
       "type": "cash",
       "amount": 2000,
       "apr": null,
@@ -502,12 +563,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "d12bf4b9ec95",
-      "title": "Up to $1,500 Savings on Mule Pro-FX 1000 and Teryx4",
+      "id": "601ca2fc8877",
+      "title": "Up to $1,500 Savings on MULE PRO-FX 1000 and Teryx4",
       "type": "cash",
       "amount": 1500,
       "apr": null,
@@ -522,12 +583,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "e6a14864d480",
-      "title": "Up to $1,250 Savings on Mule Pro-MX",
+      "id": "81b6a4fdbd22",
+      "title": "Up to $1,250 Savings on MULE PRO-MX",
       "type": "cash",
       "amount": 1250,
       "apr": null,
@@ -541,7 +602,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -560,12 +621,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "954b82e6b97e",
-      "title": "Up to $500 Savings on Select Mule Models",
+      "id": "95a7f571ecf4",
+      "title": "Up to $500 Savings on Select MULE Models",
       "type": "cash",
       "amount": 500,
       "apr": null,
@@ -581,12 +642,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "1ad9e9265b4d",
-      "title": "0% APR financing for 60 months on Jet Ski",
+      "id": "5bf5a0038333",
+      "title": "0% APR Financing for 60 Months on Jet Ski",
       "type": "apr",
       "amount": null,
       "apr": 0,
@@ -601,9 +662,9 @@
       "models": [],
       "start": "2026-10-01",
       "end": "2026-12-31",
-      "eligibility": "Well-qualified tier 1 credit customers financing through Kawasaki Finance Services; all states except New York",
+      "eligibility": "Well-qualified tier 1 credit customers through Kawasaki Finance Services; all states except New York",
       "combinable": "",
-      "finePrint": "Applies to new 2024 or newer unregistered Kawasaki JET SKI; $16.67 per month per $1,000 financed. Must take delivery from retail stock by 12/31/2026.",
+      "finePrint": "New 2024 or newer unregistered Jet Ski; $16.67 per month per $1,000 financed. Must take delivery from retail stock by 12/31/2026.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -623,12 +684,12 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
-      "id": "9dcd98e3476b",
-      "title": "Up to $2,000 Savings on Jet Ski STX 160 and Ultra 160LX-S Angler",
+      "id": "511985e0dc12",
+      "title": "Up to $2,000 Savings on Select Jet Ski Models",
       "type": "cash",
       "amount": 2000,
       "apr": null,
@@ -643,7 +704,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     },
     {
@@ -662,7 +723,7 @@
       "end": "2026-12-31",
       "eligibility": "Approved purchases of select new unregistered Kawasaki vehicles at participating dealers",
       "combinable": "May be combined with promotional retail financing rates",
-      "finePrint": "Model and year exclusions apply. Subject to change without notice.",
+      "finePrint": "Model and year exclusions apply. Valid through 12/31/2026 and subject to change without notice.",
       "sourceUrl": "https://www.kawasaki.com/en-us/research-tools/current-offers/14/sales-event"
     }
   ]
