@@ -180,11 +180,11 @@
       "sourceUrl": "https://yamahamotorsports.com/Blogs.php?action=promotionArticle&blog_id=lets-ride-t7"
     },
     {
-      "id": "f56fda36a156",
+      "id": "b44a61226892",
       "title": "Introductory 0% APR for 12 months on the Yamaha Credit Card on select new youth models",
-      "type": "apr",
+      "type": "other",
       "amount": null,
-      "apr": 0,
+      "apr": null,
       "termMonths": 12,
       "category": "Off-Road Motorcycle / ATV",
       "modelYears": [

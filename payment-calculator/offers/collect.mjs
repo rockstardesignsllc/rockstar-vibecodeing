@@ -48,6 +48,8 @@ const MIN_PAGE_CHARS = 400;
 /* Offers publish without a person reviewing them, so anything outside these limits is held back and reported. */
 const MAX_CASH = 10000;
 const MAX_APR = 25;
+/* Shortest Deal Desk term. A shorter promotional rate (deferred interest, card intro APR) cannot be applied to a loan. */
+const MIN_APR_TERM = 24;
 const MIN_KEEP_SHARE = 0.5;
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36';
 const DETAIL_LINK = /offer|promo|rebate|incentive|financ|bonus|savings|disclaim|terms|details|fine-?print|legal/i;
@@ -206,6 +208,11 @@ function clean(slug, offers, sources) {
     if (o.amount != null && (o.amount <= 0 || o.amount > MAX_CASH)) { dropped.push('HELD BACK: "' + o.title + '" has an amount of ' + money(o.amount) + ', outside $1 to ' + money(MAX_CASH) + '.'); continue; }
     if (o.apr != null && (o.apr < 0 || o.apr > MAX_APR)) { dropped.push('HELD BACK: "' + o.title + '" has an APR of ' + o.apr + '%, outside 0% to ' + MAX_APR + '%.'); continue; }
     if (!o.models.length && !o.category.trim()) { dropped.push('HELD BACK: "' + o.title + '" names no models and no category.'); continue; }
+    if (o.type === 'apr' && o.termMonths != null && o.termMonths < MIN_APR_TERM) {
+      dropped.push('"' + o.title + '" is a ' + o.termMonths + '-month promotional rate, so it is listed without "Use this rate".');
+      o.type = 'other';
+      o.apr = null;
+    }
     const id = sha([slug, o.type, o.title, o.models.join('|'), o.modelYears.join('|'), o.end || ''].join('#')).slice(0, 12);
     kept.push({ id, ...o });
   }
