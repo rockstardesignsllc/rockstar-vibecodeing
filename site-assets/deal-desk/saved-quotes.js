@@ -1,4 +1,4 @@
-/* Rockstar Deal Desk v3.18 | saved quotes page | hosted engine
+/* Rockstar Deal Desk v3.19 | saved quotes page | hosted engine
    Served from https://assets.rockstarinfo.com/deal-desk/ . Built by payment-calculator/build_hosted.py. Do not edit here. */
 (function () {
   var root = document.getElementById('rsq');
@@ -36,7 +36,7 @@
   Object.assign(CONFIG, (window.__RSDD && window.__RSDD.cfg) || {});
   /* ==================================================== */
 
-  const VERSION = '3.18';
+  const VERSION = '3.19';
   const KEEP_DAYS = 90;
   const root = document.getElementById('rsq');
   if (!root) return;
