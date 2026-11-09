@@ -4,6 +4,9 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.19
+- Factory offers: a promotional rate shorter than 24 months (deferred interest such as "no interest for 6 months", or a store credit card's intro APR) is listed as an offer without **Use this rate**, because it cannot be applied to a 24 to 144 month loan. `offers/collect.mjs` does this on every run; the 2026-11-09 Indian and Yamaha offers were corrected by hand.
+
 ## v3.18
 - Fix: the live loader pages put the calculator's styles next to the calculator instead of in the page `<head>`. HighLevel rewrites `<head>` and can drop added tags, which would leave the calculator unstyled (the same problem found and fixed on localchurchgathering.com). Nothing changes on screen.
 

@@ -94,11 +94,11 @@
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
-      "id": "acc8dd07dcb3",
+      "id": "8c7ae4ae08d8",
       "title": "No Interest for 6 Months, No Payment for 7 Months on 2024 FTR and 2025 Models",
-      "type": "apr",
+      "type": "other",
       "amount": null,
-      "apr": 0,
+      "apr": null,
       "termMonths": 6,
       "category": "Motorcycle",
       "modelYears": [
