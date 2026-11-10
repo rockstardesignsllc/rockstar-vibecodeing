@@ -1,5 +1,9 @@
 # Rockstar AI Audit changelog
 
+## v1.8.1: Call Coach test-score fix
+- "Test on one call" now fetches the call straight from HighLevel by its message ID instead of looking for it in the recent-calls list, which came back empty on the first live test. The recent-calls check asks under both HighLevel API versions.
+- The setup page (`pages/call-coach-setup.html` v1.1) shows how many calls the last automatic check saw, and any error it hit.
+
 ## v1.8: Call Coach phase 1 (call scoring and coaching)
 - New Call Coach under `/coach` on the same Worker (`worker/src/coach/`). Every 5 minutes it reads each dealership's new
   inbound HighLevel calls, waits until a call is 10 minutes old, pulls the transcript, and has Claude score it against
