@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.8.3: Call Coach transcript fetch
+- A transcript that HighLevel refuses to hand over (token scope, API version) is now reported with HighLevel's own error instead of "no transcript". The transcript route is asked under both API versions.
+
 ## v1.8.2: Call Coach works with Private Integration tokens
 - HighLevel refuses the single-message read to Private Integration tokens (401 "Token source/channel mismatch"). "Test on one call" now pages through the sub-account's call list to find the call. The list is sorted newest first on our side.
 - Setup page v1.2 reports how many calls HighLevel returned and their date range when a call is not found.

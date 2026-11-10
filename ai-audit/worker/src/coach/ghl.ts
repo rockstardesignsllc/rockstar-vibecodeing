@@ -80,20 +80,36 @@ export async function findCall(dealer: Dealer, messageId: string): Promise<CallS
 	return search;
 }
 
-/** The call's transcript, or an empty list while HighLevel has not produced one. */
+const sentences = (result: unknown): TranscriptSentence[] => {
+	if (Array.isArray(result)) return result.filter(isRecord);
+	if (!isRecord(result)) return [];
+	const nested = [result.transcription, result.transcript, result.data].find(Array.isArray);
+	return Array.isArray(nested) ? nested.filter(isRecord) : [];
+};
+
+/**
+ * The call's transcript, or an empty list when HighLevel has none (404). The route is asked under both API versions,
+ * and any other refusal is thrown so a token or scope problem is reported instead of read as "no transcript".
+ */
 export async function transcription(dealer: Dealer, messageId: string): Promise<TranscriptSentence[]> {
-	try {
-		const result = await request(dealer, 'GET', `/conversations/messages/${messageId}/locations/${dealer.location_id}/transcription`, CONVERSATIONS_VERSION);
-		return Array.isArray(result) ? result.filter(isRecord) : [];
-	} catch (error) {
-		if (error instanceof HighLevelError && (error.status === 404 || error.status === 400)) return [];
-		throw error;
+	const path = `/conversations/messages/${messageId}/locations/${dealer.location_id}/transcription`;
+	let refusal: HighLevelError | undefined;
+	for (const version of [VERSION, CONVERSATIONS_VERSION]) {
+		try {
+			const found = sentences(await request(dealer, 'GET', path, version));
+			if (found.length > 0) return found;
+		} catch (error) {
+			if (!(error instanceof HighLevelError)) throw error;
+			if (error.status !== 404) refusal ??= error;
+		}
 	}
+	if (refusal) throw refusal;
+	return [];
 }
 
 /** The call recording, streamed straight from HighLevel. */
 export const recording = (dealer: Dealer, messageId: string): Promise<Response> =>
-	fetch(`${API}/conversations/messages/${messageId}/locations/${dealer.location_id}/recording`, { headers: headers(dealer, CONVERSATIONS_VERSION) });
+	fetch(`${API}/conversations/messages/${messageId}/locations/${dealer.location_id}/recording`, { headers: headers(dealer, VERSION) });
 
 export interface Person {
 	id: string;
