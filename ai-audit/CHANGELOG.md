@@ -1,5 +1,19 @@
 # Rockstar AI Audit changelog
 
+## v1.8: Call Coach phase 1 (call scoring and coaching)
+- New Call Coach under `/coach` on the same Worker (`worker/src/coach/`). Every 5 minutes it reads each dealership's new
+  inbound HighLevel calls, waits until a call is 10 minutes old, pulls the transcript, and has Claude score it against
+  that department's call framework (Sales, BDC or Service). Calls under 60 seconds, voicemails, wrong numbers and
+  AI-answered calls are skipped.
+- Results: a contact note titled "[customer] inbound call [date] [time] [staff]", a coaching email to the staff member
+  with managers copied (wins first, then tune-ups with "say this next time" wording from the framework), a full summary
+  page with the scorecard and recording, a manager dashboard by day, and a 7 AM dealership-time summary email.
+- One `DealerCoach` Durable Object per HighLevel sub-account (migration `v3`) holds its settings, token and scores.
+  New var `COACH_BASE_URL`. No new secrets; the setup page and admin routes use `ADMIN_KEY`.
+- `pages/call-coach-setup.html` v1.0, served at `/coach/setup`: turn on a dealership, paste or upload (PDF) its
+  frameworks, and test-score a single call.
+- The Rex practice call is phase 2 and is not in this release.
+
 ## v1.7: Demo features and price-close order
 - Rex names the main features in plain words when asked (touchscreen, sound system, moonroof, heated and cooled seats, driver assists) and never quotes package codes like "502A".
 - No cash, finance, lease, trade or down payment questions until the shopper brings up price or payments.

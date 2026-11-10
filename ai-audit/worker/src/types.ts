@@ -1,16 +1,20 @@
 import type Anthropic from '@anthropic-ai/sdk';
+import type { DealerCoach } from './coach/dealer';
 import type { DemoSession } from './demo/session';
 import type { AuditSession } from './session';
 
 export interface Env {
 	AUDIT_SESSIONS: DurableObjectNamespace<AuditSession>;
 	DEMO_SESSIONS: DurableObjectNamespace<DemoSession>;
+	DEALER_COACH: DurableObjectNamespace<DealerCoach>;
 	START_LIMITER: RateLimit;
 	MESSAGE_LIMITER: RateLimit;
 	ALLOWED_ORIGINS: string;
 	BOOKING_URL: string;
 	HIGHLEVEL_LOCATION_ID: string;
 	MODEL: string;
+	/** Public address of this Worker, used in Call Coach email and note links. */
+	COACH_BASE_URL: string;
 	ANTHROPIC_API_KEY: string;
 	/** Optional, for example a Cloudflare AI Gateway URL for request logs and cost tracking. */
 	ANTHROPIC_BASE_URL?: string;
