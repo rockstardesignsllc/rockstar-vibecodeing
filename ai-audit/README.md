@@ -171,3 +171,31 @@ Resend a finished demo: `curl -X POST -H "x-admin-key: <ADMIN_KEY>" https://rock
 | `pages/bdc-demo.html` | The Rex BDC Demo page for bdcdemo.aifordealers.com |
 | `emails/bdc-demo-notification.html` | Mat's email body for the BDC demo workflow |
 | `worker/src/demo/` | The BDC demo: `session.ts` (Durable Object), `prompt.ts` (Rex's script), `tools.ts`, `highlevel.ts` (fields, tags, recap) |
+
+## Call Coach (call scoring and coaching)
+
+Scores every inbound sales, BDC and service call a dealership takes in HighLevel and coaches the staff member. Code in
+`worker/src/coach/`; the rubric is `rubric.ts`, the coaching voice is the system prompt in `score.ts`.
+
+```
+HighLevel calls + transcripts  ──►  Worker /coach (one DealerCoach Durable Object per sub-account, polls every 5 min)
+                                      ├──►  Claude scores the call against the department's framework
+                                      ├──►  HighLevel: contact note, coaching email (staff + managers), 7 AM summary email
+                                      └──►  Dashboard, full call summary and recording pages (links carry the dealer's view key)
+```
+
+### Turn on a dealership
+
+1. In the dealership's sub-account: Settings, Private Integrations, create "Rockstar Call Coach" with the scopes
+   `conversations.readonly`, `conversations/message.readonly`, `conversations/message.write`, `contacts.readonly`,
+   `contacts.write`, `users.readonly` and `locations.readonly`. The sub-account needs call recording and call
+   transcription turned on.
+2. Open `https://rockstar-ai-audit.rockstar-designs-llc.workers.dev/coach/setup`. Enter the `ADMIN_KEY`, the
+   sub-account's location ID and the token, then the manager emails, which phone number belongs to which department,
+   and one framework per department (paste text or upload a PDF). Save.
+3. Use "Test on one call" to score a recorded call without sending anything, then check the summary page.
+4. Saving shows the manager dashboard link. Add it to the sub-account as a Custom Menu Link (open in an iframe) so
+   managers see it inside HighLevel.
+
+Only calls that come in after setup are scored automatically. Emails go out through the sub-account's own HighLevel
+email, so each staff member and the first manager get a contact record there.

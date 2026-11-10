@@ -10,13 +10,18 @@
  *   GET /demo/embed.js (the demo page itself, see demo/embed.ts),
  *   POST /demo/sessions, GET /demo/sessions/<id>, POST /demo/sessions/<id>/messages, POST /demo/sessions/<id>/redeliver
  * Each demo lives in its own DemoSession Durable Object.
+ *
+ * Call Coach (call scoring and coaching for dealerships) lives under /coach, see coach/routes.ts.
  */
+import { DealerCoach } from './coach/dealer';
+import { handleCoach } from './coach/routes';
 import { demoEmbed } from './demo/embed';
 import { DemoSession, type DemoResult } from './demo/session';
+import { sameText } from './admin';
 import { AuditSession, MAX_MESSAGE_CHARS, type SessionResult } from './session';
 import type { Env } from './types';
 
-export { AuditSession, DemoSession };
+export { AuditSession, DealerCoach, DemoSession };
 
 const SESSION_ID = /^[0-9a-f]{64}$/;
 const MAX_BODY_BYTES = MAX_MESSAGE_CHARS * 4 + 256;
@@ -43,14 +48,6 @@ const fromResult = <T extends object>(result: SessionResult<T> | DemoResult<T>, 
 	result.ok ? json(200, result.value, origin) : json(result.status, { error: result.error }, origin);
 
 const clientKey = (request: Request): string => request.headers.get('cf-connecting-ip') ?? 'unknown';
-
-const sameText = (a: string, b: string): boolean => {
-	const x = new TextEncoder().encode(a);
-	const y = new TextEncoder().encode(b);
-	let diff = x.length ^ y.length;
-	for (let i = 0; i < Math.max(x.length, y.length); i++) diff |= (x[i] ?? 0) ^ (y[i] ?? 0);
-	return diff === 0;
-};
 
 async function readText(request: Request): Promise<string | null> {
 	const body = await request.text();
@@ -124,6 +121,7 @@ export default {
 		}
 		if (request.method === 'GET' && parts.length === 0) return json(200, { ok: true, service: 'rockstar-ai-audit' }, origin);
 		if (parts[0] === 'demo') return handleDemo(request, env, parts.slice(1), origin);
+		if (parts[0] === 'coach') return handleCoach(request, env, parts.slice(1), url);
 		if (parts[0] !== 'sessions') return json(404, { error: 'not found' }, origin);
 
 		if (parts.length === 1) {

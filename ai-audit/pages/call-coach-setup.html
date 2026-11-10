@@ -1,0 +1,195 @@
+<!-- Rockstar Call Coach setup v1.0 | Updated 2026-11-10 23:20 UTC -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Call Coach setup</title>
+<style>
+	:root { --ink:#16181d; --muted:#5f6672; --line:#d9dde3; --bg:#f4f5f7; --ok:#1a9c4b; --bad:#d93025; }
+	* { box-sizing:border-box; }
+	body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+	main { max-width:760px; margin:0 auto; padding:24px 16px 60px; }
+	h1 { font-size:26px; margin:0 0 4px; }
+	h2 { font-size:18px; margin:0 0 12px; }
+	.card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-top:18px; }
+	label { display:block; font-weight:600; font-size:14px; margin:14px 0 4px; }
+	label small, p.hint { font-weight:400; color:var(--muted); font-size:13px; margin:2px 0 0; display:block; }
+	input[type=text], input[type=password], textarea, select { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; font:inherit; background:#fff; }
+	textarea { min-height:140px; resize:vertical; }
+	.row { display:flex; gap:12px; flex-wrap:wrap; }
+	.row > div { flex:1 1 220px; }
+	button { font:inherit; font-weight:700; padding:11px 18px; border-radius:8px; border:0; background:var(--ink); color:#fff; cursor:pointer; margin-top:16px; }
+	button.light { background:#fff; color:var(--ink); border:1px solid var(--line); }
+	button:disabled { opacity:.5; cursor:wait; }
+	.check { display:flex; gap:8px; align-items:center; font-weight:600; font-size:14px; margin-top:14px; }
+	#msg { margin-top:16px; padding:12px 14px; border-radius:8px; display:none; white-space:pre-wrap; word-break:break-word; }
+	#msg.ok { display:block; background:#e8f6ee; color:#0e5c2c; }
+	#msg.bad { display:block; background:#fdecea; color:#8c1d15; }
+	a { color:var(--ink); }
+</style>
+</head>
+<body>
+<main>
+	<h1>Call Coach setup</h1>
+	<p class="hint">Turn on call scoring for one dealership. Fill in the top card, press Load to pull existing settings, then Save.</p>
+
+	<div class="card">
+		<h2>1. Who</h2>
+		<label for="admin">Rockstar admin key</label>
+		<input id="admin" type="password" autocomplete="off">
+		<label for="loc">HighLevel sub-account (location) ID</label>
+		<input id="loc" type="text" autocomplete="off" placeholder="hrsRmtnUmvqCKm3d01tx">
+		<label for="token">Private Integration token <small>From the sub-account: Settings, Private Integrations. Leave blank to keep the saved one.</small></label>
+		<input id="token" type="password" autocomplete="off">
+		<button class="light" id="load" type="button">Load saved settings</button>
+	</div>
+
+	<div class="card">
+		<h2>2. Dealership</h2>
+		<div class="row">
+			<div><label for="name">Name <small>Blank uses the HighLevel name.</small></label><input id="name" type="text"></div>
+			<div><label for="tz">Time zone <small>Blank uses the HighLevel one.</small></label><input id="tz" type="text" placeholder="America/Chicago"></div>
+		</div>
+		<label for="managers">Manager emails <small>Comma separated. They are copied on every coaching email and get the 7 AM summary.</small></label>
+		<input id="managers" type="text" placeholder="gm@dealer.com, salesmanager@dealer.com">
+		<label for="numbers">Phone numbers by department <small>One per line, like +18665213366 = sales. Departments: sales, bdc, service. Numbers not listed are sorted by the AI.</small></label>
+		<textarea id="numbers" style="min-height:80px" placeholder="+18665213366 = sales&#10;+18449911777 = service"></textarea>
+		<div class="row">
+			<div><label for="min">Shortest call to score (seconds)</label><input id="min" type="text" value="60"></div>
+			<div><label for="dept">Department when unsure</label><select id="dept"><option value="sales">Sales</option><option value="bdc">BDC</option><option value="service">Service</option></select></div>
+		</div>
+		<label class="check"><input id="emails" type="checkbox" checked> Send coaching emails and the 7 AM summary</label>
+		<label class="check"><input id="enabled" type="checkbox" checked> Scoring is on</label>
+	</div>
+
+	<div class="card">
+		<h2>3. Call frameworks</h2>
+		<p class="hint">One per department. Paste the text or upload a PDF and it is read in for you.</p>
+		<label for="s-sales">Sales</label>
+		<textarea id="s-sales"></textarea><input type="file" accept="application/pdf" data-for="s-sales">
+		<label for="s-bdc">BDC</label>
+		<textarea id="s-bdc"></textarea><input type="file" accept="application/pdf" data-for="s-bdc">
+		<label for="s-service">Service</label>
+		<textarea id="s-service"></textarea><input type="file" accept="application/pdf" data-for="s-service">
+		<br><button id="save" type="button">Save settings</button>
+	</div>
+
+	<div class="card">
+		<h2>4. Test on one call</h2>
+		<p class="hint">Scores a single call right now, even an old one. The message ID is in the call's HighLevel conversation URL or the API.</p>
+		<label for="mid">Call message ID</label>
+		<input id="mid" type="text" autocomplete="off">
+		<label class="check"><input id="deliver" type="checkbox"> Also write the contact note and send the email</label>
+		<button id="test" type="button">Score this call</button>
+	</div>
+
+	<div id="msg" role="status"></div>
+</main>
+<script>
+(function () {
+	var $ = function (id) { return document.getElementById(id); };
+	var DEPTS = ['sales', 'bdc', 'service'];
+	var msg = $('msg');
+	function say(kind, text, link) {
+		msg.className = kind;
+		msg.textContent = text;
+		if (link) {
+			var a = document.createElement('a');
+			a.href = link; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Open the manager dashboard';
+			msg.appendChild(document.createElement('br')); msg.appendChild(a);
+		}
+	}
+	function base() {
+		var loc = $('loc').value.trim();
+		if (!$('admin').value || !loc) { say('bad', 'Enter the admin key and the sub-account ID first.'); return null; }
+		return '/coach/admin/dealers/' + encodeURIComponent(loc);
+	}
+	function api(method, path, body, raw) {
+		var headers = { 'x-admin-key': $('admin').value };
+		if (body && !raw) headers['content-type'] = 'application/json';
+		return fetch(path, { method: method, headers: headers, body: body ? (raw ? body : JSON.stringify(body)) : undefined }).then(function (r) {
+			return r.json().then(function (data) {
+				if (!r.ok) throw new Error(data.error || ('Error ' + r.status));
+				return data;
+			});
+		});
+	}
+	function busy(button, on) { button.disabled = on; }
+	function dashboard(config) { return '/coach/d/' + config.location_id + '?key=' + config.view_key; }
+	function fill(status) {
+		var c = status.config;
+		$('name').value = c.name || '';
+		$('tz').value = c.timezone || '';
+		$('managers').value = (c.managers || []).join(', ');
+		$('numbers').value = Object.keys(c.numbers || {}).map(function (n) { return n + ' = ' + c.numbers[n]; }).join('\n');
+		$('min').value = c.min_seconds;
+		$('dept').value = c.default_department;
+		$('emails').checked = c.send_emails;
+		$('enabled').checked = c.enabled;
+		DEPTS.forEach(function (d) { $('s-' + d).value = (c.scripts || {})[d] || ''; });
+		say('ok', c.name + ': ' + status.scored + ' calls scored, ' + status.skipped + ' skipped, ' + status.errors + ' errors.' + (c.has_token ? '' : ' No token saved.'), dashboard(c));
+	}
+	$('load').onclick = function () {
+		var path = base(); if (!path) return;
+		busy(this, true); var b = this;
+		api('GET', path).then(fill).catch(function (e) { say('bad', e.message); }).then(function () { busy(b, false); });
+	};
+	$('save').onclick = function () {
+		var path = base(); if (!path) return;
+		var numbers = {};
+		$('numbers').value.split('\n').forEach(function (line) {
+			var parts = line.split('=');
+			if (parts.length === 2 && parts[0].trim()) numbers[parts[0].trim().replace(/[^+\d]/g, '')] = parts[1].trim().toLowerCase();
+		});
+		var scripts = {};
+		DEPTS.forEach(function (d) { scripts[d] = $('s-' + d).value.trim(); });
+		var body = {
+			name: $('name').value, timezone: $('tz').value,
+			managers: $('managers').value.split(',').map(function (m) { return m.trim(); }).filter(Boolean),
+			numbers: numbers, scripts: scripts,
+			min_seconds: Number($('min').value) || 60, default_department: $('dept').value,
+			send_emails: $('emails').checked, enabled: $('enabled').checked
+		};
+		if ($('token').value.trim()) body.token = $('token').value.trim();
+		busy(this, true); var b = this;
+		api('PUT', path, body).then(function (status) { $('token').value = ''; fill(status); msg.firstChild.textContent = 'Saved. ' + msg.firstChild.textContent; })
+			.catch(function (e) { say('bad', e.message); }).then(function () { busy(b, false); });
+	};
+	$('test').onclick = function () {
+		var path = base(); if (!path) return;
+		var id = $('mid').value.trim();
+		if (!id) { say('bad', 'Enter a call message ID.'); return; }
+		busy(this, true); var b = this;
+		say('ok', 'Scoring. This takes up to a minute.');
+		api('POST', path + '/run', { message_id: id, deliver: $('deliver').checked }).then(function (report) {
+			var p = report.processed[0];
+			if (!p) { say('bad', 'That call was not found in the 100 most recent calls.'); return; }
+			if (p.status === 'scored') {
+				return api('GET', path).then(function (status) {
+					say('ok', 'Scored ' + p.percent + '% for ' + p.staff_name + '.');
+					var a = document.createElement('a');
+					a.href = '/coach/d/' + status.config.location_id + '/call/' + p.id + '?key=' + status.config.view_key;
+					a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Open the full summary';
+					msg.appendChild(document.createElement('br')); msg.appendChild(a);
+				});
+			}
+			say('bad', 'Not scored: ' + p.skip_reason);
+		}).catch(function (e) { say('bad', e.message); }).then(function () { busy(b, false); });
+	};
+	Array.prototype.forEach.call(document.querySelectorAll('input[type=file]'), function (input) {
+		input.onchange = function () {
+			var file = input.files[0]; if (!file) return;
+			if (!$('admin').value) { say('bad', 'Enter the admin key first.'); input.value = ''; return; }
+			say('ok', 'Reading ' + file.name + '...');
+			api('POST', '/coach/admin/pdf', file, true).then(function (data) {
+				$(input.getAttribute('data-for')).value = data.text;
+				say('ok', 'Read ' + file.name + '. Check the text, then Save.');
+			}).catch(function (e) { say('bad', e.message); }).then(function () { input.value = ''; });
+		};
+	});
+})();
+</script>
+</body>
+</html>

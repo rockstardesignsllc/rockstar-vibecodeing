@@ -7,12 +7,14 @@
 	"durable_objects": {
 		"bindings": [
 			{ "name": "AUDIT_SESSIONS", "class_name": "AuditSession" },
-			{ "name": "DEMO_SESSIONS", "class_name": "DemoSession" }
+			{ "name": "DEMO_SESSIONS", "class_name": "DemoSession" },
+			{ "name": "DEALER_COACH", "class_name": "DealerCoach" }
 		]
 	},
 	"migrations": [
 		{ "tag": "v1", "new_sqlite_classes": ["AuditSession"] },
-		{ "tag": "v2", "new_sqlite_classes": ["DemoSession"] }
+		{ "tag": "v2", "new_sqlite_classes": ["DemoSession"] },
+		{ "tag": "v3", "new_sqlite_classes": ["DealerCoach"] }
 	],
 	"ratelimits": [
 		// New audits per visitor IP, per minute
@@ -27,6 +29,7 @@
 		"ALLOWED_ORIGINS": "https://aiaudit.rockstarinfo.com,https://app.rockstarinfo.com,https://rockstarinfo.com,https://www.rockstarinfo.com,https://getrockstarai.com,https://www.getrockstarai.com,https://bdcdemo.aifordealers.com,https://aifordealers.com,https://www.aifordealers.com",
 		"BOOKING_URL": "https://app.rockstarinfo.com/widget/bookings/rockstarai",
 		"HIGHLEVEL_LOCATION_ID": "hrsRmtnUmvqCKm3d01tx",
-		"MODEL": "claude-sonnet-5-5"
+		"MODEL": "claude-sonnet-5-5",
+		"COACH_BASE_URL": "https://rockstar-ai-audit.rockstar-designs-llc.workers.dev"
 	}
 }
