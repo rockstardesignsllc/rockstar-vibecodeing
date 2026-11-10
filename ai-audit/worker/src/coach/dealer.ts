@@ -27,7 +27,7 @@ const fail = (status: number, error: string): CoachResult<never> => ({ ok: false
 export interface DealerStatus {
 	config: PublicDealerConfig;
 	/** How many calls HighLevel returned on the last automatic check, and when. */
-	last_check: { at: string; calls_seen: number; error: string } | null;
+	last_check: { at: string; calls_seen: number; newest: string; error: string } | null;
 	scored: number;
 	skipped: number;
 	errors: number;
@@ -36,6 +36,9 @@ export interface DealerStatus {
 
 export interface RunReport {
 	looked_at: number;
+	/** Date range of the calls HighLevel returned. */
+	newest: string;
+	oldest: string;
 	processed: Array<Pick<CallRecord, 'id' | 'status' | 'skip_reason' | 'percent' | 'staff_name'>>;
 }
 
@@ -202,10 +205,10 @@ export class DealerCoach extends DurableObject<Env> {
 			this.busy = true;
 			try {
 				const report = await this.poll(config, {});
-				await this.ctx.storage.put(LAST_CHECK_KEY, { at: new Date().toISOString(), calls_seen: report.looked_at, error: '' });
+				await this.ctx.storage.put(LAST_CHECK_KEY, { at: new Date().toISOString(), calls_seen: report.looked_at, newest: report.newest, error: '' });
 				await this.digest(config);
 			} catch (error) {
-				await this.ctx.storage.put(LAST_CHECK_KEY, { at: new Date().toISOString(), calls_seen: 0, error: errorText(error).slice(0, 300) });
+				await this.ctx.storage.put(LAST_CHECK_KEY, { at: new Date().toISOString(), calls_seen: 0, newest: '', error: errorText(error).slice(0, 300) });
 				console.error(`call coach ${config.location_id}: ${errorText(error)}`);
 			} finally {
 				this.busy = false;
@@ -216,9 +219,9 @@ export class DealerCoach extends DurableObject<Env> {
 
 	private async poll(config: DealerConfig, options: { message_id?: string; deliver?: boolean }): Promise<RunReport> {
 		if (options.message_id) {
-			const call = await ghl.callMessage(config, options.message_id);
-			const record = call ? await this.process(config, call, options.deliver !== false, true) : undefined;
-			return { looked_at: call ? 1 : 0, processed: record ? [summary(record)] : [] };
+			const search = await ghl.findCall(config, options.message_id);
+			const record = search.call ? await this.process(config, search.call, options.deliver !== false, true) : undefined;
+			return { looked_at: search.looked_at, newest: search.newest, oldest: search.oldest, processed: record ? [summary(record)] : [] };
 		}
 		const calls = await ghl.recentCalls(config);
 		const now = Date.now();
@@ -233,7 +236,7 @@ export class DealerCoach extends DurableObject<Env> {
 				!this.stored(call.id)
 			);
 		});
-		const report: RunReport = { looked_at: calls.length, processed: [] };
+		const report: RunReport = { looked_at: calls.length, newest: calls[0]?.dateAdded ?? '', oldest: calls[calls.length - 1]?.dateAdded ?? '', processed: [] };
 		await this.finishDeliveries(config, calls);
 		for (const call of due.reverse().slice(0, MAX_CALLS_PER_RUN)) {
 			const record = await this.process(config, call, options.deliver !== false, false);

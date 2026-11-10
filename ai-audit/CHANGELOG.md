@@ -1,5 +1,9 @@
 # Rockstar AI Audit changelog
 
+## v1.8.2: Call Coach works with Private Integration tokens
+- HighLevel refuses the single-message read to Private Integration tokens (401 "Token source/channel mismatch"). "Test on one call" now pages through the sub-account's call list to find the call. The list is sorted newest first on our side.
+- Setup page v1.2 reports how many calls HighLevel returned and their date range when a call is not found.
+
 ## v1.8.1: Call Coach test-score fix
 - "Test on one call" now fetches the call straight from HighLevel by its message ID instead of looking for it in the recent-calls list, which came back empty on the first live test. The recent-calls check asks under both HighLevel API versions.
 - The setup page (`pages/call-coach-setup.html` v1.1) shows how many calls the last automatic check saw, and any error it hit.
