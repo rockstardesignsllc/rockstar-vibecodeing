@@ -104,7 +104,7 @@ const sentences = (result: unknown): TranscriptSentence[] => {
  * and any other refusal is thrown so a token or scope problem is reported instead of read as "no transcript".
  */
 export async function transcription(dealer: Dealer, messageId: string): Promise<TranscriptSentence[]> {
-	const path = `/conversations/messages/${messageId}/locations/${dealer.location_id}/transcription`;
+	const path = `/conversations/locations/${dealer.location_id}/messages/${messageId}/transcription`;
 	let refusal: HighLevelError | undefined;
 	for (const version of [VERSION, CONVERSATIONS_VERSION]) {
 		try {

@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.8.5: Call Coach transcript address
+- The transcript was requested at the wrong HighLevel address (location and message swapped), so every call read as "no transcript". It now uses `/conversations/locations/<location>/messages/<message>/transcription`.
+
 ## v1.8.4: Test a call by its conversation ID
 - "Test on one call" (setup page v1.3) accepts the conversation ID from the HighLevel URL and scores that conversation's longest answered inbound call. A call's message ID still works.
 
