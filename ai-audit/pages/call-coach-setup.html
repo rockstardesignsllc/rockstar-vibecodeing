@@ -1,4 +1,4 @@
-<!-- Rockstar Call Coach setup v1.2 | Updated 2026-11-10 23:55 UTC -->
+<!-- Rockstar Call Coach setup v1.3 | Updated 2026-11-11 00:00 UTC -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -78,8 +78,8 @@
 
 	<div class="card">
 		<h2>4. Test on one call</h2>
-		<p class="hint">Scores a single call right now, even an old one. The message ID is in the call's HighLevel conversation URL or the API.</p>
-		<label for="mid">Call message ID</label>
+		<p class="hint">Scores a single call right now, even an old one. Paste the conversation ID from the end of the HighLevel conversation URL (it scores that conversation's longest answered inbound call), or a call's message ID.</p>
+		<label for="mid">Conversation ID or call message ID</label>
 		<input id="mid" type="text" autocomplete="off">
 		<label class="check"><input id="deliver" type="checkbox"> Also write the contact note and send the email</label>
 		<button id="test" type="button">Score this call</button>
@@ -160,7 +160,7 @@
 	$('test').onclick = function () {
 		var path = base(); if (!path) return;
 		var id = $('mid').value.trim();
-		if (!id) { say('bad', 'Enter a call message ID.'); return; }
+		if (!id) { say('bad', 'Enter a conversation ID or a call message ID.'); return; }
 		busy(this, true); var b = this;
 		say('ok', 'Scoring. This takes up to a minute.');
 		api('POST', path + '/run', { message_id: id, deliver: $('deliver').checked }).then(function (report) {

@@ -42,6 +42,7 @@ export interface CallMessage {
 	direction?: string;
 	status?: string;
 	contactId?: string;
+	conversationId?: string;
 	userId?: string;
 	dateAdded: string;
 	from?: string;

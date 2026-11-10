@@ -59,12 +59,22 @@ export interface CallSearch {
 	oldest: string;
 }
 
+const isAnsweredInbound = (call: CallMessage): boolean => call.direction === 'inbound' && call.status === 'completed';
+
+/** The call a conversation id most likely means: its longest answered inbound call, else its longest call. */
+const bestOf = (calls: CallMessage[]): CallMessage | undefined => {
+	const pool = calls.some(isAnsweredInbound) ? calls.filter(isAnsweredInbound) : calls;
+	return [...pool].sort((x, y) => (y.meta?.call?.duration ?? 0) - (x.meta?.call?.duration ?? 0))[0];
+};
+
 /**
- * Finds one call by its message id by paging through the sub-account's calls. HighLevel refuses the single-message
- * read to Private Integration tokens, so the export list is the only way to reach a call without its contact.
+ * Finds one call by its message id, or the best call of a conversation by the conversation id, by paging through the
+ * sub-account's calls. HighLevel refuses the single-message read to Private Integration tokens, so the export list is
+ * the only way to reach a call without its contact.
  */
-export async function findCall(dealer: Dealer, messageId: string): Promise<CallSearch> {
+export async function findCall(dealer: Dealer, id: string): Promise<CallSearch> {
 	const search: CallSearch = { looked_at: 0, newest: '', oldest: '' };
+	const inConversation: CallMessage[] = [];
 	let cursor = '';
 	for (let page = 0; page < MAX_SEARCH_PAGES; page++) {
 		const result = await callPage(dealer, cursor);
@@ -72,12 +82,14 @@ export async function findCall(dealer: Dealer, messageId: string): Promise<CallS
 			search.looked_at++;
 			if (!search.newest || call.dateAdded > search.newest) search.newest = call.dateAdded;
 			if (!search.oldest || call.dateAdded < search.oldest) search.oldest = call.dateAdded;
-			if (call.id === messageId) return { ...search, call };
+			if (call.id === id) return { ...search, call };
+			if (call.conversationId === id) inConversation.push(call);
 		}
 		if (!result.cursor || result.calls.length === 0) break;
 		cursor = result.cursor;
 	}
-	return search;
+	const call = bestOf(inConversation);
+	return call ? { ...search, call } : search;
 }
 
 const sentences = (result: unknown): TranscriptSentence[] => {

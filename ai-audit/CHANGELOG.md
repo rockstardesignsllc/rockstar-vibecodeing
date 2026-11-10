@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.8.4: Test a call by its conversation ID
+- "Test on one call" (setup page v1.3) accepts the conversation ID from the HighLevel URL and scores that conversation's longest answered inbound call. A call's message ID still works.
+
 ## v1.8.3: Call Coach transcript fetch
 - A transcript that HighLevel refuses to hand over (token scope, API version) is now reported with HighLevel's own error instead of "no transcript". The transcript route is asked under both API versions.
 
