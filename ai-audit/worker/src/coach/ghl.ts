@@ -30,30 +30,54 @@ const str = (value: unknown): string => (typeof value === 'string' ? value.trim(
 
 const isCall = (m: unknown): m is CallMessage => isRecord(m) && typeof m.id === 'string' && typeof m.dateAdded === 'string';
 
-/**
- * The newest call messages in the sub-account, newest first. HighLevel serves this route under both API versions and
- * has answered with an empty list under one of them, so an empty answer is asked again under the other.
- */
-export async function recentCalls(dealer: Dealer, limit = 100): Promise<CallMessage[]> {
-	const query = new URLSearchParams({ locationId: dealer.location_id, channel: 'Call', limit: String(limit), sortBy: 'createdAt', sortOrder: 'desc' });
-	for (const version of [VERSION, CONVERSATIONS_VERSION]) {
-		const result = await request(dealer, 'GET', `/conversations/messages/export?${query}`, version);
-		const calls = isRecord(result) && Array.isArray(result.messages) ? result.messages.filter(isCall) : [];
-		if (calls.length > 0) return calls;
-	}
-	return [];
+const PAGE_SIZE = 100;
+const MAX_SEARCH_PAGES = 12;
+
+interface CallPage {
+	calls: CallMessage[];
+	cursor: string;
 }
 
-/** One call message by id, or nothing when it does not exist or is not a call. */
-export async function callMessage(dealer: Dealer, messageId: string): Promise<CallMessage | undefined> {
-	try {
-		const result = await request(dealer, 'GET', `/conversations/messages/${messageId}`, CONVERSATIONS_VERSION);
-		const message = isRecord(result) && isRecord(result.message) ? result.message : result;
-		return isCall(message) && isRecord(message) && message.messageType === 'TYPE_CALL' ? message : undefined;
-	} catch (error) {
-		if (error instanceof HighLevelError && (error.status === 404 || error.status === 400)) return undefined;
-		throw error;
+async function callPage(dealer: Dealer, cursor = ''): Promise<CallPage> {
+	const query = new URLSearchParams({ locationId: dealer.location_id, channel: 'Call', limit: String(PAGE_SIZE), sortBy: 'createdAt', sortOrder: 'desc' });
+	if (cursor) query.set('cursor', cursor);
+	const result = await request(dealer, 'GET', `/conversations/messages/export?${query}`, VERSION);
+	const page = isRecord(result) ? result : {};
+	return { calls: Array.isArray(page.messages) ? page.messages.filter(isCall) : [], cursor: str(page.nextCursor) };
+}
+
+/** The newest call messages in the sub-account, newest first whatever order HighLevel answers in. */
+export async function recentCalls(dealer: Dealer): Promise<CallMessage[]> {
+	const { calls } = await callPage(dealer);
+	return calls.sort((x, y) => Date.parse(y.dateAdded) - Date.parse(x.dateAdded));
+}
+
+export interface CallSearch {
+	call?: CallMessage;
+	looked_at: number;
+	newest: string;
+	oldest: string;
+}
+
+/**
+ * Finds one call by its message id by paging through the sub-account's calls. HighLevel refuses the single-message
+ * read to Private Integration tokens, so the export list is the only way to reach a call without its contact.
+ */
+export async function findCall(dealer: Dealer, messageId: string): Promise<CallSearch> {
+	const search: CallSearch = { looked_at: 0, newest: '', oldest: '' };
+	let cursor = '';
+	for (let page = 0; page < MAX_SEARCH_PAGES; page++) {
+		const result = await callPage(dealer, cursor);
+		for (const call of result.calls) {
+			search.looked_at++;
+			if (!search.newest || call.dateAdded > search.newest) search.newest = call.dateAdded;
+			if (!search.oldest || call.dateAdded < search.oldest) search.oldest = call.dateAdded;
+			if (call.id === messageId) return { ...search, call };
+		}
+		if (!result.cursor || result.calls.length === 0) break;
+		cursor = result.cursor;
 	}
+	return search;
 }
 
 /** The call's transcript, or an empty list while HighLevel has not produced one. */
