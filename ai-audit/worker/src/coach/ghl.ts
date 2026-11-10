@@ -28,12 +28,32 @@ async function request(dealer: Dealer, method: 'GET' | 'POST', path: string, ver
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const str = (value: unknown): string => (typeof value === 'string' ? value.trim() : '');
 
-/** The newest call messages in the sub-account, newest first. */
+const isCall = (m: unknown): m is CallMessage => isRecord(m) && typeof m.id === 'string' && typeof m.dateAdded === 'string';
+
+/**
+ * The newest call messages in the sub-account, newest first. HighLevel serves this route under both API versions and
+ * has answered with an empty list under one of them, so an empty answer is asked again under the other.
+ */
 export async function recentCalls(dealer: Dealer, limit = 100): Promise<CallMessage[]> {
 	const query = new URLSearchParams({ locationId: dealer.location_id, channel: 'Call', limit: String(limit), sortBy: 'createdAt', sortOrder: 'desc' });
-	const result = await request(dealer, 'GET', `/conversations/messages/export?${query}`, CONVERSATIONS_VERSION);
-	if (!isRecord(result) || !Array.isArray(result.messages)) return [];
-	return result.messages.filter((m): m is CallMessage => isRecord(m) && typeof m.id === 'string' && typeof m.dateAdded === 'string');
+	for (const version of [VERSION, CONVERSATIONS_VERSION]) {
+		const result = await request(dealer, 'GET', `/conversations/messages/export?${query}`, version);
+		const calls = isRecord(result) && Array.isArray(result.messages) ? result.messages.filter(isCall) : [];
+		if (calls.length > 0) return calls;
+	}
+	return [];
+}
+
+/** One call message by id, or nothing when it does not exist or is not a call. */
+export async function callMessage(dealer: Dealer, messageId: string): Promise<CallMessage | undefined> {
+	try {
+		const result = await request(dealer, 'GET', `/conversations/messages/${messageId}`, CONVERSATIONS_VERSION);
+		const message = isRecord(result) && isRecord(result.message) ? result.message : result;
+		return isCall(message) && isRecord(message) && message.messageType === 'TYPE_CALL' ? message : undefined;
+	} catch (error) {
+		if (error instanceof HighLevelError && (error.status === 404 || error.status === 400)) return undefined;
+		throw error;
+	}
 }
 
 /** The call's transcript, or an empty list while HighLevel has not produced one. */

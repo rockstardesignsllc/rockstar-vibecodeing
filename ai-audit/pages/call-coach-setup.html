@@ -1,4 +1,4 @@
-<!-- Rockstar Call Coach setup v1.0 | Updated 2026-11-10 23:20 UTC -->
+<!-- Rockstar Call Coach setup v1.1 | Updated 2026-11-10 23:45 UTC -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -129,7 +129,7 @@
 		$('emails').checked = c.send_emails;
 		$('enabled').checked = c.enabled;
 		DEPTS.forEach(function (d) { $('s-' + d).value = (c.scripts || {})[d] || ''; });
-		say('ok', c.name + ': ' + status.scored + ' calls scored, ' + status.skipped + ' skipped, ' + status.errors + ' errors.' + (c.has_token ? '' : ' No token saved.'), dashboard(c));
+		say('ok', c.name + ': ' + status.scored + ' calls scored, ' + status.skipped + ' skipped, ' + status.errors + ' errors.' + (c.has_token ? '' : ' No token saved.') + (status.last_check ? ' Last automatic check saw ' + status.last_check.calls_seen + ' calls in HighLevel' + (status.last_check.error ? ' and hit an error: ' + status.last_check.error : '.') : ''), dashboard(c));
 	}
 	$('load').onclick = function () {
 		var path = base(); if (!path) return;
@@ -165,7 +165,7 @@
 		say('ok', 'Scoring. This takes up to a minute.');
 		api('POST', path + '/run', { message_id: id, deliver: $('deliver').checked }).then(function (report) {
 			var p = report.processed[0];
-			if (!p) { say('bad', 'That call was not found in the 100 most recent calls.'); return; }
+			if (!p) { say('bad', 'HighLevel has no call with that message ID in this sub-account.'); return; }
 			if (p.status === 'scored') {
 				return api('GET', path).then(function (status) {
 					say('ok', 'Scored ' + p.percent + '% for ' + p.staff_name + '.');

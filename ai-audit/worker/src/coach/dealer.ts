@@ -9,6 +9,7 @@ import { DEPARTMENTS, type CallMessage, type CallRecord, type DealerConfig, type
 
 const CONFIG_KEY = 'config';
 const DIGEST_KEY = 'last_digest';
+const LAST_CHECK_KEY = 'last_check';
 const ATTEMPTS_PREFIX = 'attempts:';
 const POLL_EVERY_MS = 5 * 60 * 1000;
 /** Calls are scored once they are this old, so HighLevel has finished the transcript. */
@@ -25,6 +26,8 @@ const fail = (status: number, error: string): CoachResult<never> => ({ ok: false
 
 export interface DealerStatus {
 	config: PublicDealerConfig;
+	/** How many calls HighLevel returned on the last automatic check, and when. */
+	last_check: { at: string; calls_seen: number; error: string } | null;
 	scored: number;
 	skipped: number;
 	errors: number;
@@ -35,6 +38,14 @@ export interface RunReport {
 	looked_at: number;
 	processed: Array<Pick<CallRecord, 'id' | 'status' | 'skip_reason' | 'percent' | 'staff_name'>>;
 }
+
+const summary = (record: CallRecord): RunReport['processed'][number] => ({
+	id: record.id,
+	status: record.status,
+	skip_reason: record.skip_reason,
+	percent: record.percent,
+	staff_name: record.staff_name
+});
 
 const isDepartment = (value: unknown): value is Department => DEPARTMENTS.some(d => d === value);
 
@@ -138,7 +149,7 @@ export class DealerCoach extends DurableObject<Env> {
 		const alarm = await this.ctx.storage.getAlarm();
 		return {
 			ok: true,
-			value: { config: this.publicConfig(config), scored: count('scored'), skipped: count('skipped'), errors: count('error'), next_run: alarm ? new Date(alarm).toISOString() : null }
+			value: { config: this.publicConfig(config), last_check: (await this.ctx.storage.get<DealerStatus['last_check']>(LAST_CHECK_KEY)) ?? null, scored: count('scored'), skipped: count('skipped'), errors: count('error'), next_run: alarm ? new Date(alarm).toISOString() : null }
 		};
 	}
 
@@ -190,9 +201,11 @@ export class DealerCoach extends DurableObject<Env> {
 		if (!this.busy) {
 			this.busy = true;
 			try {
-				await this.poll(config, {});
+				const report = await this.poll(config, {});
+				await this.ctx.storage.put(LAST_CHECK_KEY, { at: new Date().toISOString(), calls_seen: report.looked_at, error: '' });
 				await this.digest(config);
 			} catch (error) {
+				await this.ctx.storage.put(LAST_CHECK_KEY, { at: new Date().toISOString(), calls_seen: 0, error: errorText(error).slice(0, 300) });
 				console.error(`call coach ${config.location_id}: ${errorText(error)}`);
 			} finally {
 				this.busy = false;
@@ -202,10 +215,14 @@ export class DealerCoach extends DurableObject<Env> {
 	}
 
 	private async poll(config: DealerConfig, options: { message_id?: string; deliver?: boolean }): Promise<RunReport> {
+		if (options.message_id) {
+			const call = await ghl.callMessage(config, options.message_id);
+			const record = call ? await this.process(config, call, options.deliver !== false, true) : undefined;
+			return { looked_at: call ? 1 : 0, processed: record ? [summary(record)] : [] };
+		}
 		const calls = await ghl.recentCalls(config);
 		const now = Date.now();
 		const due = calls.filter(call => {
-			if (options.message_id) return call.id === options.message_id;
 			const at = Date.parse(call.dateAdded);
 			return (
 				call.direction === 'inbound' &&
@@ -217,10 +234,10 @@ export class DealerCoach extends DurableObject<Env> {
 			);
 		});
 		const report: RunReport = { looked_at: calls.length, processed: [] };
-		if (!options.message_id) await this.finishDeliveries(config, calls);
+		await this.finishDeliveries(config, calls);
 		for (const call of due.reverse().slice(0, MAX_CALLS_PER_RUN)) {
-			const record = await this.process(config, call, options.deliver !== false, Boolean(options.message_id));
-			if (record) report.processed.push({ id: record.id, status: record.status, skip_reason: record.skip_reason, percent: record.percent, staff_name: record.staff_name });
+			const record = await this.process(config, call, options.deliver !== false, false);
+			if (record) report.processed.push(summary(record));
 		}
 		return report;
 	}
