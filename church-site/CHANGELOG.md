@@ -3,6 +3,9 @@
 The current version and date are also stamped at the top of every built page in
 `dist/` and at the top of `styles.css`.
 
+## v1.3 — 2026-11-10
+- Home page: updated the weekly message video.
+
 ## v1.2 — 2026-11-06
 - Fix: the loader now injects the stylesheet **inside the page body** instead of `<head>`. GoHighLevel rewrites `<head>` and was dropping the injected stylesheet link, so pages loaded their content but unstyled. CSS now persists.
 
