@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.14.1: Call Coach setup only on its own address
+- `/coach/setup` and `/coach/admin` now answer only on `callcoach.rockstarai.app`, where Cloudflare Access (email sign-in) guards them. On the workers.dev address the setup page redirects there and admin calls are refused. Dealer dashboards, coaching pages and recordings still work on both addresses.
+
 ## v1.14: Call Coach lives at callcoach.rockstarai.app
 - `COACH_BASE_URL` is now `https://callcoach.rockstarai.app`, so new notes, emails, coaching pages and dashboard links use the branded address. Links on the workers.dev address keep working.
 - Removed the unused `coach-domain/` Pages project (the custom domain made it unnecessary). Setup guide v1.2 carries the new setup address.

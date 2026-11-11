@@ -205,8 +205,14 @@ async function handleDealerView(request: Request, env: Env, parts: string[], url
 }
 
 export async function handleCoach(request: Request, env: Env, parts: string[], url: URL): Promise<Response> {
-	if (parts.length === 1 && parts[0] === 'setup' && request.method === 'GET') return html(200, SETUP_PAGE);
-	if (parts[0] === 'admin') return handleAdmin(request, env, parts.slice(1));
+	if (parts[0] === 'setup' || parts[0] === 'admin') {
+		// Setup and admin answer only on the Call Coach address, where Cloudflare Access guards them.
+		if (url.host !== new URL(env.COACH_BASE_URL).host) {
+			return parts[0] === 'setup' ? Response.redirect(`${env.COACH_BASE_URL}/coach/setup`, 302) : json(403, { error: `use ${env.COACH_BASE_URL}` });
+		}
+		if (parts.length === 1 && parts[0] === 'setup' && request.method === 'GET') return html(200, SETUP_PAGE);
+		if (parts[0] === 'admin') return handleAdmin(request, env, parts.slice(1));
+	}
 	if (parts[0] === 'd') return handleDealerView(request, env, parts.slice(1), url);
 	return json(404, { error: 'not found' });
 }
