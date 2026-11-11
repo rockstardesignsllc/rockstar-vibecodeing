@@ -1,5 +1,6 @@
 import type Anthropic from '@anthropic-ai/sdk';
 import type { DealerCoach } from './coach/dealer';
+import type { CoachDirectory } from './coach/directory';
 import type { DemoSession } from './demo/session';
 import type { AuditSession } from './session';
 
@@ -7,6 +8,7 @@ export interface Env {
 	AUDIT_SESSIONS: DurableObjectNamespace<AuditSession>;
 	DEMO_SESSIONS: DurableObjectNamespace<DemoSession>;
 	DEALER_COACH: DurableObjectNamespace<DealerCoach>;
+	COACH_DIRECTORY: DurableObjectNamespace<CoachDirectory>;
 	START_LIMITER: RateLimit;
 	MESSAGE_LIMITER: RateLimit;
 	ALLOWED_ORIGINS: string;

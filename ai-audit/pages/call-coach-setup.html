@@ -1,4 +1,4 @@
-<!-- Rockstar Call Coach setup v1.5 | Updated 2026-11-11 17:56 UTC -->
+<!-- Rockstar Call Coach setup v1.6 | Updated 2026-11-11 21:44 UTC -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -28,12 +28,18 @@
 	#msg.ok { display:block; background:#e8f6ee; color:#0e5c2c; }
 	#msg.bad { display:block; background:#fdecea; color:#8c1d15; }
 	a { color:var(--ink); }
+	table { width:100%; border-collapse:collapse; font-size:14px; margin-top:12px; }
+	th, td { text-align:left; padding:9px 8px 9px 0; border-top:1px solid var(--line); vertical-align:top; }
+	th { border-top:0; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+	td button { margin:0 6px 0 0; padding:6px 10px; font-size:13px; }
+	.pill { display:inline-block; padding:2px 9px; border-radius:999px; color:#fff; font-size:12px; font-weight:700; }
+	.wide { overflow-x:auto; }
 </style>
 </head>
 <body>
 <main>
 	<h1>Call Coach setup</h1>
-	<p class="hint">Turn on call scoring for one dealership. Fill in the top card, press Load to pull existing settings, then Save.</p>
+	<p class="hint">One page for every dealership. Enter the admin key, then press My dealers to see who is set up, or enter a sub-account ID to add or edit one.</p>
 
 	<div class="card">
 		<h2>1. Who</h2>
@@ -44,6 +50,8 @@
 		<label for="token">Private Integration token <small>From the sub-account: Settings, Private Integrations. Leave blank to keep the saved one.</small></label>
 		<input id="token" type="password" autocomplete="off">
 		<button class="light" id="load" type="button">Load saved settings</button>
+		<button class="light" id="list" type="button">My dealers</button>
+		<div class="wide" id="dealers"></div>
 	</div>
 
 	<div class="card">
@@ -135,6 +143,39 @@
 		DEPTS.forEach(function (d) { $('s-' + d).value = (c.scripts || {})[d] || ''; });
 		say('ok', c.name + ': ' + status.scored + ' calls scored, ' + status.skipped + ' skipped, ' + status.errors + ' errors.' + (c.has_token ? '' : ' No token saved.') + (status.last_check ? ' Last automatic check saw ' + status.last_check.calls_seen + ' calls in HighLevel (newest ' + (status.last_check.newest || 'n/a') + ')' + (status.last_check.error ? ' and hit an error: ' + status.last_check.error : '.') : ''), dashboard(c));
 	}
+	function cell(row, text) { var td = document.createElement('td'); if (text !== undefined) td.textContent = text; row.appendChild(td); return td; }
+	function small(label, cls, onclick) { var b = document.createElement('button'); b.type = 'button'; b.className = cls; b.textContent = label; b.onclick = onclick; return b; }
+	function showDealers(dealers) {
+		var box = $('dealers'); box.textContent = '';
+		if (!dealers.length) { box.textContent = 'No dealers set up yet.'; return; }
+		var table = document.createElement('table'), head = document.createElement('tr');
+		['Dealer', 'Status', 'Scored', 'Dashboard link', ''].forEach(function (h) { var th = document.createElement('th'); th.textContent = h; head.appendChild(th); });
+		table.appendChild(head);
+		dealers.forEach(function (d) {
+			var tr = document.createElement('tr');
+			cell(tr, d.name + (d.score_outbound ? ' (inbound + outbound)' : ''));
+			var pill = document.createElement('span'); pill.className = 'pill'; pill.textContent = d.enabled ? 'On' : 'Paused'; pill.style.background = d.enabled ? 'var(--ok)' : 'var(--muted)';
+			cell(tr).appendChild(pill);
+			cell(tr, String(d.scored));
+			var links = cell(tr), open = document.createElement('a');
+			open.href = d.dashboard; open.target = '_blank'; open.rel = 'noopener'; open.textContent = 'Open';
+			links.appendChild(small('Copy link', 'light', function () { var b = this; navigator.clipboard.writeText(d.dashboard).then(function () { b.textContent = 'Copied'; }, function () { say('ok', d.dashboard); }); }));
+			links.appendChild(open);
+			var actions = cell(tr);
+			actions.appendChild(small('Edit', 'light', function () { $('loc').value = d.location_id; $('loc').onchange(); $('load').click(); }));
+			actions.appendChild(small('Delete', 'light', function () {
+				if (!window.confirm('Delete ' + d.name + ' from Call Coach? This stops scoring and erases its settings and scored calls. Notes already in the CRM stay.')) return;
+				api('DELETE', '/coach/admin/dealers/' + encodeURIComponent(d.location_id)).then(function () { say('ok', d.name + ' was deleted.'); $('list').click(); }).catch(function (e) { say('bad', e.message); });
+			}));
+			table.appendChild(tr);
+		});
+		box.appendChild(table);
+	}
+	$('list').onclick = function () {
+		if (!$('admin').value) { say('bad', 'Enter the admin key first.'); return; }
+		busy(this, true); var b = this;
+		api('GET', '/coach/admin/dealers').then(function (r) { showDealers(r.dealers); }).catch(function (e) { say('bad', e.message); }).then(function () { busy(b, false); });
+	};
 	$('loc').onchange = function () { ['name', 'tz', 'token'].forEach(function (id) { $(id).value = ''; }); };
 	$('load').onclick = function () {
 		var path = base(); if (!path) return;

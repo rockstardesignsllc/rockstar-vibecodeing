@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { DurableObject } from 'cloudflare:workers';
 import type { Env } from '../types';
+import { DIRECTORY_NAME, type CoachDirectory } from './directory';
 import * as ghl from './ghl';
 import { coachingEmail, digestEmail, noteBody, usDate } from './render';
 import { totals } from './rubric';
@@ -10,6 +11,7 @@ import { isInboundDepartment, type CallMessage, type CallRecord, type DealerConf
 const CONFIG_KEY = 'config';
 const DIGEST_KEY = 'last_digest';
 const LAST_CHECK_KEY = 'last_check';
+const LISTED_KEY = 'listed';
 const ATTEMPTS_PREFIX = 'attempts:';
 const POLL_EVERY_MS = 5 * 60 * 1000;
 /** Calls are scored once they are this old, so HighLevel has finished the transcript. */
@@ -65,8 +67,32 @@ export class DealerCoach extends DurableObject<Env> {
 
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env);
-		ctx.storage.sql.exec('CREATE TABLE IF NOT EXISTS calls (id TEXT PRIMARY KEY, local_date TEXT NOT NULL, status TEXT NOT NULL, record TEXT NOT NULL)');
-		ctx.storage.sql.exec('CREATE INDEX IF NOT EXISTS calls_by_date ON calls (local_date, status)');
+		this.createTables();
+	}
+
+	private createTables(): void {
+		this.ctx.storage.sql.exec('CREATE TABLE IF NOT EXISTS calls (id TEXT PRIMARY KEY, local_date TEXT NOT NULL, status TEXT NOT NULL, record TEXT NOT NULL)');
+		this.ctx.storage.sql.exec('CREATE INDEX IF NOT EXISTS calls_by_date ON calls (local_date, status)');
+	}
+
+	private directory(): DurableObjectStub<CoachDirectory> {
+		return this.env.COACH_DIRECTORY.get(this.env.COACH_DIRECTORY.idFromName(DIRECTORY_NAME));
+	}
+
+	/** Puts this dealership on the setup page's list. Done once, and again by the poll for dealerships saved before the list existed. */
+	private async list(config: DealerConfig): Promise<void> {
+		if (await this.ctx.storage.get<boolean>(LISTED_KEY)) return;
+		await this.directory().add(config.location_id);
+		await this.ctx.storage.put(LISTED_KEY, true);
+	}
+
+	/** Removes the dealership for good: its settings, token and every scored call. Notes already in HighLevel stay. */
+	async remove(locationId: string): Promise<CoachResult<{ removed: true }>> {
+		await this.ctx.storage.deleteAlarm();
+		await this.ctx.storage.deleteAll();
+		this.createTables();
+		await this.directory().remove(locationId);
+		return { ok: true, value: { removed: true } };
 	}
 
 	private client(): Anthropic {
@@ -146,6 +172,7 @@ export class DealerCoach extends DurableObject<Env> {
 			return fail(400, `"${config.timezone}" is not a time zone. Use one like America/Chicago.`);
 		}
 		await this.ctx.storage.put(CONFIG_KEY, config);
+		await this.list(config);
 		if (config.enabled) await this.ctx.storage.setAlarm(Date.now() + 1000);
 		else await this.ctx.storage.deleteAlarm();
 		return this.status();
@@ -214,6 +241,7 @@ export class DealerCoach extends DurableObject<Env> {
 	async alarm(): Promise<void> {
 		const config = await this.config();
 		if (!config?.enabled) return;
+		await this.list(config).catch(error => console.error(`call coach ${config.location_id} listing: ${errorText(error)}`));
 		if (!this.busy) {
 			this.busy = true;
 			try {
@@ -315,10 +343,8 @@ export class DealerCoach extends DurableObject<Env> {
 				this.store(record);
 				return record;
 			}
-			const [staff, customer] = await Promise.all([
-				this.staff(config, call, analysis.staff_name_heard),
-				call.contactId ? ghl.contact(config, call.contactId).catch(() => undefined) : undefined
-			]);
+			const customer = call.contactId ? await ghl.contact(config, call.contactId).catch(() => undefined) : undefined;
+			const staff = await this.staff(config, call, analysis.staff_name_heard, customer?.assigned_to ?? '');
 			const heard = analysis.customer_name_heard.split(' ');
 			record.user_id = staff?.id ?? '';
 			record.staff_name = [staff?.first, staff?.last].filter(Boolean).join(' ') || analysis.staff_name_heard || 'Unassigned';
@@ -355,12 +381,14 @@ export class DealerCoach extends DurableObject<Env> {
 	}
 
 	/**
-	 * Who took the call: the user HighLevel assigned it to, or, for calls it leaves unassigned (phone tree calls), the
-	 * user whose name matches the one the staff member gave on the call.
+	 * Who took the call: the user HighLevel assigned the call to; else, for calls it leaves unassigned (phone tree
+	 * calls), the user whose name matches the one the staff member gave on the call; else the user the contact is assigned to.
 	 */
-	private async staff(config: DealerConfig, call: CallMessage, nameHeard: string): Promise<ghl.Person | undefined> {
+	private async staff(config: DealerConfig, call: CallMessage, nameHeard: string, contactOwner: string): Promise<ghl.Person | undefined> {
 		try {
-			return call.userId ? await ghl.user(config, call.userId) : ghl.userNamed(await ghl.users(config), nameHeard);
+			if (call.userId) return await ghl.user(config, call.userId);
+			const named = ghl.userNamed(await ghl.users(config), nameHeard);
+			return named ?? (contactOwner ? await ghl.user(config, contactOwner) : undefined);
 		} catch {
 			return undefined;
 		}

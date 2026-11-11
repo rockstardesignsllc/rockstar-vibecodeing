@@ -186,9 +186,11 @@ const person = (id: string, raw: unknown): Person => {
 	};
 };
 
-export async function contact(dealer: Dealer, contactId: string): Promise<Person> {
+/** A contact, with the id of the user it is assigned to when it has one. */
+export async function contact(dealer: Dealer, contactId: string): Promise<Person & { assigned_to: string }> {
 	const result = await request(dealer, 'GET', `/contacts/${contactId}`, VERSION);
-	return person(contactId, isRecord(result) ? result.contact : undefined);
+	const raw = isRecord(result) ? result.contact : undefined;
+	return { ...person(contactId, raw), assigned_to: isRecord(raw) ? str(raw.assignedTo) : '' };
 }
 
 export async function user(dealer: Dealer, userId: string): Promise<Person> {

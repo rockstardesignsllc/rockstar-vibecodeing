@@ -14,9 +14,10 @@ import Anthropic from '@anthropic-ai/sdk';
 import SETUP_PAGE from '../../../pages/call-coach-setup.html';
 import { sameText } from '../admin';
 import type { Env } from '../types';
-import type { CoachResult, DealerCoach } from './dealer';
+import type { CoachResult, DealerCoach, DealerStatus } from './dealer';
+import { DIRECTORY_NAME } from './directory';
 import { recording } from './ghl';
-import { callPage, dashboardPage } from './render';
+import { callPage, dashboardPage, dashboardUrl } from './render';
 import { pdfToText } from './score';
 import { DEPARTMENTS, isInboundDepartment, type DealerConfigInput, type Department, type InboundDepartment } from './types';
 
@@ -113,6 +114,34 @@ const toBase64 = (bytes: Uint8Array): string => {
 	return btoa(binary);
 };
 
+interface DealerRow {
+	location_id: string;
+	name: string;
+	enabled: boolean;
+	score_outbound: boolean;
+	scored: number;
+	last_check: DealerStatus['last_check'];
+	dashboard: string;
+}
+
+/** Every dealership set up for Call Coach, by name, with its dashboard link. */
+async function dealerList(env: Env): Promise<DealerRow[]> {
+	const ids = await env.COACH_DIRECTORY.get(env.COACH_DIRECTORY.idFromName(DIRECTORY_NAME)).list();
+	const statuses = await Promise.all(ids.map(id => dealer(env, id).status()));
+	return statuses
+		.flatMap(status => (status.ok ? [status.value] : []))
+		.map(({ config, scored, last_check }) => ({
+			location_id: config.location_id,
+			name: config.name,
+			enabled: config.enabled,
+			score_outbound: config.score_outbound === true,
+			scored,
+			last_check,
+			dashboard: dashboardUrl(env.COACH_BASE_URL, config)
+		}))
+		.sort((x, y) => x.name.localeCompare(y.name));
+}
+
 async function handleAdmin(request: Request, env: Env, parts: string[]): Promise<Response> {
 	if (!isAdmin(request, env)) return json(401, { error: 'admin key required' });
 	if (parts.length === 1 && parts[0] === 'pdf' && request.method === 'POST') {
@@ -125,10 +154,12 @@ async function handleAdmin(request: Request, env: Env, parts: string[]): Promise
 			return json(502, { error: error instanceof Error ? error.message : 'could not read the PDF' });
 		}
 	}
+	if (parts.length === 1 && parts[0] === 'dealers' && request.method === 'GET') return json(200, { dealers: await dealerList(env) });
 	const locationId = parts[1] ?? '';
 	if (parts[0] !== 'dealers' || !LOCATION_ID.test(locationId)) return json(404, { error: 'not found' });
 	const stub = dealer(env, locationId);
 	if (parts.length === 2 && request.method === 'GET') return fromResult(await stub.status());
+	if (parts.length === 2 && request.method === 'DELETE') return fromResult(await stub.remove(locationId));
 	if (parts.length === 2 && request.method === 'PUT') {
 		const body = await readJson(request);
 		if (!body) return json(400, { error: 'send the settings as JSON' });

@@ -14,6 +14,7 @@
  * Call Coach (call scoring and coaching for dealerships) lives under /coach, see coach/routes.ts.
  */
 import { DealerCoach } from './coach/dealer';
+import { CoachDirectory } from './coach/directory';
 import { handleCoach } from './coach/routes';
 import { demoEmbed } from './demo/embed';
 import { DemoSession, type DemoResult } from './demo/session';
@@ -21,7 +22,7 @@ import { sameText } from './admin';
 import { AuditSession, MAX_MESSAGE_CHARS, type SessionResult } from './session';
 import type { Env } from './types';
 
-export { AuditSession, DealerCoach, DemoSession };
+export { AuditSession, CoachDirectory, DealerCoach, DemoSession };
 
 const SESSION_ID = /^[0-9a-f]{64}$/;
 const MAX_BODY_BYTES = MAX_MESSAGE_CHARS * 4 + 256;

@@ -8,13 +8,15 @@
 		"bindings": [
 			{ "name": "AUDIT_SESSIONS", "class_name": "AuditSession" },
 			{ "name": "DEMO_SESSIONS", "class_name": "DemoSession" },
-			{ "name": "DEALER_COACH", "class_name": "DealerCoach" }
+			{ "name": "DEALER_COACH", "class_name": "DealerCoach" },
+			{ "name": "COACH_DIRECTORY", "class_name": "CoachDirectory" }
 		]
 	},
 	"migrations": [
 		{ "tag": "v1", "new_sqlite_classes": ["AuditSession"] },
 		{ "tag": "v2", "new_sqlite_classes": ["DemoSession"] },
-		{ "tag": "v3", "new_sqlite_classes": ["DealerCoach"] }
+		{ "tag": "v3", "new_sqlite_classes": ["DealerCoach"] },
+		{ "tag": "v4", "new_sqlite_classes": ["CoachDirectory"] }
 	],
 	"ratelimits": [
 		// New audits per visitor IP, per minute
