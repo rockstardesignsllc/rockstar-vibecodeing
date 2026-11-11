@@ -202,3 +202,4 @@ email, so each staff member and the first manager get a contact record there.
 
 ### Call Coach address
 Call Coach is served at `https://callcoach.rockstarai.app` (a custom domain on this Worker, set in `worker/wrangler.jsonc`; rockstarai.app is in the same Cloudflare account). `COACH_BASE_URL` is the address used in notes, emails and dashboard links. The workers.dev address still answers, so links sent before the change keep working.
+The setup page and admin API answer only on that address, and Cloudflare Access (Zero Trust, application `Call Coach setup`, policy `Rockstar Team`) asks for an allowed email before they load. Add a team member by adding their email to that policy. Local `wrangler dev` serves requests as that address, so setup works there unchanged.
