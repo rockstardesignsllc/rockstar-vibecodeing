@@ -5,7 +5,7 @@ import * as ghl from './ghl';
 import { coachingEmail, digestEmail, noteBody, usDate } from './render';
 import { totals } from './rubric';
 import { scoreCall, transcriptText } from './score';
-import { DEPARTMENTS, type CallMessage, type CallRecord, type DealerConfig, type DealerConfigInput, type Department, type PublicDealerConfig } from './types';
+import { isInboundDepartment, type CallMessage, type CallRecord, type DealerConfig, type DealerConfigInput, type Department, type InboundDepartment, type PublicDealerConfig } from './types';
 
 const CONFIG_KEY = 'config';
 const DIGEST_KEY = 'last_digest';
@@ -52,10 +52,10 @@ const summary = (record: CallRecord): RunReport['processed'][number] => ({
 	staff_name: record.staff_name
 });
 
-const isDepartment = (value: unknown): value is Department => DEPARTMENTS.some(d => d === value);
+const departmentMap = (value: Record<string, InboundDepartment> | undefined): Record<string, InboundDepartment> =>
+	Object.fromEntries(Object.entries(value ?? {}).filter((entry): entry is [string, InboundDepartment] => isInboundDepartment(entry[1])));
 
-const departmentMap = (value: Record<string, Department> | undefined): Record<string, Department> =>
-	Object.fromEntries(Object.entries(value ?? {}).filter((entry): entry is [string, Department] => isDepartment(entry[1])));
+const outbound = (call: CallMessage): boolean => call.direction === 'outbound';
 
 const errorText = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 
@@ -130,11 +130,12 @@ export class DealerCoach extends DurableObject<Env> {
 			timezone: input.timezone?.trim() || current?.timezone || found.timezone || 'America/Chicago',
 			enabled: input.enabled ?? current?.enabled ?? true,
 			send_emails: input.send_emails ?? current?.send_emails ?? true,
+			score_outbound: input.score_outbound ?? current?.score_outbound ?? false,
 			managers: (input.managers ?? current?.managers ?? []).map(m => m.trim().toLowerCase()).filter(m => m.includes('@')),
 			scripts: Object.fromEntries(Object.entries({ ...current?.scripts, ...input.scripts }).filter(([, script]) => script.trim())),
 			numbers: departmentMap(input.numbers ?? current?.numbers),
 			users: departmentMap(input.users ?? current?.users),
-			default_department: isDepartment(input.default_department) ? input.default_department : (current?.default_department ?? 'sales'),
+			default_department: isInboundDepartment(input.default_department) ? input.default_department : (current?.default_department ?? 'sales'),
 			min_seconds: Math.max(0, Math.round(input.min_seconds ?? current?.min_seconds ?? DEFAULT_MIN_SECONDS)),
 			view_key: current?.view_key ?? crypto.randomUUID().replaceAll('-', ''),
 			scoring_started_at: input.scoring_started_at ?? current?.scoring_started_at ?? new Date().toISOString()
@@ -240,7 +241,7 @@ export class DealerCoach extends DurableObject<Env> {
 		const due = calls.filter(call => {
 			const at = Date.parse(call.dateAdded);
 			return (
-				call.direction === 'inbound' &&
+				(call.direction === 'inbound' || (call.direction === 'outbound' && config.score_outbound)) &&
 				call.status === 'completed' &&
 				(call.meta?.call?.duration ?? 0) >= config.min_seconds &&
 				at >= Date.parse(config.scoring_started_at) &&
@@ -266,13 +267,14 @@ export class DealerCoach extends DurableObject<Env> {
 			local_time: local.time,
 			status: 'skipped',
 			skip_reason: '',
+			direction: outbound(call) ? 'outbound' : 'inbound',
 			department,
 			user_id: call.userId ?? '',
 			staff_name: 'Unassigned',
 			staff_email: '',
 			contact_id: call.contactId ?? '',
 			conversation_id: call.conversationId ?? '',
-			customer_phone: call.from ?? '',
+			customer_phone: (outbound(call) ? call.to : call.from) ?? '',
 			customer_first: '',
 			customer_last: '',
 			duration: call.meta?.call?.duration ?? 0,
@@ -287,7 +289,7 @@ export class DealerCoach extends DurableObject<Env> {
 
 	/** Scores one call and delivers the results. Returns nothing when the transcript is not ready yet. */
 	private async process(config: DealerConfig, call: CallMessage, deliver: boolean, forced: boolean): Promise<CallRecord | undefined> {
-		const known = (call.to ? config.numbers[call.to] : undefined) ?? (call.userId ? config.users[call.userId] : undefined);
+		const known: Department | undefined = outbound(call) ? 'outbound' : ((call.to ? config.numbers[call.to] : undefined) ?? (call.userId ? config.users[call.userId] : undefined));
 		const record = this.blank(config, call, known ?? config.default_department);
 		record.delivery = this.stored(call.id)?.delivery ?? {};
 		const attemptsKey = ATTEMPTS_PREFIX + call.id;

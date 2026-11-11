@@ -1,4 +1,4 @@
-import { GRADE_COLORS, GRADE_LABELS, grade, rubricFor } from './rubric';
+import { GRADE_COLORS, GRADE_LABELS, grade, leftOut, rubricFor } from './rubric';
 import { DEPARTMENT_LABELS, type CallRecord, type DealerConfig, type Grade } from './types';
 
 type Dealer = Pick<DealerConfig, 'location_id' | 'name' | 'view_key'>;
@@ -27,7 +27,8 @@ export const customerSortName = (record: CallRecord): string =>
 const recordGrade = (record: CallRecord): Grade => grade(record.percent, record.analysis?.red_flags.length ?? 0);
 
 /** "Jane Smith inbound call 11/10/2026 3:42 PM Bob Jones" */
-export const noteTitle = (record: CallRecord): string => `${customerName(record)} inbound call ${usDate(record.local_date)} ${record.local_time} ${record.staff_name}`;
+export const noteTitle = (record: CallRecord): string =>
+	`${customerName(record)} ${record.direction ?? 'inbound'} call ${usDate(record.local_date)} ${record.local_time} ${record.staff_name}`;
 
 export const usDate = (isoDate: string): string => {
 	const [y, m, d] = isoDate.split('-');
@@ -126,11 +127,11 @@ export function coachingEmail(record: CallRecord, base: string, dealer: Dealer, 
 export function callPage(record: CallRecord, base: string, dealer: Dealer, app: string): string {
 	const a = record.analysis;
 	const byId = new Map((a?.items ?? []).map(item => [item.id, item]));
+	const scored = { department: record.department, appointment_set: record.appointment_set };
 	const rows = rubricFor(record.department)
-		.filter(item => !(item.needs_appointment && !record.appointment_set))
 		.map(item => {
 			const result = byId.get(item.id);
-			if (result && !result.applicable && item.id !== 'appointment_set') return '';
+			if (leftOut(item, result, scored)) return '';
 			const points = Math.min(item.max, Math.max(0, Math.round(result?.points ?? 0)));
 			const color = points === item.max ? GRADE_COLORS.green : points === 0 ? GRADE_COLORS.red : GRADE_COLORS.yellow;
 			return `<tr><td style="padding:9px 8px 9px 0;border-top:1px solid ${LINE};vertical-align:top"><strong>${esc(item.label)}</strong><div style="color:${MUTED};font-size:13px">${esc(result?.evidence ?? '')}</div></td><td style="padding:9px 0;border-top:1px solid ${LINE};text-align:right;vertical-align:top;white-space:nowrap;font-weight:700;color:${color}">${points} / ${item.max}</td></tr>`;

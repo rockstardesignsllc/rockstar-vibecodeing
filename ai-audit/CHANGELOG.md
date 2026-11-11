@@ -1,5 +1,10 @@
 # Rockstar AI Audit changelog
 
+## v1.10: Call Coach outbound scoring (add-on)
+- New per-dealer switch "Also score outbound calls" and an Outbound framework box (setup page v1.5). Off by default, so inbound-only dealers are unchanged.
+- Outbound calls get their own scorecard: who they are and why they are calling, keeping the call on its goal, handling questions, the appointment items when a visit applies, tone and next step. A voicemail left is not scored.
+- Notes, emails and the coaching page say "outbound call", and the customer phone is the number that was dialed.
+
 ## v1.9: Call Coach launch changes
 - The coaching email is now a short notice: subject "Call Scoring for [customer] [phone] complete at [date time]", the score, a one-line summary and a button to the coaching page. The full coaching stays on the page and in the contact note.
 - The coaching page has an "Open this call in the CRM" button that goes to the call's conversation in HighLevel (recording and transcript). The address comes from the new `COACH_APP_URL` var.
