@@ -17,7 +17,7 @@ import type { Env } from '../types';
 import type { CoachResult, DealerCoach, DealerStatus } from './dealer';
 import { DIRECTORY_NAME } from './directory';
 import { recording } from './ghl';
-import { callPage, dashboardPage, dashboardUrl } from './render';
+import { callPage, dashboardPage, dashboardUrl, staffPage } from './render';
 import { pdfToText } from './score';
 import { DEPARTMENTS, isInboundDepartment, type DealerConfigInput, type Department, type InboundDepartment } from './types';
 
@@ -183,7 +183,12 @@ async function handleDealerView(request: Request, env: Env, parts: string[], url
 	if (!access) return notFound();
 	const base = env.COACH_BASE_URL;
 	if (parts.length === 1) {
-		const day = await stub.day(key, url.searchParams.get('date'));
+		const date = url.searchParams.get('date');
+		if (!date) {
+			const recent = await stub.recent(key);
+			return recent.ok ? html(200, staffPage(recent.value.days, recent.value.today, recent.value.records, base, access)) : notFound();
+		}
+		const day = await stub.day(key, date);
 		return day.ok ? html(200, dashboardPage(day.value.date, day.value.today, day.value.records, base, access)) : notFound();
 	}
 	const id = parts[2] ?? '';

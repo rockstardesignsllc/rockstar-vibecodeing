@@ -1,5 +1,9 @@
 # Rockstar AI Audit changelog
 
+## v1.12: Call Coach dashboard by staff member
+- The manager dashboard now opens on the last 30 days grouped by staff member: name, average score, calls and appointments set. Clicking a name opens all of their calls, newest first, each with its score and a link to the full summary.
+- The one-day view is still there (the 7 AM email links to it) and each view links to the other.
+
 ## v1.11: Call Coach dealer list
 - Setup page v1.6 has a "My dealers" button: every dealership set up, on or paused, calls scored, its dashboard link (copy or open), Edit and Delete. Backed by a new `CoachDirectory` Durable Object (migration v4) that each dealership registers with on Save, and on its next automatic check for dealerships saved earlier.
 - Delete removes a dealership's settings, token and scored calls and stops its scoring. Notes already written in HighLevel stay.

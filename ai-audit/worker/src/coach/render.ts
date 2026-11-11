@@ -138,7 +138,7 @@ export function callPage(record: CallRecord, base: string, dealer: Dealer, app: 
 		})
 		.join('');
 	const inHighLevel = highLevelUrl(app, dealer, record);
-	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${esc(noteTitle(record))}</h1>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(a?.summary ?? '')}</p><audio controls preload="none" src="${esc(recordingUrl(base, dealer, record.id))}" style="width:100%;margin:18px 0 0"></audio>${inHighLevel ? `<p style="margin:16px 0 0">${button(inHighLevel, 'Open this call in Rockstar')}</p>` : ''}${coachingBlock(record)}${section('Scorecard', INK, `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px">${rows}<tr><td style="padding:10px 0;border-top:2px solid ${INK};font-weight:800">Total</td><td style="padding:10px 0;border-top:2px solid ${INK};text-align:right;font-weight:800">${record.earned} / ${record.possible}</td></tr></table>`)}<p style="margin:24px 0 0"><a href="${esc(dashboardUrl(base, dealer, record.local_date))}" style="color:${INK}">Back to all calls for ${esc(usDate(record.local_date))}</a></p>`;
+	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${esc(noteTitle(record))}</h1>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(a?.summary ?? '')}</p><audio controls preload="none" src="${esc(recordingUrl(base, dealer, record.id))}" style="width:100%;margin:18px 0 0"></audio>${inHighLevel ? `<p style="margin:16px 0 0">${button(inHighLevel, 'Open this call in Rockstar')}</p>` : ''}${coachingBlock(record)}${section('Scorecard', INK, `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px">${rows}<tr><td style="padding:10px 0;border-top:2px solid ${INK};font-weight:800">Total</td><td style="padding:10px 0;border-top:2px solid ${INK};text-align:right;font-weight:800">${record.earned} / ${record.possible}</td></tr></table>`)}<p style="margin:24px 0 0"><a href="${esc(dashboardUrl(base, dealer))}" style="color:${INK}">Back to all staff</a> &nbsp;|&nbsp; <a href="${esc(dashboardUrl(base, dealer, record.local_date))}" style="color:${INK}">All calls for ${esc(usDate(record.local_date))}</a></p>`;
 	return shell(noteTitle(record), inner);
 }
 
@@ -148,14 +148,17 @@ interface StaffGroup {
 	calls: CallRecord[];
 }
 
-function byStaff(records: CallRecord[]): StaffGroup[] {
+const byCustomer = (x: CallRecord, y: CallRecord): number => customerSortName(x).localeCompare(customerSortName(y));
+const newestFirst = (x: CallRecord, y: CallRecord): number => y.at.localeCompare(x.at);
+
+function byStaff(records: CallRecord[], order: (x: CallRecord, y: CallRecord) => number = byCustomer): StaffGroup[] {
 	const groups = new Map<string, CallRecord[]>();
 	for (const record of records) groups.set(record.staff_name, [...(groups.get(record.staff_name) ?? []), record]);
 	return [...groups.entries()]
 		.map(([name, calls]) => ({
 			name,
 			average: Math.round(calls.reduce((sum, c) => sum + c.percent, 0) / calls.length),
-			calls: [...calls].sort((x, y) => customerSortName(x).localeCompare(customerSortName(y)))
+			calls: [...calls].sort(order)
 		}))
 		.sort((x, y) => x.name.localeCompare(y.name));
 }
@@ -187,7 +190,29 @@ export function digestEmail(date: string, records: CallRecord[], base: string, d
 	return { subject: `Yesterday's call coaching summaries: ${dealer.name}, ${usDate(date)}`, html: shell('Call coaching summaries', inner) };
 }
 
+const viewLink = (href: string, label: string): string => `<a href="${esc(href)}" style="color:${INK};font-weight:600">${esc(label)}</a>`;
+
+/** The dashboard's home view: each staff member with their average, opening to all of their calls in the period. */
+export function staffPage(days: number, today: string, records: CallRecord[], base: string, dealer: Dealer): string {
+	const set = records.filter(r => r.appointment_set).length;
+	const heading = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)}</p><h1 style="margin:4px 0 0;font-size:22px">Call coaching by staff member</h1><p style="margin:6px 0 0;color:${MUTED};font-size:14px">Last ${days} days: ${records.length} scored call${records.length === 1 ? '' : 's'}, ${set} appointment${set === 1 ? '' : 's'} set. Click a name to see their calls. ${viewLink(dashboardUrl(base, dealer, today), 'See one day at a time')}</p>`;
+	const staff = byStaff(records, newestFirst)
+		.map(group => {
+			const g = grade(group.average);
+			const appointments = group.calls.filter(c => c.appointment_set).length;
+			const calls = group.calls
+				.map(
+					c =>
+						`<div style="padding:12px 0;border-top:1px solid ${LINE}"><span style="color:${MUTED};font-size:13px">${esc(usDate(c.local_date))} ${esc(c.local_time)}</span><br><strong>${esc(customerName(c))}</strong> &nbsp;${pill(`${c.percent}%`, GRADE_COLORS[recordGrade(c)])} &nbsp;${appointmentPill(c.appointment_set)}${(c.analysis?.red_flags.length ?? 0) > 0 ? ` &nbsp;${pill('Red flag', GRADE_COLORS.red)}` : ''}<div style="margin-top:4px;color:${MUTED};font-size:14px">${esc(c.analysis?.one_line_summary ?? '')} <a href="${esc(callUrl(base, dealer, c.id))}" style="color:${INK};font-weight:600;white-space:nowrap">Full summary and recording</a></div></div>`
+				)
+				.join('');
+			return `<details style="margin:14px 0 0;border:1px solid ${LINE};border-radius:10px;padding:0 16px"><summary style="cursor:pointer;padding:14px 0;font-size:17px;font-weight:800">${esc(group.name)} &nbsp;${pill(`${group.average}% average, ${GRADE_LABELS[g]}`, GRADE_COLORS[g])} <span style="font-size:13px;font-weight:400;color:${MUTED}">&nbsp;${group.calls.length} call${group.calls.length === 1 ? '' : 's'}, ${appointments} appointment${appointments === 1 ? '' : 's'} set</span></summary>${calls}</details>`;
+		})
+		.join('');
+	return shell(`Call coaching: ${dealer.name}`, `${heading}${staff || `<p style="margin:18px 0 0;color:${MUTED}">No scored calls in the last ${days} days.</p>`}`);
+}
+
 export function dashboardPage(date: string, today: string, records: CallRecord[], base: string, dealer: Dealer): string {
 	const picker = `<form method="get" action="${esc(dealerPath(base, dealer))}" style="margin:16px 0 0"><input type="hidden" name="key" value="${esc(dealer.view_key)}"><label style="font-size:14px;color:${MUTED}">Day <input type="date" name="date" value="${esc(date)}" max="${esc(today)}" onchange="this.form.submit()" style="font:inherit;padding:6px 8px;border:1px solid ${LINE};border-radius:8px"></label> <noscript><button type="submit">Show</button></noscript></form>`;
-	return shell(`Call coaching: ${dealer.name}`, `${dayHeading(dealer, date, records)}${picker}${summaryBlock(records, base, dealer)}`);
+	return shell(`Call coaching: ${dealer.name}`, `${dayHeading(dealer, date, records)}${picker}<p style="margin:12px 0 0;font-size:14px">${viewLink(dashboardUrl(base, dealer), 'See the last 30 days by staff member')}</p>${summaryBlock(records, base, dealer)}`);
 }
