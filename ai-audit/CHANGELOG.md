@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.13.2: Call Coach branded address (first half)
+- New `ai-audit/coach-domain/`: a Cloudflare Pages project (`rockstar-call-coach`) that passes `/coach/*` to the Worker through a service binding, so Call Coach can live at `callcoach.rockstarcrm.app` while that domain's DNS stays at GoDaddy. Setup steps are in the README. `COACH_BASE_URL` still points at workers.dev until the new address is confirmed working.
+
 ## v1.13.1: Call Coach setup messages stay in view
 - Setup page v1.8: the green and red status message now sticks to the bottom of the window. Before, pressing My dealers without the admin key put "Enter the admin key first" at the bottom of the page, out of sight, so the button looked dead.
 

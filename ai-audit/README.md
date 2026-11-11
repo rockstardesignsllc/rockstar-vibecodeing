@@ -199,3 +199,10 @@ HighLevel calls + transcripts  ──►  Worker /coach (one DealerCoach Durable
 
 Only calls that come in after setup are scored automatically. Emails go out through the sub-account's own HighLevel
 email, so each staff member and the first manager get a contact record there.
+
+### Call Coach branded address
+`coach-domain/` is a Cloudflare Pages project that forwards `/coach/*` to this Worker, because a Worker custom domain needs the domain's DNS on Cloudflare and rockstarcrm.app is at GoDaddy.
+1. Cloudflare, Workers & Pages, Create, Pages, Connect to Git: this repo, production branch `main`, project name `rockstar-call-coach`, no build command, root directory `ai-audit/coach-domain`, build output directory `public`. Set preview deployments to None.
+2. In the project: Custom domains, Set up a custom domain, `callcoach.rockstarcrm.app`.
+3. GoDaddy DNS for rockstarcrm.app: CNAME `callcoach` to `rockstar-call-coach.pages.dev`.
+4. When `https://callcoach.rockstarcrm.app/coach/setup` loads, change `COACH_BASE_URL` in `worker/wrangler.jsonc` to that address so notes, emails and dashboards use it. The workers.dev links keep working.
