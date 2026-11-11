@@ -1,5 +1,9 @@
 # Rockstar AI Audit changelog
 
+## v1.14: Call Coach lives at callcoach.rockstarai.app
+- `COACH_BASE_URL` is now `https://callcoach.rockstarai.app`, so new notes, emails, coaching pages and dashboard links use the branded address. Links on the workers.dev address keep working.
+- Removed the unused `coach-domain/` Pages project (the custom domain made it unnecessary). Setup guide v1.2 carries the new setup address.
+
 ## v1.13.3: Call Coach custom domain
 - The Worker now also answers on `callcoach.rockstarai.app` (a custom domain in `wrangler.jsonc`; rockstarai.app is in the same Cloudflare account). The workers.dev address stays on. `COACH_BASE_URL` is unchanged until the new address is confirmed.
 
