@@ -1,5 +1,9 @@
 # Rockstar AI Audit changelog
 
+## v1.14.2: Rockstar branding on the Call Coach setup page
+- Setup page v1.9: Rockstar logo header, title "Rockstar Call Coach Setup", black, red, white and gray styling, and the logo as the tab icon.
+- New "Remember the admin key on this computer" box. The key is kept only in that browser's storage, never in the page or the repository; unticking it forgets the key.
+
 ## v1.14.1: Call Coach setup only on its own address
 - `/coach/setup` and `/coach/admin` now answer only on `callcoach.rockstarai.app`, where Cloudflare Access (email sign-in) guards them. On the workers.dev address the setup page redirects there and admin calls are refused. Dealer dashboards, coaching pages and recordings still work on both addresses.
 
