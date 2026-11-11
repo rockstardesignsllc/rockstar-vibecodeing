@@ -1,0 +1,160 @@
+<!-- RockstarAI Call Coach Setup Guide v1.1 | Updated 2026-11-11 22:55 UTC -->
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>RockstarAI Call Coach Setup Guide</title>
+<style>
+@page { size: Letter; margin: 0.8in 0.75in 0.85in; }
+@page :first { margin: 0; }
+* { box-sizing: border-box; }
+body { margin:0; font: 10.3pt/1.45 "Helvetica Neue", Helvetica, Arial, sans-serif; color:#16181d; }
+.cover { height: 11in; page-break-after: always; display:flex; flex-direction:column; }
+.cover .top { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 1in; text-align:center; }
+.cover img { width:3.1in; }
+.cover .kicker { margin-top:.45in; font-size:11pt; letter-spacing:.28em; text-transform:uppercase; color:#e02b2b; font-weight:700; }
+.cover h1 { font-size:36pt; line-height:1.1; margin:.12in 0 0; font-weight:800; letter-spacing:-.01em; }
+.cover .sub { margin-top:.2in; font-size:13pt; color:#5f6672; max-width:5.2in; }
+.cover .band { background:#111214; color:#fff; padding:.45in 1in; display:flex; justify-content:space-between; align-items:center; border-top:6px solid #e02b2b; font-size:10.5pt; }
+.cover .band b { font-size:12pt; }
+.cover .band span { color:#b8bcc4; }
+h2 { font-size:17pt; margin:0 0 .12in; padding:.1in .16in; background:#111214; color:#fff; border-left:7px solid #e02b2b; border-radius:3px; break-after:avoid; }
+h2 small { float:right; font-size:9.5pt; font-weight:400; color:#b8bcc4; padding-top:.07in; }
+section { margin-bottom:.24in; }
+p { margin:0 0 .1in; }
+ol, ul { margin:0 0 .1in; padding-left:.28in; }
+li { margin-bottom:.07in; }
+ul li, .check li { break-inside:avoid; }
+ol > li::marker { font-weight:800; color:#e02b2b; }
+ul > li::marker { color:#e02b2b; }
+ul.sub { margin-top:.05in; }
+.box { border:1px solid #d9dde3; border-left:5px solid #e02b2b; background:#f4f5f7; border-radius:4px; padding:.12in .16in; margin:0 0 .14in; break-inside:avoid; }
+.box.dark { background:#111214; color:#fff; border-color:#111214; border-left-color:#e02b2b; }
+.url { font-family: Menlo, Consolas, monospace; font-size:9.5pt; word-break:break-all; }
+.box.dark .url { color:#fff; }
+table { width:100%; border-collapse:collapse; font-size:9.8pt; }
+th { background:#111214; color:#fff; text-align:left; padding:.08in .1in; }
+td { padding:.08in .1in; border-bottom:1px solid #d9dde3; vertical-align:top; }
+tr:nth-child(even) td { background:#f4f5f7; }
+tr { break-inside:avoid; }
+.check { list-style:none; padding-left:0; columns:2; }
+.check li { padding-left:.3in; position:relative; }
+.check li::before { content:""; position:absolute; left:0; top:.03in; width:.15in; height:.15in; border:1.6px solid #16181d; border-radius:3px; }
+.newpage { break-before:page; }
+</style></head><body>
+
+<div class="cover">
+	<div class="top">
+		<img src="logo-small.png" alt="Rockstar">
+		<div class="kicker">RockstarAI</div>
+		<h1>Call Coach<br>Setup Guide</h1>
+		<div class="sub">How to turn on AI call scoring and coaching for a dealership in 15 to 30 minutes.</div>
+	</div>
+	<div class="band"><div><b>For Rockstar team members</b><br><span>Internal use only. Do not share with dealers.</span></div><div style="text-align:right"><span>Guide v1.1</span><br><span>November 2026</span></div></div>
+</div>
+
+<section>
+<h2>Start here</h2>
+<p>This guide walks you through turning on Call Coach for one dealership. Follow the parts in order and do not skip the test.</p>
+<p><b>What Call Coach does:</b> it reads the dealership's recorded phone calls, scores each one, and sends coaching to the salesperson and their managers. Once a dealer is set up, it runs by itself. Nobody clicks anything day to day.</p>
+<div class="box dark"><b>The setup page (one page for every dealer)</b><br><span class="url">https://rockstar-ai-audit.rockstar-designs-llc.workers.dev/coach/setup</span><br>The dealer never sees this page. Only Rockstar staff use it.</div>
+</section>
+
+<section>
+<h2>Part 1: Gather these first <small>5 minutes</small></h2>
+<ol>
+<li><b>The admin key.</b> Get it from Mat. Never share it with a dealer and never paste it into a chat or email.</li>
+<li><b>The dealer's phone scripts, if they have them.</b> Sales, BDC, Service. Text or PDF both work. No scripts is fine: calls are then scored on the built-in General scorecard (listening, ownership, next steps, customer satisfaction). If they bought the outbound add-on, get their outbound script too.</li>
+<li><b>Manager emails.</b> The people who should be copied on every coaching email and get the 7 AM daily summary.</li>
+<li><b>Check their users.</b> In the dealer's account, go to Settings, My Staff. Every person who answers phones needs to be a user with their real first name and a working email. This is how the coaching email finds the right person.</li>
+</ol>
+</section>
+
+<section class="newpage">
+<h2>Part 2: Create the token <small>5 minutes</small></h2>
+<p>The token is a password that lets Call Coach read that one dealer's calls. You create it inside the dealer's own account.</p>
+<ol>
+<li>Log in to Rockstar and switch into the dealer's sub-account. <b>Check the dealer's name at the top left.</b> A token made in the wrong account will be rejected.</li>
+<li>Go to Settings, then Private Integrations, then Create new integration.</li>
+<li>Name it <b>Rockstar Call Coach</b>.</li>
+<li>Check exactly these seven permissions:
+<ul class="check sub"><li>View Conversations</li><li>View Conversation Messages</li><li>Edit Conversation Messages</li><li>View Contacts</li><li>Edit Contacts</li><li>View Users</li><li>View Locations</li></ul></li>
+<li>Click Create and <b>copy the token right away.</b> It is only shown once. If you lose it, delete the integration and make a new one.</li>
+<li>Copy the <b>sub-account ID.</b> It is the code in the browser address right after <span class="url">/location/</span>.</li>
+</ol>
+</section>
+
+<section>
+<h2>Part 3: Fill in the setup page <small>5 to 10 minutes</small></h2>
+<ol>
+<li>Open the setup page and type the admin key.</li>
+<li>Paste the sub-account ID. Paste the token.</li>
+<li><b>Name:</b> leave it blank. It fills in the dealership's name automatically.</li>
+<li><b>Time zone:</b> leave it blank unless the 7 AM summary should use a different time zone than the account's.</li>
+<li><b>Manager emails:</b> type them separated by commas.</li>
+<li><b>Phone numbers by department:</b> leave it blank. The AI sorts every call by what the customer called about.</li>
+<li><b>Call frameworks:</b> paste each script the dealer gave you into its box, or click Choose File to upload the PDF and wait for the text to appear. Read it over once. Leave a box blank if there is no script for it.</li>
+<li><b>Outbound add-on only:</b> check "Also score outbound calls" and fill in the Outbound box.</li>
+<li><b>Uncheck "Scoring is on"</b> for now. You will turn it on after the test.</li>
+<li>Click <b>Save settings</b> and wait for the green "Saved" message. A red message tells you what to fix.</li>
+</ol>
+</section>
+
+<section class="newpage">
+<h2>Part 4: Test it <small>5 to 10 minutes</small></h2>
+<ol>
+<li>In the dealer's account, open Conversations and find a real inbound sales call that lasted at least two minutes and was answered by a person.</li>
+<li>Copy the conversation ID. It is the code at the very end of the browser address.</li>
+<li>On the setup page, paste it into "Test on one call". Leave "Also write the contact note and send the email" <b>unchecked</b>. Click <b>Score this call</b> and wait up to a minute.</li>
+<li>Click <b>Open the full summary</b> and check all four:
+<ul class="check sub"><li>The dealership's name is correct at the top.</li><li>The score and coaching look fair for that call.</li><li>The recording plays.</li><li>"Open this call in Rockstar" takes you to the right conversation.</li></ul></li>
+<li>Go back and score the same call again with the box <b>checked</b>. This one is real. Then confirm:
+<ul class="check sub"><li>A note appeared on that customer's contact.</li><li>The coaching email arrived for the managers.</li></ul></li>
+</ol>
+<div class="box"><b>If any check fails, stop.</b> Tell Mat before going live.</div>
+</section>
+
+<section>
+<h2>Part 5: Go live <small>3 minutes</small></h2>
+<ol>
+<li>On the setup page, check <b>"Scoring is on"</b> and click Save settings.</li>
+<li>From this moment, every new inbound call over 60 seconds is scored about 10 to 15 minutes after it ends. Calls from before you turned it on are left alone.</li>
+<li>Click <b>My dealers</b> at the top of the setup page. Find the dealer and click <b>Copy link</b> in the Dashboard link column.</li>
+<li>Add the dashboard to the dealer's menu: in the agency view go to Settings, Custom Menu Links, and create a new link. Title it <b>Call Coach</b>, paste the link, show it only in this dealer's sub-account, and set it to open inside the app.</li>
+<li>Log in to the dealer's account and click Call Coach in the menu to confirm the dashboard opens.</li>
+</ol>
+</section>
+
+<section class="newpage">
+<h2>What the dealer gets every day</h2>
+<ul>
+<li><b>A topic on every call:</b> Sales related, Service related or Other. Sales calls are scored on the sales script, service calls on the service script, and anything without a matching script on the General scorecard.</li>
+<li><b>A note on the customer's contact</b> for each scored call, with the score, summary, promised follow-ups, what went well, tune-ups and links.</li>
+<li><b>An email to the salesperson and managers:</b> "Call Scoring for [customer] [phone] complete at [date and time]" with a button to the coaching page.</li>
+<li><b>A 7 AM summary to managers</b> of yesterday's calls, grouped by salesperson, with color-coded average scores. It opens with frustrated customers and promised follow-ups that need attention.</li>
+<li><b>The Call Coach dashboard</b> in their menu. It shows the last 30 days by staff member. Click a name to see all of that person's calls.</li>
+</ul>
+</section>
+
+<section>
+<h2>Managing dealers later</h2>
+<p>Click <b>My dealers</b> on the setup page to see every dealer that is set up.</p>
+<ul>
+<li><b>Edit:</b> loads that dealer's settings into the page. Change what you need and click Save settings. Leave the token box blank to keep the saved token.</li>
+<li><b>Pause:</b> click Edit, uncheck "Scoring is on", Save. Everything is kept and you can turn it back on later.</li>
+<li><b>Stop emails only:</b> click Edit, uncheck "Send coaching emails and the 7 AM summary", Save. Notes and the dashboard keep working.</li>
+<li><b>Delete (a dealer cancels):</b> click Delete and confirm. This erases their settings and scored calls from Call Coach for good. Notes already written on their contacts stay. Also remove their Call Coach menu link and delete the Rockstar Call Coach integration in their account.</li>
+</ul>
+</section>
+
+<section class="newpage">
+<h2>If something goes wrong</h2>
+<table>
+<tr><th style="width:34%">What you see</th><th style="width:33%">What it means</th><th>What to do</th></tr>
+<tr><td>"That token reads calls from a different sub-account"</td><td>The token was made in the wrong account</td><td>Redo Part 2 inside the dealer's own sub-account</td></tr>
+<tr><td>A red message saying the token was not accepted</td><td>The token was copied wrong or is missing a permission</td><td>Make a new token with all seven permissions</td></tr>
+<tr><td>"That call was not found"</td><td>The ID is from another account, or the call is over 90 days old</td><td>Copy the ID again from this dealer's Conversations</td></tr>
+<tr><td>"Not scored" with a reason</td><td>Voicemail, wrong number, or the call was answered by the voice AI</td><td>Normal. Pick a call a person answered</td></tr>
+<tr><td>The email only went to managers</td><td>The name the rep said on the call did not match exactly one user's first name</td><td>Fix the user's first name in Settings, My Staff</td></tr>
+<tr><td>The recording will not play</td><td>The page may be stale</td><td>Refresh and try again. If it still fails, tell Mat</td></tr>
+<tr><td>A dealer is missing from My dealers</td><td>It was paused before the list existed</td><td>Enter its sub-account ID, Load, and Save once</td></tr>
+</table>
+<p style="margin-top:.16in">Anything not on this list: take a screenshot and send it to Mat.</p>
+</section>
+</body></html>

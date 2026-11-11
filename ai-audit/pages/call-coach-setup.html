@@ -1,4 +1,4 @@
-<!-- Rockstar Call Coach setup v1.6 | Updated 2026-11-11 21:44 UTC -->
+<!-- Rockstar Call Coach setup v1.7 | Updated 2026-11-11 22:45 UTC -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -62,12 +62,9 @@
 		</div>
 		<label for="managers">Manager emails <small>Comma separated. They are copied on every coaching email and get the 7 AM summary.</small></label>
 		<input id="managers" type="text" placeholder="gm@dealer.com, salesmanager@dealer.com">
-		<label for="numbers">Phone numbers by department <small>One per line, like +18665213366 = sales. Departments: sales, bdc, service. Numbers not listed are sorted by the AI.</small></label>
+		<label for="numbers">Phone numbers by department <small>One per line, like +18665213366 = sales. Departments: sales, bdc, service. Optional. Every call is sorted by what the customer called about, so most dealers leave this blank.</small></label>
 		<textarea id="numbers" style="min-height:80px" placeholder="+18665213366 = sales&#10;+18449911777 = service"></textarea>
-		<div class="row">
-			<div><label for="min">Shortest call to score (seconds)</label><input id="min" type="text" value="60"></div>
-			<div><label for="dept">Department when unsure</label><select id="dept"><option value="sales">Sales</option><option value="bdc">BDC</option><option value="service">Service</option></select></div>
-		</div>
+		<label for="min">Shortest call to score (seconds)</label><input id="min" type="text" value="60">
 		<label class="check"><input id="emails" type="checkbox" checked> Send coaching emails and the 7 AM summary</label>
 		<label class="check"><input id="outbound" type="checkbox"> Also score outbound calls <small>Add-on. Uses the Outbound framework below.</small></label>
 		<label class="check"><input id="enabled" type="checkbox" checked> Scoring is on</label>
@@ -75,7 +72,7 @@
 
 	<div class="card">
 		<h2>3. Call frameworks</h2>
-		<p class="hint">One per department. Paste the text or upload a PDF and it is read in for you.</p>
+		<p class="hint">Optional. Paste the text or upload a PDF and it is read in for you. A sales related call is scored on the Sales (or BDC) framework and a service related call on the Service framework. Any call with no matching framework, and every call when these are all blank, is scored on the built-in General scorecard: listening, ownership, next steps and how satisfied the customer sounded.</p>
 		<label for="s-sales">Sales</label>
 		<textarea id="s-sales"></textarea><input type="file" accept="application/pdf" data-for="s-sales">
 		<label for="s-bdc">BDC</label>
@@ -136,7 +133,6 @@
 		$('managers').value = (c.managers || []).join(', ');
 		$('numbers').value = Object.keys(c.numbers || {}).map(function (n) { return n + ' = ' + c.numbers[n]; }).join('\n');
 		$('min').value = c.min_seconds;
-		$('dept').value = c.default_department;
 		$('emails').checked = c.send_emails;
 		$('outbound').checked = c.score_outbound === true;
 		$('enabled').checked = c.enabled;
@@ -195,7 +191,7 @@
 			name: $('name').value, timezone: $('tz').value,
 			managers: $('managers').value.split(',').map(function (m) { return m.trim(); }).filter(Boolean),
 			numbers: numbers, scripts: scripts,
-			min_seconds: Number($('min').value) || 60, default_department: $('dept').value,
+			min_seconds: Number($('min').value) || 60,
 			send_emails: $('emails').checked, score_outbound: $('outbound').checked, enabled: $('enabled').checked
 		};
 		if ($('token').value.trim()) body.token = $('token').value.trim();
