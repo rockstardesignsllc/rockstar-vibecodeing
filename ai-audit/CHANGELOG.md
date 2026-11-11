@@ -1,5 +1,11 @@
 # Rockstar AI Audit changelog
 
+## v1.11: Call Coach dealer list
+- Setup page v1.6 has a "My dealers" button: every dealership set up, on or paused, calls scored, its dashboard link (copy or open), Edit and Delete. Backed by a new `CoachDirectory` Durable Object (migration v4) that each dealership registers with on Save, and on its next automatic check for dealerships saved earlier.
+- Delete removes a dealership's settings, token and scored calls and stops its scoring. Notes already written in HighLevel stay.
+- The coaching page button now reads "Open this call in Rockstar".
+- A call with no assigned user and no name match falls back to the user the contact is assigned to.
+
 ## v1.10: Call Coach outbound scoring (add-on)
 - New per-dealer switch "Also score outbound calls" and an Outbound framework box (setup page v1.5). Off by default, so inbound-only dealers are unchanged.
 - Outbound calls get their own scorecard: who they are and why they are calling, keeping the call on its goal, handling questions, the appointment items when a visit applies, tone and next step. A voicemail left is not scored.
