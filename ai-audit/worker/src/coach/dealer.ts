@@ -21,6 +21,7 @@ const MAX_CALLS_PER_RUN = 8;
 const MAX_ATTEMPTS = 3;
 const DIGEST_HOUR = 7;
 const DEFAULT_MIN_SECONDS = 60;
+const STAFF_VIEW_DAYS = 30;
 const WAIT_FOR_TURN_MS = 45 * 1000;
 const WAIT_STEP_MS = 500;
 
@@ -204,6 +205,19 @@ export class DealerCoach extends DurableObject<Env> {
 		const yesterday = this.localParts(config, new Date(now - 24 * 60 * 60 * 1000)).date;
 		const chosen = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : this.scoredOn(today).length > 0 ? today : yesterday;
 		return { ok: true, value: { date: chosen, today, records: this.scoredOn(chosen) } };
+	}
+
+	/** Every scored call of the last 30 days, for the dashboard's by-staff view. */
+	async recent(key: string): Promise<CoachResult<{ days: number; today: string; records: CallRecord[] }>> {
+		const config = await this.config();
+		if (!config || key !== config.view_key) return fail(404, 'not found');
+		const now = Date.now();
+		const since = this.localParts(config, new Date(now - STAFF_VIEW_DAYS * 24 * 60 * 60 * 1000)).date;
+		const records = this.ctx.storage.sql
+			.exec<{ record: string }>("SELECT record FROM calls WHERE local_date >= ? AND status = 'scored'", since)
+			.toArray()
+			.map(row => JSON.parse(row.record) as CallRecord);
+		return { ok: true, value: { days: STAFF_VIEW_DAYS, today: this.localParts(config, new Date(now)).date, records } };
 	}
 
 	async call(key: string, id: string): Promise<CoachResult<CallRecord>> {
