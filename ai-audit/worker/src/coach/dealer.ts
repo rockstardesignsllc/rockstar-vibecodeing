@@ -19,6 +19,8 @@ const MAX_CALLS_PER_RUN = 8;
 const MAX_ATTEMPTS = 3;
 const DIGEST_HOUR = 7;
 const DEFAULT_MIN_SECONDS = 60;
+const WAIT_FOR_TURN_MS = 45 * 1000;
+const WAIT_STEP_MS = 500;
 
 export type CoachResult<T> = { ok: true; value: T } | { ok: false; status: number; error: string };
 
@@ -187,7 +189,7 @@ export class DealerCoach extends DurableObject<Env> {
 	async run(options: { message_id?: string; deliver?: boolean } = {}): Promise<CoachResult<RunReport>> {
 		const config = await this.config();
 		if (!config) return fail(404, 'This dealership is not set up yet.');
-		if (this.busy) return fail(409, 'A run is already in progress.');
+		if (!(await this.turn())) return fail(409, 'The automatic check is still running. Try again in a minute.');
 		this.busy = true;
 		try {
 			return { ok: true, value: await this.poll(config, options) };
@@ -196,6 +198,13 @@ export class DealerCoach extends DurableObject<Env> {
 		} finally {
 			this.busy = false;
 		}
+	}
+
+	/** Waits for a run in progress (usually the automatic check) to finish. False when it is still going after the wait. */
+	private async turn(): Promise<boolean> {
+		const deadline = Date.now() + WAIT_FOR_TURN_MS;
+		while (this.busy && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, WAIT_STEP_MS));
+		return !this.busy;
 	}
 
 	async alarm(): Promise<void> {
