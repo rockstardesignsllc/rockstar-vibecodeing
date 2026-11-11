@@ -190,7 +190,7 @@ HighLevel calls + transcripts  ──►  Worker /coach (one DealerCoach Durable
    `conversations.readonly`, `conversations/message.readonly`, `conversations/message.write`, `contacts.readonly`,
    `contacts.write`, `users.readonly` and `locations.readonly`. The sub-account needs call recording and call
    transcription turned on.
-2. Open `https://rockstar-ai-audit.rockstar-designs-llc.workers.dev/coach/setup`. Enter the `ADMIN_KEY`, the
+2. Open `https://callcoach.rockstarai.app/coach/setup`. Enter the `ADMIN_KEY`, the
    sub-account's location ID and the token, then the manager emails, which phone number belongs to which department,
    and one framework per department (paste text or upload a PDF). Save.
 3. Use "Test on one call" to score a recorded call without sending anything, then check the summary page.
@@ -200,9 +200,5 @@ HighLevel calls + transcripts  ──►  Worker /coach (one DealerCoach Durable
 Only calls that come in after setup are scored automatically. Emails go out through the sub-account's own HighLevel
 email, so each staff member and the first manager get a contact record there.
 
-### Call Coach branded address
-`coach-domain/` is a Cloudflare Pages project that forwards `/coach/*` to this Worker, because a Worker custom domain needs the domain's DNS on Cloudflare and rockstarcrm.app is at GoDaddy.
-1. Cloudflare, Workers & Pages, Create, Pages, Connect to Git: this repo, production branch `main`, project name `rockstar-call-coach`, no build command, root directory `ai-audit/coach-domain`, build output directory `public`. Set preview deployments to None.
-2. In the project: Custom domains, Set up a custom domain, `callcoach.rockstarcrm.app`.
-3. GoDaddy DNS for rockstarcrm.app: CNAME `callcoach` to `rockstar-call-coach.pages.dev`.
-4. When `https://callcoach.rockstarcrm.app/coach/setup` loads, change `COACH_BASE_URL` in `worker/wrangler.jsonc` to that address so notes, emails and dashboards use it. The workers.dev links keep working.
+### Call Coach address
+Call Coach is served at `https://callcoach.rockstarai.app` (a custom domain on this Worker, set in `worker/wrangler.jsonc`; rockstarai.app is in the same Cloudflare account). `COACH_BASE_URL` is the address used in notes, emails and dashboard links. The workers.dev address still answers, so links sent before the change keep working.
