@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.8.8: Call Coach setup page clears the old dealer's name
+- Changing the sub-account ID on the setup page (v1.4) clears the name, time zone and token boxes, so a second dealership is not saved under the first one's name.
+
 ## v1.8.7: Call Coach reads calls by date
 - On a busy dealership HighLevel answered the call list starting months back instead of newest first, so recent calls were never seen. The automatic check now asks for the last 24 hours by date, and "Test on one call" searches the last 2, 7, 30, then 90 days.
 
