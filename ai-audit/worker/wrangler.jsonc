@@ -4,6 +4,9 @@
 	"compatibility_date": "2026-10-01",
 	"compatibility_flags": ["nodejs_compat"],
 	"observability": { "enabled": true },
+	// Call Coach's branded address. workers_dev stays on so links already sent on the workers.dev address keep working.
+	"workers_dev": true,
+	"routes": [{ "pattern": "callcoach.rockstarai.app", "custom_domain": true }],
 	"durable_objects": {
 		"bindings": [
 			{ "name": "AUDIT_SESSIONS", "class_name": "AuditSession" },
