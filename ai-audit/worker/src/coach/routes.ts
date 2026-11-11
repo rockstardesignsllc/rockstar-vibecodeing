@@ -28,6 +28,27 @@ const MAX_PDF_BYTES = 8_000_000;
 const json = (status: number, body: object): Response =>
 	new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 
+const RANGE = /^bytes=(\d*)-(\d*)$/;
+
+/**
+ * Serves a file with byte-range support. Safari and iOS only play audio from a server that answers range requests,
+ * and HighLevel's recording route does not, so the whole recording is read and the asked-for slice returned.
+ */
+function ranged(file: ArrayBuffer, type: string, range: string | null): Response {
+	const size = file.byteLength;
+	const headers = { 'content-type': type, 'accept-ranges': 'bytes', 'cache-control': 'private, max-age=3600', 'content-disposition': 'inline' };
+	const match = range ? RANGE.exec(range.trim()) : null;
+	if (!match || (!match[1] && !match[2])) return new Response(file, { headers: { ...headers, 'content-length': String(size) } });
+	const suffix = !match[1];
+	const start = suffix ? Math.max(0, size - Number(match[2])) : Number(match[1]);
+	const end = suffix || !match[2] ? size - 1 : Math.min(Number(match[2]), size - 1);
+	if (start > end || start >= size) return new Response(null, { status: 416, headers: { ...headers, 'content-range': `bytes */${size}` } });
+	return new Response(file.slice(start, end + 1), {
+		status: 206,
+		headers: { ...headers, 'content-range': `bytes ${start}-${end}/${size}`, 'content-length': String(end - start + 1) }
+	});
+}
+
 const html = (status: number, body: string): Response =>
 	new Response(body, { status, headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'referrer-policy': 'no-referrer' } });
 
@@ -142,10 +163,8 @@ async function handleDealerView(request: Request, env: Env, parts: string[], url
 	if (parts[1] === 'call') return html(200, callPage(call.value, base, access));
 	if (parts[1] === 'rec') {
 		const audio = await recording(access, id);
-		if (!audio.ok) return notFound();
-		return new Response(audio.body, {
-			headers: { 'content-type': audio.headers.get('content-type') ?? 'audio/x-wav', 'cache-control': 'private, max-age=3600', 'content-disposition': 'inline' }
-		});
+		if (!audio.ok) return json(502, { error: `HighLevel did not return the recording (${audio.status}).` });
+		return ranged(await audio.arrayBuffer(), audio.headers.get('content-type') ?? 'audio/x-wav', request.headers.get('range'));
 	}
 	return notFound();
 }

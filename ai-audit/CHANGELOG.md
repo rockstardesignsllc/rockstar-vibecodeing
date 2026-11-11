@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.8.9: Call Coach recordings play in Safari
+- The recording link now answers byte-range requests, which Safari and iPhones need before they will play audio. A recording HighLevel refuses is reported with its status instead of a blank player.
+
 ## v1.8.8: Call Coach setup page clears the old dealer's name
 - Changing the sub-account ID on the setup page (v1.4) clears the name, time zone and token boxes, so a second dealership is not saved under the first one's name.
 
