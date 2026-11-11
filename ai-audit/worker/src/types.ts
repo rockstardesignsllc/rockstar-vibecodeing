@@ -15,6 +15,8 @@ export interface Env {
 	MODEL: string;
 	/** Public address of this Worker, used in Call Coach email and note links. */
 	COACH_BASE_URL: string;
+	/** The HighLevel app address dealers log in at, used for "open this call in HighLevel" links. */
+	COACH_APP_URL: string;
 	ANTHROPIC_API_KEY: string;
 	/** Optional, for example a Cloudflare AI Gateway URL for request logs and cost tracking. */
 	ANTHROPIC_BASE_URL?: string;

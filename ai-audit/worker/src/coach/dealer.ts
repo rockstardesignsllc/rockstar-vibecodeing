@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { DurableObject } from 'cloudflare:workers';
 import type { Env } from '../types';
 import * as ghl from './ghl';
-import { coachingEmail, digestEmail, noteBody } from './render';
+import { coachingEmail, digestEmail, noteBody, usDate } from './render';
 import { totals } from './rubric';
 import { scoreCall, transcriptText } from './score';
 import { DEPARTMENTS, type CallMessage, type CallRecord, type DealerConfig, type DealerConfigInput, type Department, type PublicDealerConfig } from './types';
@@ -271,6 +271,8 @@ export class DealerCoach extends DurableObject<Env> {
 			staff_name: 'Unassigned',
 			staff_email: '',
 			contact_id: call.contactId ?? '',
+			conversation_id: call.conversationId ?? '',
+			customer_phone: call.from ?? '',
 			customer_first: '',
 			customer_last: '',
 			duration: call.meta?.call?.duration ?? 0,
@@ -312,10 +314,11 @@ export class DealerCoach extends DurableObject<Env> {
 				return record;
 			}
 			const [staff, customer] = await Promise.all([
-				call.userId ? ghl.user(config, call.userId).catch(() => undefined) : undefined,
+				this.staff(config, call, analysis.staff_name_heard),
 				call.contactId ? ghl.contact(config, call.contactId).catch(() => undefined) : undefined
 			]);
 			const heard = analysis.customer_name_heard.split(' ');
+			record.user_id = staff?.id ?? '';
 			record.staff_name = [staff?.first, staff?.last].filter(Boolean).join(' ') || analysis.staff_name_heard || 'Unassigned';
 			record.staff_email = staff?.email ?? '';
 			record.customer_first = customer?.first || heard[0] || '';
@@ -346,6 +349,18 @@ export class DealerCoach extends DurableObject<Env> {
 			record.skip_reason = errorText(error).slice(0, 300);
 			this.store(record);
 			return record;
+		}
+	}
+
+	/**
+	 * Who took the call: the user HighLevel assigned it to, or, for calls it leaves unassigned (phone tree calls), the
+	 * user whose name matches the one the staff member gave on the call.
+	 */
+	private async staff(config: DealerConfig, call: CallMessage, nameHeard: string): Promise<ghl.Person | undefined> {
+		try {
+			return call.userId ? await ghl.user(config, call.userId) : ghl.userNamed(await ghl.users(config), nameHeard);
+		} catch {
+			return undefined;
 		}
 	}
 
@@ -383,7 +398,8 @@ export class DealerCoach extends DurableObject<Env> {
 			if (to) {
 				const [first, ...rest] = record.staff_email ? record.staff_name.split(' ') : [];
 				const contactId = await ghl.contactForEmail(config, to, first ?? '', rest.join(' '));
-				const email = coachingEmail(record, base, config);
+				const now = this.localParts(config, new Date());
+				const email = coachingEmail(record, base, config, `${usDate(now.date)} ${now.time}`);
 				await ghl.sendEmail(config, contactId, email.subject, email.html, config.managers.filter(m => m !== to.toLowerCase()));
 				record.delivery.email_sent = true;
 				this.store(record);

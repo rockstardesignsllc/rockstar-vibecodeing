@@ -30,6 +30,7 @@
 		"BOOKING_URL": "https://app.rockstarinfo.com/widget/bookings/rockstarai",
 		"HIGHLEVEL_LOCATION_ID": "hrsRmtnUmvqCKm3d01tx",
 		"MODEL": "claude-sonnet-5-5",
-		"COACH_BASE_URL": "https://rockstar-ai-audit.rockstar-designs-llc.workers.dev"
+		"COACH_BASE_URL": "https://rockstar-ai-audit.rockstar-designs-llc.workers.dev",
+		"COACH_APP_URL": "https://app.rockstarinfo.com"
 	}
 }
