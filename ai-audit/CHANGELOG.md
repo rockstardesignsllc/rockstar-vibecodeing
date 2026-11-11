@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.8.7: Call Coach reads calls by date
+- On a busy dealership HighLevel answered the call list starting months back instead of newest first, so recent calls were never seen. The automatic check now asks for the last 24 hours by date, and "Test on one call" searches the last 2, 7, 30, then 90 days.
+
 ## v1.8.6: Call Coach test waits its turn, wrong-account tokens refused
 - Save now refuses a token created in a different sub-account. HighLevel answers the call list for the token's own sub-account whatever location is asked for, so such a token silently read another account's calls.
 - "Test on one call" clicked while the automatic check is running (it starts right after Save) now waits up to 45 seconds for it to finish instead of answering "A run is already in progress".
