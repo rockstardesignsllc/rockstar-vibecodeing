@@ -30,25 +30,59 @@ const str = (value: unknown): string => (typeof value === 'string' ? value.trim(
 
 const isCall = (m: unknown): m is CallMessage => isRecord(m) && typeof m.id === 'string' && typeof m.dateAdded === 'string';
 
-const PAGE_SIZE = 100;
-const MAX_SEARCH_PAGES = 12;
+const PAGE_SIZE = 500;
+const DAY_MS = 24 * 60 * 60 * 1000;
+const RECENT_DAYS = 1;
+const MAX_RECENT_PAGES = 4;
+/** How far back, in days, each pass of a call search reaches. A search stops at the first pass that finds the call. */
+const SEARCH_REACH_DAYS = [2, 7, 30, 90];
+const MAX_SEARCH_PAGES = 20;
 
 interface CallPage {
 	calls: CallMessage[];
 	cursor: string;
 }
 
-async function callPage(dealer: Dealer, cursor = ''): Promise<CallPage> {
+interface CallWindow {
+	start: number;
+	end: number;
+}
+
+/**
+ * One page of the sub-account's calls. HighLevel does not reliably answer newest first, so callers that need recent
+ * calls pass a date window instead of trusting the order.
+ */
+async function callPage(dealer: Dealer, window?: CallWindow, cursor = ''): Promise<CallPage> {
 	const query = new URLSearchParams({ locationId: dealer.location_id, channel: 'Call', limit: String(PAGE_SIZE), sortBy: 'createdAt', sortOrder: 'desc' });
+	if (window) {
+		query.set('startDate', new Date(window.start).toISOString());
+		query.set('endDate', new Date(window.end).toISOString());
+	}
 	if (cursor) query.set('cursor', cursor);
 	const result = await request(dealer, 'GET', `/conversations/messages/export?${query}`, VERSION);
 	const page = isRecord(result) ? result : {};
 	return { calls: Array.isArray(page.messages) ? page.messages.filter(isCall) : [], cursor: str(page.nextCursor) };
 }
 
-/** The newest call messages in the sub-account, newest first whatever order HighLevel answers in. */
+/** Every call in a date window, up to a page budget. Returns the calls and how many pages were read. */
+async function callsIn(dealer: Dealer, window: CallWindow, maxPages: number): Promise<{ calls: CallMessage[]; pages: number }> {
+	const calls: CallMessage[] = [];
+	let cursor = '';
+	let pages = 0;
+	while (pages < maxPages) {
+		const result = await callPage(dealer, window, cursor);
+		pages++;
+		calls.push(...result.calls);
+		if (!result.cursor || result.calls.length === 0) break;
+		cursor = result.cursor;
+	}
+	return { calls, pages };
+}
+
+/** The last day of call messages in the sub-account, newest first. */
 export async function recentCalls(dealer: Dealer): Promise<CallMessage[]> {
-	const { calls } = await callPage(dealer);
+	const now = Date.now();
+	const { calls } = await callsIn(dealer, { start: now - RECENT_DAYS * DAY_MS, end: now }, MAX_RECENT_PAGES);
 	return calls.sort((x, y) => Date.parse(y.dateAdded) - Date.parse(x.dateAdded));
 }
 
@@ -77,28 +111,30 @@ const bestOf = (calls: CallMessage[]): CallMessage | undefined => {
 };
 
 /**
- * Finds one call by its message id, or the best call of a conversation by the conversation id, by paging through the
- * sub-account's calls. HighLevel refuses the single-message read to Private Integration tokens, so the export list is
- * the only way to reach a call without its contact.
+ * Finds one call by its message id, or the best call of a conversation by the conversation id, by reading the
+ * sub-account's calls from the newest days backward. HighLevel refuses the single-message read to Private Integration
+ * tokens, so the export list is the only way to reach a call without its contact.
  */
 export async function findCall(dealer: Dealer, id: string): Promise<CallSearch> {
 	const search: CallSearch = { looked_at: 0, newest: '', oldest: '' };
-	const inConversation: CallMessage[] = [];
-	let cursor = '';
-	for (let page = 0; page < MAX_SEARCH_PAGES; page++) {
-		const result = await callPage(dealer, cursor);
-		for (const call of result.calls) {
+	const now = Date.now();
+	let pagesLeft = MAX_SEARCH_PAGES;
+	let end = now;
+	for (const days of SEARCH_REACH_DAYS) {
+		if (pagesLeft <= 0) break;
+		const start = now - days * DAY_MS;
+		const { calls, pages } = await callsIn(dealer, { start, end }, pagesLeft);
+		pagesLeft -= pages;
+		end = start;
+		for (const call of calls) {
 			search.looked_at++;
 			if (!search.newest || call.dateAdded > search.newest) search.newest = call.dateAdded;
 			if (!search.oldest || call.dateAdded < search.oldest) search.oldest = call.dateAdded;
-			if (call.id === id) return { ...search, call };
-			if (call.conversationId === id) inConversation.push(call);
 		}
-		if (!result.cursor || result.calls.length === 0) break;
-		cursor = result.cursor;
+		const call = calls.find(c => c.id === id) ?? bestOf(calls.filter(c => c.conversationId === id));
+		if (call) return { ...search, call };
 	}
-	const call = bestOf(inConversation);
-	return call ? { ...search, call } : search;
+	return search;
 }
 
 const sentences = (result: unknown): TranscriptSentence[] => {
