@@ -1,5 +1,9 @@
 # Rockstar AI Audit changelog
 
+## v1.8.6: Call Coach test waits its turn, wrong-account tokens refused
+- Save now refuses a token created in a different sub-account. HighLevel answers the call list for the token's own sub-account whatever location is asked for, so such a token silently read another account's calls.
+- "Test on one call" clicked while the automatic check is running (it starts right after Save) now waits up to 45 seconds for it to finish instead of answering "A run is already in progress".
+
 ## v1.8.5: Call Coach transcript address
 - The transcript was requested at the wrong HighLevel address (location and message swapped), so every call read as "no transcript". It now uses `/conversations/locations/<location>/messages/<message>/transcription`.
 
