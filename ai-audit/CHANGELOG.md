@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.13.1: Call Coach setup messages stay in view
+- Setup page v1.8: the green and red status message now sticks to the bottom of the window. Before, pressing My dealers without the admin key put "Enter the admin key first" at the bottom of the page, out of sight, so the button looked dead.
+
 ## v1.13: Call Coach scores by what the call was about
 - Every call is tagged by topic, "Sales related", "Service related" or "Other", whoever answered it. The pill shows on the dashboard, the coaching page, the email, the note and the 7 AM summary.
 - The topic picks the scorecard: the dealership's Sales (or BDC) framework for a sales related call, its Service framework for a service related call, and a new built-in General scorecard for everything else. A salesperson who takes a service call is no longer graded on the sales framework, and a dealership with no frameworks at all is scored on the General scorecard.

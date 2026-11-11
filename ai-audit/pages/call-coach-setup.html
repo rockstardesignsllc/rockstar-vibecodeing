@@ -1,4 +1,4 @@
-<!-- Rockstar Call Coach setup v1.7 | Updated 2026-11-11 22:45 UTC -->
+<!-- Rockstar Call Coach setup v1.8 | Updated 2026-11-11 22:24 UTC -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -24,7 +24,7 @@
 	button.light { background:#fff; color:var(--ink); border:1px solid var(--line); }
 	button:disabled { opacity:.5; cursor:wait; }
 	.check { display:flex; gap:8px; align-items:center; font-weight:600; font-size:14px; margin-top:14px; }
-	#msg { margin-top:16px; padding:12px 14px; border-radius:8px; display:none; white-space:pre-wrap; word-break:break-word; }
+	#msg { position:sticky; bottom:12px; z-index:5; margin-top:16px; padding:12px 14px; border-radius:8px; display:none; white-space:pre-wrap; word-break:break-word; box-shadow:0 4px 18px rgba(0,0,0,.18); }
 	#msg.ok { display:block; background:#e8f6ee; color:#0e5c2c; }
 	#msg.bad { display:block; background:#fdecea; color:#8c1d15; }
 	a { color:var(--ink); }
