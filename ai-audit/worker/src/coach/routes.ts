@@ -160,7 +160,7 @@ async function handleDealerView(request: Request, env: Env, parts: string[], url
 	if (parts.length !== 3 || !MESSAGE_ID.test(id)) return notFound();
 	const call = await stub.call(key, id);
 	if (!call.ok) return notFound();
-	if (parts[1] === 'call') return html(200, callPage(call.value, base, access));
+	if (parts[1] === 'call') return html(200, callPage(call.value, base, access, env.COACH_APP_URL));
 	if (parts[1] === 'rec') {
 		const audio = await recording(access, id);
 		if (!audio.ok) return json(502, { error: `HighLevel did not return the recording (${audio.status}).` });

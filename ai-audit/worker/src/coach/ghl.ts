@@ -195,6 +195,26 @@ export async function user(dealer: Dealer, userId: string): Promise<Person> {
 	return person(userId, await request(dealer, 'GET', `/users/${userId}`, VERSION));
 }
 
+/** Every user of the sub-account. */
+export async function users(dealer: Dealer): Promise<Person[]> {
+	const result = await request(dealer, 'GET', `/users/?${new URLSearchParams({ locationId: dealer.location_id })}`, VERSION);
+	const found = isRecord(result) && Array.isArray(result.users) ? result.users : [];
+	return found.filter(isRecord).map(u => person(str(u.id), u));
+}
+
+/**
+ * The one user whose name matches the name a staff member gave on the call. A first name must match exactly, and a
+ * last name narrows it when one was heard. Nobody is returned when the name fits no user or more than one.
+ */
+export function userNamed(people: Person[], heard: string): Person | undefined {
+	const [first, ...rest] = heard.trim().toLowerCase().split(/\s+/);
+	if (!first) return undefined;
+	const last = rest.join(' ');
+	const sameFirst = people.filter(p => p.first.toLowerCase() === first);
+	const matches = last && sameFirst.some(p => p.last.toLowerCase() === last) ? sameFirst.filter(p => p.last.toLowerCase() === last) : sameFirst;
+	return matches.length === 1 ? matches[0] : undefined;
+}
+
 export const addNote = (dealer: Dealer, contactId: string, body: string): Promise<unknown> =>
 	request(dealer, 'POST', `/contacts/${contactId}/notes`, VERSION, { body: body.slice(0, MAX_NOTE_CHARS) });
 

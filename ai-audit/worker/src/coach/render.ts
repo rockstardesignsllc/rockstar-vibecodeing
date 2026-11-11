@@ -63,7 +63,7 @@ const pill = (text: string, color: string): string =>
 const appointmentPill = (set: boolean): string => pill(set ? 'Appointment set' : 'No appointment set', set ? GRADE_COLORS.green : GRADE_COLORS.red);
 
 const button = (href: string, label: string): string =>
-	`<a href="${esc(href)}" style="display:inline-block;padding:12px 22px;border-radius:8px;background:${INK};color:#ffffff;font-weight:700;text-decoration:none;font-size:15px">${esc(label)}</a>`;
+	`<a href="${esc(href)}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 22px;border-radius:8px;background:${INK};color:#ffffff;font-weight:700;text-decoration:none;font-size:15px">${esc(label)}</a>`;
 
 const section = (title: string, color: string, inner: string): string =>
 	`<h2 style="margin:28px 0 10px;font-size:17px;color:${color}">${esc(title)}</h2>${inner}`;
@@ -102,13 +102,28 @@ export interface Email {
 	html: string;
 }
 
-export function coachingEmail(record: CallRecord, base: string, dealer: Dealer): Email {
-	const first = record.staff_name.split(' ')[0] || 'there';
-	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">Hey ${esc(first)}, here's your call with ${esc(customerName(record))}</h1><p style="margin:4px 0 0;color:${MUTED};font-size:14px">${esc(usDate(record.local_date))} at ${esc(record.local_time)}</p>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(record.analysis?.summary ?? '')}</p>${coachingBlock(record)}<p style="margin:28px 0 0">${button(callUrl(base, dealer, record.id), 'See the full summary and recording')}</p>`;
-	return { subject: `Call coaching: ${customerName(record)}, ${record.percent}% ${record.appointment_set ? '(appointment set)' : '(no appointment)'}`, html: shell('Call coaching', inner) };
+/** "(727) 644-1825" for a US number, otherwise the number as HighLevel has it. */
+export const phoneText = (phone: string): string => {
+	const us = /^\+?1?(\d{3})(\d{3})(\d{4})$/.exec(phone.replace(/[^\d+]/g, ''));
+	return us ? `(${us[1]}) ${us[2]}-${us[3]}` : phone;
+};
+
+/** The call inside HighLevel: its conversation, where the recording and transcript live, or else the contact. */
+export const highLevelUrl = (app: string, dealer: Dealer, record: CallRecord): string => {
+	const location = `${app}/v2/location/${dealer.location_id}`;
+	if (record.conversation_id) return `${location}/conversations/conversations/${record.conversation_id}`;
+	return record.contact_id ? `${location}/contacts/detail/${record.contact_id}` : '';
+};
+
+/** The short "your call was scored" email. The coaching itself is on the page it links to. */
+export function coachingEmail(record: CallRecord, base: string, dealer: Dealer, completedAt: string): Email {
+	const first = record.staff_email ? record.staff_name.split(' ')[0] : '';
+	const who = [customerName(record), phoneText(record.customer_phone ?? '')].filter(Boolean).join(' ');
+	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${first ? `${esc(first)}, your` : 'The'} call with ${esc(customerName(record))} has been scored</h1><p style="margin:4px 0 0;color:${MUTED};font-size:14px">${esc(record.staff_name)}, ${esc(usDate(record.local_date))} at ${esc(record.local_time)}</p>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(record.analysis?.one_line_summary ?? '')}</p><p style="margin:24px 0 0">View the call coaching score and summary here:</p><p style="margin:12px 0 0">${button(callUrl(base, dealer, record.id), 'Open the call coaching summary')}</p>`;
+	return { subject: `Call Scoring for ${who} complete at ${completedAt}`, html: shell('Call coaching', inner) };
 }
 
-export function callPage(record: CallRecord, base: string, dealer: Dealer): string {
+export function callPage(record: CallRecord, base: string, dealer: Dealer, app: string): string {
 	const a = record.analysis;
 	const byId = new Map((a?.items ?? []).map(item => [item.id, item]));
 	const rows = rubricFor(record.department)
@@ -121,7 +136,8 @@ export function callPage(record: CallRecord, base: string, dealer: Dealer): stri
 			return `<tr><td style="padding:9px 8px 9px 0;border-top:1px solid ${LINE};vertical-align:top"><strong>${esc(item.label)}</strong><div style="color:${MUTED};font-size:13px">${esc(result?.evidence ?? '')}</div></td><td style="padding:9px 0;border-top:1px solid ${LINE};text-align:right;vertical-align:top;white-space:nowrap;font-weight:700;color:${color}">${points} / ${item.max}</td></tr>`;
 		})
 		.join('');
-	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${esc(noteTitle(record))}</h1>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(a?.summary ?? '')}</p><audio controls preload="none" src="${esc(recordingUrl(base, dealer, record.id))}" style="width:100%;margin:18px 0 0"></audio>${coachingBlock(record)}${section('Scorecard', INK, `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px">${rows}<tr><td style="padding:10px 0;border-top:2px solid ${INK};font-weight:800">Total</td><td style="padding:10px 0;border-top:2px solid ${INK};text-align:right;font-weight:800">${record.earned} / ${record.possible}</td></tr></table>`)}<p style="margin:24px 0 0"><a href="${esc(dashboardUrl(base, dealer, record.local_date))}" style="color:${INK}">Back to all calls for ${esc(usDate(record.local_date))}</a></p>`;
+	const inHighLevel = highLevelUrl(app, dealer, record);
+	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${esc(noteTitle(record))}</h1>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(a?.summary ?? '')}</p><audio controls preload="none" src="${esc(recordingUrl(base, dealer, record.id))}" style="width:100%;margin:18px 0 0"></audio>${inHighLevel ? `<p style="margin:16px 0 0">${button(inHighLevel, 'Open this call in the CRM')}</p>` : ''}${coachingBlock(record)}${section('Scorecard', INK, `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px">${rows}<tr><td style="padding:10px 0;border-top:2px solid ${INK};font-weight:800">Total</td><td style="padding:10px 0;border-top:2px solid ${INK};text-align:right;font-weight:800">${record.earned} / ${record.possible}</td></tr></table>`)}<p style="margin:24px 0 0"><a href="${esc(dashboardUrl(base, dealer, record.local_date))}" style="color:${INK}">Back to all calls for ${esc(usDate(record.local_date))}</a></p>`;
 	return shell(noteTitle(record), inner);
 }
 

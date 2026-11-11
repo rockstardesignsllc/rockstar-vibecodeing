@@ -1,5 +1,10 @@
 # Rockstar AI Audit changelog
 
+## v1.9: Call Coach launch changes
+- The coaching email is now a short notice: subject "Call Scoring for [customer] [phone] complete at [date time]", the score, a one-line summary and a button to the coaching page. The full coaching stays on the page and in the contact note.
+- The coaching page has an "Open this call in the CRM" button that goes to the call's conversation in HighLevel (recording and transcript). The address comes from the new `COACH_APP_URL` var.
+- Calls HighLevel leaves unassigned (phone tree calls) are matched to a user by the name the staff member gives on the call, so the email still reaches them. No match, or two users with that name, sends to the managers only.
+
 ## v1.8.9: Call Coach recordings play in Safari
 - The recording link now answers byte-range requests, which Safari and iPhones need before they will play audio. A recording HighLevel refuses is reported with its status instead of a blank player.
 

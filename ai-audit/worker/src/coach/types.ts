@@ -106,6 +106,9 @@ export interface CallRecord {
 	staff_name: string;
 	staff_email: string;
 	contact_id: string;
+	/** The HighLevel conversation the call sits in. Absent on calls scored before v1.9. */
+	conversation_id?: string;
+	customer_phone?: string;
 	customer_first: string;
 	customer_last: string;
 	duration: number;
