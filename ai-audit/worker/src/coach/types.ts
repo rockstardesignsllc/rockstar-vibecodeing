@@ -1,7 +1,17 @@
-export const DEPARTMENTS = ['sales', 'bdc', 'service'] as const;
+/** The departments an inbound call can belong to. */
+export const INBOUND_DEPARTMENTS = ['sales', 'bdc', 'service'] as const;
+export type InboundDepartment = (typeof INBOUND_DEPARTMENTS)[number];
+
+/** Every framework a call can be scored against. Calls the dealership makes are all scored as "outbound". */
+export const DEPARTMENTS = [...INBOUND_DEPARTMENTS, 'outbound'] as const;
 export type Department = (typeof DEPARTMENTS)[number];
 
-export const DEPARTMENT_LABELS: Record<Department, string> = { sales: 'Sales', bdc: 'BDC', service: 'Service' };
+export const DEPARTMENT_LABELS: Record<Department, string> = { sales: 'Sales', bdc: 'BDC', service: 'Service', outbound: 'Outbound' };
+
+export const isDepartment = (value: unknown): value is Department => DEPARTMENTS.some(d => d === value);
+export const isInboundDepartment = (value: unknown): value is InboundDepartment => INBOUND_DEPARTMENTS.some(d => d === value);
+
+export type Direction = 'inbound' | 'outbound';
 
 /** One dealership (HighLevel sub-account) using Call Coach. Stored in its own DealerCoach Durable Object. */
 export interface DealerConfig {
@@ -12,13 +22,15 @@ export interface DealerConfig {
 	timezone: string;
 	enabled: boolean;
 	send_emails: boolean;
+	/** Also score calls the dealership makes (an add-on). Inbound calls are always scored. */
+	score_outbound: boolean;
 	managers: string[];
 	scripts: Partial<Record<Department, string>>;
 	/** Dealership phone number that was called (E.164) to the department that answers it. */
-	numbers: Record<string, Department>;
+	numbers: Record<string, InboundDepartment>;
 	/** HighLevel user id to department, for shared numbers. */
-	users: Record<string, Department>;
-	default_department: Department;
+	users: Record<string, InboundDepartment>;
+	default_department: InboundDepartment;
 	min_seconds: number;
 	/** Random key in dashboard, summary and recording links. */
 	view_key: string;
@@ -101,6 +113,8 @@ export interface CallRecord {
 	local_time: string;
 	status: CallStatus;
 	skip_reason: string;
+	/** Absent on calls scored before v1.10, which were all inbound. */
+	direction?: Direction;
 	department: Department;
 	user_id: string;
 	staff_name: string;

@@ -18,7 +18,7 @@ import type { CoachResult, DealerCoach } from './dealer';
 import { recording } from './ghl';
 import { callPage, dashboardPage } from './render';
 import { pdfToText } from './score';
-import { DEPARTMENTS, type DealerConfigInput, type Department } from './types';
+import { DEPARTMENTS, isInboundDepartment, type DealerConfigInput, type Department, type InboundDepartment } from './types';
 
 const LOCATION_ID = /^[A-Za-z0-9]{10,40}$/;
 const MESSAGE_ID = /^[A-Za-z0-9]{10,40}$/;
@@ -79,10 +79,8 @@ async function readJson(request: Request): Promise<Record<string, unknown> | nul
 
 const text = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
 const flag = (value: unknown): boolean | undefined => (typeof value === 'boolean' ? value : undefined);
-const isDepartment = (value: unknown): value is Department => DEPARTMENTS.some(d => d === value);
-
-const departments = (value: unknown): Record<string, Department> | undefined =>
-	isRecord(value) ? Object.fromEntries(Object.entries(value).filter((entry): entry is [string, Department] => isDepartment(entry[1]))) : undefined;
+const departments = (value: unknown): Record<string, InboundDepartment> | undefined =>
+	isRecord(value) ? Object.fromEntries(Object.entries(value).filter((entry): entry is [string, InboundDepartment] => isInboundDepartment(entry[1]))) : undefined;
 
 /** Keeps only well-formed settings from a request body. Anything missing or malformed is left as it was. */
 function settings(body: Record<string, unknown>): DealerConfigInput {
@@ -98,11 +96,12 @@ function settings(body: Record<string, unknown>): DealerConfigInput {
 	set('timezone', text(body.timezone));
 	set('enabled', flag(body.enabled));
 	set('send_emails', flag(body.send_emails));
+	set('score_outbound', flag(body.score_outbound));
 	set('managers', Array.isArray(body.managers) ? body.managers.filter((m): m is string => typeof m === 'string') : undefined);
 	set('scripts', scripts);
 	set('numbers', departments(body.numbers));
 	set('users', departments(body.users));
-	set('default_department', isDepartment(body.default_department) ? body.default_department : undefined);
+	set('default_department', isInboundDepartment(body.default_department) ? body.default_department : undefined);
 	set('min_seconds', typeof body.min_seconds === 'number' && Number.isFinite(body.min_seconds) ? body.min_seconds : undefined);
 	set('scoring_started_at', text(body.scoring_started_at) && !Number.isNaN(Date.parse(text(body.scoring_started_at) ?? '')) ? text(body.scoring_started_at) : undefined);
 	return input;
