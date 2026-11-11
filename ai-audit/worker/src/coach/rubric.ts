@@ -16,6 +16,8 @@ const SERVICE: readonly Department[] = ['service'];
 const INBOUND: readonly Department[] = ['sales', 'bdc', 'service'];
 const OUTBOUND: readonly Department[] = ['outbound'];
 const ALL: readonly Department[] = ['sales', 'bdc', 'service', 'outbound'];
+const GENERAL: readonly Department[] = ['general'];
+const EVERY: readonly Department[] = [...ALL, ...GENERAL];
 
 export const RUBRIC: readonly RubricItem[] = [
 	{ id: 'appointment_set', label: 'Appointment set', max: 3, guide: '3 if a specific day and time to come in was agreed. Otherwise 0. On an outbound call only, mark it not applicable when the call had no visit to set (for example a paperwork, payment or delivery update).', departments: ALL },
@@ -34,6 +36,55 @@ export const RUBRIC: readonly RubricItem[] = [
 		departments: OUTBOUND
 	},
 	{
+		id: 'general_greeting',
+		label: 'Answered professionally',
+		max: 1,
+		guide: '1 if the staff member answered with the dealership name and their own name in a friendly way.',
+		departments: GENERAL
+	},
+	{
+		id: 'general_listened',
+		label: 'Listened and understood what the customer needed',
+		max: 3,
+		guide: '3 if the staff member let the customer explain, asked questions to get the full picture and showed they understood (for example by repeating it back). 2 if they understood the need but asked little. 1 if they caught only part of it or made the customer repeat themselves. 0 if they talked over the customer or missed the point.',
+		departments: GENERAL
+	},
+	{
+		id: 'general_ownership',
+		label: 'Took ownership and resolved it',
+		max: 3,
+		guide: '3 if the staff member solved the need on the call, or owned it and gave a specific plan to get it solved. 2 if they helped but left part of it open. 1 if they passed the customer along with little help. 0 if the customer was brushed off or left with nothing.',
+		departments: GENERAL
+	},
+	{
+		id: 'general_contact',
+		label: "Got the customer's name and best number",
+		max: 1,
+		guide: '1 if the staff member got or confirmed who the customer is and how to reach them. Not applicable when the staff member clearly already knows the customer.',
+		departments: GENERAL
+	},
+	{
+		id: 'general_invite',
+		label: 'Asked for the visit',
+		max: 2,
+		guide: 'Applies only when the customer is shopping for a vehicle or needs to bring one in. 2 if the staff member invited them in for a specific day and time. 1 if the invitation was vague ("come by anytime"). 0 if they never asked. Otherwise not applicable.',
+		departments: GENERAL
+	},
+	{
+		id: 'general_expectations',
+		label: 'Said what happens next and when',
+		max: 2,
+		guide: '2 if the customer was told exactly what happens next, who does it and by when. 1 if the next step was named but with no time or owner. 0 if the call ended with nothing clear. Give 2 if the need was fully solved on the call and nothing is left to do.',
+		departments: GENERAL
+	},
+	{
+		id: 'general_satisfaction',
+		label: 'Customer sounded satisfied at the end',
+		max: 2,
+		guide: '2 if the customer ended the call sounding satisfied or thankful. 1 if neutral. 0 if frustrated, upset or unconvinced.',
+		departments: GENERAL
+	},
+	{
 		id: 'followed_framework',
 		label: "Followed the dealership's call framework",
 		max: 2,
@@ -42,7 +93,7 @@ export const RUBRIC: readonly RubricItem[] = [
 	},
 	{ id: 'greeting', label: 'Greeted the caller the way the framework says', max: 1, guide: '1 if the greeting matches the framework greeting in substance.', departments: INBOUND },
 	{ id: 'asked_name', label: "Asked for the customer's name", max: 1, guide: '1 if the staff member asked for the name (first and last when the framework asks for both).', departments: INBOUND },
-	{ id: 'used_name', label: "Used the customer's name during the call", max: 1, guide: '1 if the staff member addressed the customer by name at least once after learning it.', departments: ALL },
+	{ id: 'used_name', label: "Used the customer's name during the call", max: 1, guide: '1 if the staff member addressed the customer by name at least once after learning it.', departments: EVERY },
 	{ id: 'asked_phone', label: 'Asked for the best phone number', max: 1, guide: '1 if the staff member asked for or confirmed a phone number.', departments: INBOUND },
 	{
 		id: 'vehicle_and_alternatives',
@@ -127,13 +178,13 @@ export const RUBRIC: readonly RubricItem[] = [
 		departments: ALL,
 		needs_appointment: true
 	},
-	{ id: 'other_questions', label: 'Asked if they had any other questions', max: 1, guide: '1 if the staff member asked whether the customer had any other questions before ending.', departments: ALL },
+	{ id: 'other_questions', label: 'Asked if they had any other questions', max: 1, guide: '1 if the staff member asked whether the customer had any other questions before ending.', departments: EVERY },
 	{
 		id: 'tone',
 		label: 'Tone and energy',
 		max: 2,
 		guide: '2 if friendly, confident and in control with no long dead air. 1 if fine but flat or hesitant. 0 if rude, rushed or dismissive.',
-		departments: ALL
+		departments: EVERY
 	},
 	{
 		id: 'next_step',

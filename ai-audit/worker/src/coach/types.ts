@@ -2,16 +2,30 @@
 export const INBOUND_DEPARTMENTS = ['sales', 'bdc', 'service'] as const;
 export type InboundDepartment = (typeof INBOUND_DEPARTMENTS)[number];
 
-/** Every framework a call can be scored against. Calls the dealership makes are all scored as "outbound". */
-export const DEPARTMENTS = [...INBOUND_DEPARTMENTS, 'outbound'] as const;
+/**
+ * Every scorecard a call can be scored against. Calls the dealership makes are all scored as "outbound". "general" is
+ * the built-in customer service scorecard for inbound calls that no department framework fits.
+ */
+export const DEPARTMENTS = [...INBOUND_DEPARTMENTS, 'outbound', 'general'] as const;
 export type Department = (typeof DEPARTMENTS)[number];
 
-export const DEPARTMENT_LABELS: Record<Department, string> = { sales: 'Sales', bdc: 'BDC', service: 'Service', outbound: 'Outbound' };
+export const DEPARTMENT_LABELS: Record<Department, string> = { sales: 'Sales', bdc: 'BDC', service: 'Service', outbound: 'Outbound', general: 'General' };
 
 export const isDepartment = (value: unknown): value is Department => DEPARTMENTS.some(d => d === value);
 export const isInboundDepartment = (value: unknown): value is InboundDepartment => INBOUND_DEPARTMENTS.some(d => d === value);
 
 export type Direction = 'inbound' | 'outbound';
+
+/** What the customer's call was about, whoever answered it. */
+export const TOPICS = ['sales', 'service', 'other'] as const;
+export type Topic = (typeof TOPICS)[number];
+export const TOPIC_LABELS: Record<Topic, string> = { sales: 'Sales related', service: 'Service related', other: 'Other' };
+export const isTopic = (value: unknown): value is Topic => TOPICS.some(t => t === value);
+
+export const MOODS = ['satisfied', 'neutral', 'frustrated'] as const;
+export type Mood = (typeof MOODS)[number];
+export const MOOD_LABELS: Record<Mood, string> = { satisfied: 'Satisfied', neutral: 'Neutral', frustrated: 'Frustrated' };
+export const isMood = (value: unknown): value is Mood => MOODS.some(m => m === value);
 
 /** One dealership (HighLevel sub-account) using Call Coach. Stored in its own DealerCoach Durable Object. */
 export interface DealerConfig {
@@ -86,6 +100,11 @@ export interface CallAnalysis {
 	scoreable: boolean;
 	skip_reason: string;
 	department: Department;
+	/** Absent on calls scored before v1.13, as are customer_mood and follow_ups. */
+	topic?: Topic;
+	customer_mood?: Mood;
+	/** What the staff member promised to do after the call. */
+	follow_ups?: string[];
 	staff_name_heard: string;
 	customer_name_heard: string;
 	appointment_set: boolean;

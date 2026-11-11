@@ -1,5 +1,14 @@
 # Rockstar AI Audit changelog
 
+## v1.13: Call Coach scores by what the call was about
+- Every call is tagged by topic, "Sales related", "Service related" or "Other", whoever answered it. The pill shows on the dashboard, the coaching page, the email, the note and the 7 AM summary.
+- The topic picks the scorecard: the dealership's Sales (or BDC) framework for a sales related call, its Service framework for a service related call, and a new built-in General scorecard for everything else. A salesperson who takes a service call is no longer graded on the sales framework, and a dealership with no frameworks at all is scored on the General scorecard.
+- General scorecard: answered professionally, listened and understood, took ownership and resolved it, got the name and number, asked for the visit (only when one applies), said what happens next, customer satisfaction, name use, other questions, tone.
+- Every call now records the customer's mood at the end and each follow-up the staff member promised. Follow-ups are listed in the note, the email and the coaching page. The 7 AM summary and the one-day dashboard open with a "Needs attention" block of frustrated customers and promised follow-ups.
+- "No appointment set" is no longer shown on General scorecard calls.
+- Setup page v1.7: frameworks are optional, and "Department when unsure" is gone because the topic decides.
+- The setup guide (PDF v1.1 and its source) is in `ai-audit/docs/`.
+
 ## v1.12: Call Coach dashboard by staff member
 - The manager dashboard now opens on the last 30 days grouped by staff member: name, average score, calls and appointments set. Clicking a name opens all of their calls, newest first, each with its score and a link to the full summary.
 - The one-day view is still there (the 7 AM email links to it) and each view links to the other.

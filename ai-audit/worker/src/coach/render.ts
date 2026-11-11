@@ -1,5 +1,5 @@
 import { GRADE_COLORS, GRADE_LABELS, grade, leftOut, rubricFor } from './rubric';
-import { DEPARTMENT_LABELS, type CallRecord, type DealerConfig, type Grade } from './types';
+import { DEPARTMENT_LABELS, MOOD_LABELS, TOPIC_LABELS, type CallRecord, type DealerConfig, type Grade, type Topic } from './types';
 
 type Dealer = Pick<DealerConfig, 'location_id' | 'name' | 'view_key'>;
 
@@ -7,6 +7,7 @@ const FONT = "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Hel
 const INK = '#16181d';
 const MUTED = '#5f6672';
 const LINE = '#e3e6eb';
+const TOPIC_COLORS: Record<Topic, string> = { sales: '#1d4ed8', service: '#7c3aed', other: MUTED };
 
 export const esc = (text: string): string =>
 	text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
@@ -26,6 +27,13 @@ export const customerSortName = (record: CallRecord): string =>
 
 const recordGrade = (record: CallRecord): Grade => grade(record.percent, record.analysis?.red_flags.length ?? 0);
 
+const scorecardName = (record: CallRecord): string => `${DEPARTMENT_LABELS[record.department]} scorecard`;
+const followUps = (record: CallRecord): string[] => record.analysis?.follow_ups ?? [];
+const frustrated = (record: CallRecord): boolean => record.analysis?.customer_mood === 'frustrated';
+
+/** The general scorecard covers calls with no visit to set, so a missing appointment is only shown on the others. */
+const showsAppointment = (record: CallRecord): boolean => record.appointment_set || record.department !== 'general';
+
 /** "Jane Smith inbound call 11/10/2026 3:42 PM Bob Jones" */
 export const noteTitle = (record: CallRecord): string =>
 	`${customerName(record)} ${record.direction ?? 'inbound'} call ${usDate(record.local_date)} ${record.local_time} ${record.staff_name}`;
@@ -41,10 +49,17 @@ export function noteBody(record: CallRecord, base: string, dealer: Dealer): stri
 	return [
 		noteTitle(record),
 		'',
-		`Call coaching score: ${record.percent}% (${GRADE_LABELS[recordGrade(record)]}) | ${DEPARTMENT_LABELS[record.department]} | Appointment set: ${a.appointment_set ? `Yes${a.appointment_time ? `, ${a.appointment_time}` : ''}` : 'No'}`,
+		[
+			`Call coaching score: ${record.percent}% (${GRADE_LABELS[recordGrade(record)]})`,
+			...(a.topic ? [TOPIC_LABELS[a.topic]] : []),
+			scorecardName(record),
+			...(a.customer_mood ? [`Customer mood: ${MOOD_LABELS[a.customer_mood]}`] : []),
+			...(showsAppointment(record) ? [`Appointment set: ${a.appointment_set ? `Yes${a.appointment_time ? `, ${a.appointment_time}` : ''}` : 'No'}`] : [])
+		].join(' | '),
 		'',
 		'SUMMARY',
 		a.summary,
+		...(followUps(record).length ? ['', 'PROMISED FOLLOW-UPS', ...followUps(record).map(f => `- ${f}`)] : []),
 		'',
 		'WHAT WENT WELL',
 		...a.wins.map(w => `- ${w.title}: ${w.detail}`),
@@ -61,7 +76,22 @@ export function noteBody(record: CallRecord, base: string, dealer: Dealer): stri
 const pill = (text: string, color: string): string =>
 	`<span style="display:inline-block;padding:3px 10px;border-radius:999px;background:${color};color:#ffffff;font-size:12px;font-weight:700;white-space:nowrap">${esc(text)}</span>`;
 
-const appointmentPill = (set: boolean): string => pill(set ? 'Appointment set' : 'No appointment set', set ? GRADE_COLORS.green : GRADE_COLORS.red);
+const spaced = (pills: string[]): string => pills.map(p => ` &nbsp;${p}`).join('');
+
+/** The markers shown beside a call wherever calls are listed: topic, appointment, frustrated customer, red flag, follow-ups. */
+function badges(record: CallRecord): string[] {
+	const topic = record.analysis?.topic;
+	const promised = followUps(record).length;
+	return [
+		...(topic ? [pill(TOPIC_LABELS[topic], TOPIC_COLORS[topic])] : []),
+		...(showsAppointment(record) ? [pill(record.appointment_set ? 'Appointment set' : 'No appointment set', record.appointment_set ? GRADE_COLORS.green : GRADE_COLORS.red)] : []),
+		...(frustrated(record) ? [pill('Customer frustrated', GRADE_COLORS.red)] : []),
+		...((record.analysis?.red_flags.length ?? 0) > 0 ? [pill('Red flag', GRADE_COLORS.red)] : []),
+		...(promised ? [pill(`${promised} follow-up${promised === 1 ? '' : 's'} promised`, INK)] : [])
+	];
+}
+
+const followUpList = (record: CallRecord): string => `<ul style="margin:0;padding-left:20px">${followUps(record).map(f => `<li style="margin:0 0 6px">${esc(f)}</li>`).join('')}</ul>`;
 
 const button = (href: string, label: string): string =>
 	`<a href="${esc(href)}" target="_blank" rel="noopener" style="display:inline-block;padding:12px 22px;border-radius:8px;background:${INK};color:#ffffff;font-weight:700;text-decoration:none;font-size:15px">${esc(label)}</a>`;
@@ -87,12 +117,13 @@ function coachingBlock(record: CallRecord): string {
 	const flags = a.red_flags.length
 		? section('Red flags', GRADE_COLORS.red, `<ul style="margin:0;padding-left:20px">${a.red_flags.map(f => `<li>${esc(f)}</li>`).join('')}</ul>`)
 		: '';
-	return `${flags}${section('What you did well', GRADE_COLORS.green, `<ul style="margin:0;padding-left:20px">${wins}</ul>`)}${section('Where to tune it up', '#a66f00', tuneUps)}`;
+	const promised = followUps(record).length ? section('Promised follow-ups', INK, followUpList(record)) : '';
+	return `${flags}${promised}${section('What you did well', GRADE_COLORS.green, `<ul style="margin:0;padding-left:20px">${wins}</ul>`)}${section('Where to tune it up', '#a66f00', tuneUps)}`;
 }
 
 function scoreHeader(record: CallRecord): string {
 	const g = recordGrade(record);
-	return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px 0 4px"><tr><td style="padding:14px 20px;border-radius:12px;background:${GRADE_COLORS[g]};color:#ffffff;font-size:30px;font-weight:800">${record.percent}%</td><td style="padding-left:14px;font-size:14px;color:${MUTED}"><strong style="color:${INK};font-size:15px">${GRADE_LABELS[g]}</strong><br>${esc(DEPARTMENT_LABELS[record.department])} call, ${Math.round(record.duration / 60)} min<br>${appointmentPill(record.appointment_set)}</td></tr></table>`;
+	return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px 0 4px"><tr><td style="padding:14px 20px;border-radius:12px;background:${GRADE_COLORS[g]};color:#ffffff;font-size:30px;font-weight:800">${record.percent}%</td><td style="padding-left:14px;font-size:14px;color:${MUTED}"><strong style="color:${INK};font-size:15px">${GRADE_LABELS[g]}</strong><br>${esc(scorecardName(record))}, ${Math.round(record.duration / 60)} min${record.analysis?.customer_mood ? `<br>Customer mood: ${esc(MOOD_LABELS[record.analysis.customer_mood])}` : ''}<br><span style="line-height:2.1">${badges(record).join(' ')}</span></td></tr></table>`;
 }
 
 const shell = (title: string, inner: string): string =>
@@ -120,7 +151,7 @@ export const highLevelUrl = (app: string, dealer: Dealer, record: CallRecord): s
 export function coachingEmail(record: CallRecord, base: string, dealer: Dealer, completedAt: string): Email {
 	const first = record.staff_email ? record.staff_name.split(' ')[0] : '';
 	const who = [customerName(record), phoneText(record.customer_phone ?? '')].filter(Boolean).join(' ');
-	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${first ? `${esc(first)}, your` : 'The'} call with ${esc(customerName(record))} has been scored</h1><p style="margin:4px 0 0;color:${MUTED};font-size:14px">${esc(record.staff_name)}, ${esc(usDate(record.local_date))} at ${esc(record.local_time)}</p>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(record.analysis?.one_line_summary ?? '')}</p><p style="margin:24px 0 0">View the call coaching score and summary here:</p><p style="margin:12px 0 0">${button(callUrl(base, dealer, record.id), 'Open the call coaching summary')}</p>`;
+	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${first ? `${esc(first)}, your` : 'The'} call with ${esc(customerName(record))} has been scored</h1><p style="margin:4px 0 0;color:${MUTED};font-size:14px">${esc(record.staff_name)}, ${esc(usDate(record.local_date))} at ${esc(record.local_time)}</p>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(record.analysis?.one_line_summary ?? '')}</p>${followUps(record).length ? `<p style="margin:16px 0 6px;font-weight:700">Promised follow-ups</p>${followUpList(record)}` : ''}<p style="margin:24px 0 0">View the call coaching score and summary here:</p><p style="margin:12px 0 0">${button(callUrl(base, dealer, record.id), 'Open the call coaching summary')}</p>`;
 	return { subject: `Call Scoring for ${who} complete at ${completedAt}`, html: shell('Call coaching', inner) };
 }
 
@@ -172,12 +203,25 @@ function summaryBlock(records: CallRecord[], base: string, dealer: Dealer): stri
 			const calls = group.calls
 				.map(
 					c =>
-						`<div style="padding:12px 0;border-top:1px solid ${LINE}"><strong>${esc(customerSortName(c))}</strong> &nbsp;${appointmentPill(c.appointment_set)}${(c.analysis?.red_flags.length ?? 0) > 0 ? ` &nbsp;${pill('Red flag', GRADE_COLORS.red)}` : ''}<div style="margin-top:4px;color:${MUTED};font-size:14px">${esc(c.analysis?.one_line_summary ?? '')} <a href="${esc(callUrl(base, dealer, c.id))}" style="color:${INK};font-weight:600;white-space:nowrap">Full summary and recording (${c.percent}%)</a></div></div>`
+						`<div style="padding:12px 0;border-top:1px solid ${LINE}"><strong>${esc(customerSortName(c))}</strong>${spaced(badges(c))}<div style="margin-top:4px;color:${MUTED};font-size:14px">${esc(c.analysis?.one_line_summary ?? '')} <a href="${esc(callUrl(base, dealer, c.id))}" style="color:${INK};font-weight:600;white-space:nowrap">Full summary and recording (${c.percent}%)</a></div></div>`
 				)
 				.join('');
 			return `<div style="margin:22px 0 0"><table role="presentation" cellpadding="0" cellspacing="0" style="width:100%"><tr><td style="font-size:18px;font-weight:800">${esc(group.name)}</td><td style="text-align:right">${pill(`${group.average}% average, ${GRADE_LABELS[g]}`, GRADE_COLORS[g])}</td></tr></table>${calls}</div>`;
 		})
 		.join('');
+}
+
+/** What a manager should act on first: frustrated customers and promises made, each linked to its call. */
+function attentionBlock(records: CallRecord[], base: string, dealer: Dealer): string {
+	const rows = records
+		.filter(r => frustrated(r) || followUps(r).length > 0)
+		.sort((x, y) => Number(frustrated(y)) - Number(frustrated(x)) || byCustomer(x, y))
+		.map(
+			r =>
+				`<div style="padding:10px 0;border-top:1px solid ${LINE}"><strong>${esc(customerName(r))}</strong> <span style="color:${MUTED};font-size:13px">with ${esc(r.staff_name)}</span>${frustrated(r) ? ` &nbsp;${pill('Customer frustrated', GRADE_COLORS.red)}` : ''} &nbsp;<a href="${esc(callUrl(base, dealer, r.id))}" style="color:${INK};font-weight:600;font-size:14px;white-space:nowrap">Open call</a>${followUps(r).length ? `<div style="margin-top:6px;font-size:14px">${followUpList(r)}</div>` : ''}</div>`
+		)
+		.join('');
+	return rows ? `<div style="margin:22px 0 0;padding:4px 16px 8px;border:1px solid ${LINE};border-left:5px solid ${GRADE_COLORS.red};border-radius:10px"><h2 style="margin:12px 0 8px;font-size:17px">Needs attention: frustrated customers and promised follow-ups</h2>${rows}</div>` : '';
 }
 
 const dayHeading = (dealer: Dealer, date: string, records: CallRecord[]): string => {
@@ -186,7 +230,7 @@ const dayHeading = (dealer: Dealer, date: string, records: CallRecord[]): string
 };
 
 export function digestEmail(date: string, records: CallRecord[], base: string, dealer: Dealer): Email {
-	const inner = `${dayHeading(dealer, date, records)}<p style="margin:18px 0 0">${button(dashboardUrl(base, dealer, date), "Yesterday's call coaching summaries")}</p>${summaryBlock(records, base, dealer)}`;
+	const inner = `${dayHeading(dealer, date, records)}<p style="margin:18px 0 0">${button(dashboardUrl(base, dealer, date), "Yesterday's call coaching summaries")}</p>${attentionBlock(records, base, dealer)}${summaryBlock(records, base, dealer)}`;
 	return { subject: `Yesterday's call coaching summaries: ${dealer.name}, ${usDate(date)}`, html: shell('Call coaching summaries', inner) };
 }
 
@@ -203,7 +247,7 @@ export function staffPage(days: number, today: string, records: CallRecord[], ba
 			const calls = group.calls
 				.map(
 					c =>
-						`<div style="padding:12px 0;border-top:1px solid ${LINE}"><span style="color:${MUTED};font-size:13px">${esc(usDate(c.local_date))} ${esc(c.local_time)}</span><br><strong>${esc(customerName(c))}</strong> &nbsp;${pill(`${c.percent}%`, GRADE_COLORS[recordGrade(c)])} &nbsp;${appointmentPill(c.appointment_set)}${(c.analysis?.red_flags.length ?? 0) > 0 ? ` &nbsp;${pill('Red flag', GRADE_COLORS.red)}` : ''}<div style="margin-top:4px;color:${MUTED};font-size:14px">${esc(c.analysis?.one_line_summary ?? '')} <a href="${esc(callUrl(base, dealer, c.id))}" style="color:${INK};font-weight:600;white-space:nowrap">Full summary and recording</a></div></div>`
+						`<div style="padding:12px 0;border-top:1px solid ${LINE}"><span style="color:${MUTED};font-size:13px">${esc(usDate(c.local_date))} ${esc(c.local_time)}</span><br><strong>${esc(customerName(c))}</strong> ${spaced([pill(`${c.percent}%`, GRADE_COLORS[recordGrade(c)]), ...badges(c)])}<div style="margin-top:4px;color:${MUTED};font-size:14px">${esc(c.analysis?.one_line_summary ?? '')} <a href="${esc(callUrl(base, dealer, c.id))}" style="color:${INK};font-weight:600;white-space:nowrap">Full summary and recording</a></div></div>`
 				)
 				.join('');
 			return `<details style="margin:14px 0 0;border:1px solid ${LINE};border-radius:10px;padding:0 16px"><summary style="cursor:pointer;padding:14px 0;font-size:17px;font-weight:800">${esc(group.name)} &nbsp;${pill(`${group.average}% average, ${GRADE_LABELS[g]}`, GRADE_COLORS[g])} <span style="font-size:13px;font-weight:400;color:${MUTED}">&nbsp;${group.calls.length} call${group.calls.length === 1 ? '' : 's'}, ${appointments} appointment${appointments === 1 ? '' : 's'} set</span></summary>${calls}</details>`;
@@ -214,5 +258,5 @@ export function staffPage(days: number, today: string, records: CallRecord[], ba
 
 export function dashboardPage(date: string, today: string, records: CallRecord[], base: string, dealer: Dealer): string {
 	const picker = `<form method="get" action="${esc(dealerPath(base, dealer))}" style="margin:16px 0 0"><input type="hidden" name="key" value="${esc(dealer.view_key)}"><label style="font-size:14px;color:${MUTED}">Day <input type="date" name="date" value="${esc(date)}" max="${esc(today)}" onchange="this.form.submit()" style="font:inherit;padding:6px 8px;border:1px solid ${LINE};border-radius:8px"></label> <noscript><button type="submit">Show</button></noscript></form>`;
-	return shell(`Call coaching: ${dealer.name}`, `${dayHeading(dealer, date, records)}${picker}<p style="margin:12px 0 0;font-size:14px">${viewLink(dashboardUrl(base, dealer), 'See the last 30 days by staff member')}</p>${summaryBlock(records, base, dealer)}`);
+	return shell(`Call coaching: ${dealer.name}`, `${dayHeading(dealer, date, records)}${picker}<p style="margin:12px 0 0;font-size:14px">${viewLink(dashboardUrl(base, dealer), 'See the last 30 days by staff member')}</p>${attentionBlock(records, base, dealer)}${summaryBlock(records, base, dealer)}`);
 }
