@@ -52,6 +52,15 @@ export async function recentCalls(dealer: Dealer): Promise<CallMessage[]> {
 	return calls.sort((x, y) => Date.parse(y.dateAdded) - Date.parse(x.dateAdded));
 }
 
+/**
+ * True when the token's call list belongs to another sub-account. HighLevel answers the call list for the sub-account
+ * the token was created in, whatever location id is asked for, so a token from the wrong sub-account reads the wrong calls.
+ */
+export async function readsAnotherLocation(dealer: Dealer): Promise<boolean> {
+	const { calls } = await callPage(dealer);
+	return calls.some(call => call.locationId !== undefined && call.locationId !== dealer.location_id);
+}
+
 export interface CallSearch {
 	call?: CallMessage;
 	looked_at: number;

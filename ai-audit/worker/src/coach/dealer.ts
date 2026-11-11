@@ -117,6 +117,9 @@ export class DealerCoach extends DurableObject<Env> {
 		let found: { name: string; timezone: string };
 		try {
 			found = await ghl.location({ token, location_id: locationId });
+			if (await ghl.readsAnotherLocation({ token, location_id: locationId })) {
+				return fail(400, 'That token reads calls from a different sub-account. Create the Private Integration token inside this dealership\'s own sub-account and paste that one.');
+			}
 		} catch (error) {
 			return fail(400, `HighLevel did not accept that token for this sub-account: ${errorText(error)}`);
 		}

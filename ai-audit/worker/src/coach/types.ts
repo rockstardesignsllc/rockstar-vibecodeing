@@ -39,6 +39,7 @@ export interface TranscriptSentence {
 
 export interface CallMessage {
 	id: string;
+	locationId?: string;
 	direction?: string;
 	status?: string;
 	contactId?: string;
