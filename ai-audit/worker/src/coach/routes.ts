@@ -19,7 +19,7 @@ import { DIRECTORY_NAME } from './directory';
 import { recording } from './ghl';
 import { callPage, dashboardPage, dashboardUrl, staffPage } from './render';
 import { pdfToText } from './score';
-import { DEPARTMENTS, isInboundDepartment, type DealerConfigInput, type Department, type InboundDepartment, type StaffMember } from './types';
+import { DEPARTMENTS, isInboundDepartment, isStaffDepartment, type DealerConfigInput, type Department, type InboundDepartment, type StaffMember } from './types';
 
 const LOCATION_ID = /^[A-Za-z0-9]{10,40}$/;
 const MESSAGE_ID = /^[A-Za-z0-9]{10,40}$/;
@@ -88,7 +88,7 @@ const staffMembers = (value: unknown): StaffMember[] | undefined =>
 	Array.isArray(value)
 		? value.filter(isRecord).flatMap(member => {
 				const name = text(member.name)?.trim();
-				return name && isInboundDepartment(member.department) ? [{ name, department: member.department, phone: text(member.phone) ?? '', email: text(member.email) ?? '' }] : [];
+				return name && isStaffDepartment(member.department) ? [{ name, department: member.department, phone: text(member.phone) ?? '', email: text(member.email) ?? '' }] : [];
 			})
 		: undefined;
 

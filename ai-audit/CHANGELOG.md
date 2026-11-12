@@ -1,5 +1,9 @@
 # Rockstar AI Audit changelog
 
+## v1.17: Call Coach staff departments and dropdown
+- Setup page v1.11: the staff list is one row per person with a department dropdown in place of typed lines.
+- Staff can also be listed under Reconditioning or Finance. These label the person on the dashboard; calls are still scored as sales, BDC, service or outbound.
+
 ## v1.16: Call Coach staff list and Practice Calls on dealer dashboards
 - Setup page v1.10: a staff list per dealership (name, department, optional mobile and email). Calls are attributed to the listed name, so "Matt" and "Matt Piarski" are one person. Calls already scored are regrouped when the dashboard is opened; nothing is rescored.
 - Each dealership's dashboard has a "Practice Calls" section, by person, in the 30 day view and the day view. Practice calls no longer mix into the regular call lists or the 7 AM summary.

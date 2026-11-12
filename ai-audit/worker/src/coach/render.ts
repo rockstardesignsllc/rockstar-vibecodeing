@@ -1,5 +1,5 @@
 import { GRADE_COLORS, GRADE_LABELS, grade, leftOut, rubricFor } from './rubric';
-import { DEPARTMENT_LABELS, MOOD_LABELS, PRACTICE_LABELS, TOPIC_LABELS, type CallRecord, type DealerConfig, type Grade, type StaffMember, type Topic } from './types';
+import { DEPARTMENT_LABELS, MOOD_LABELS, PRACTICE_LABELS, STAFF_DEPARTMENT_LABELS, TOPIC_LABELS, type CallRecord, type DealerConfig, type Grade, type StaffMember, type Topic } from './types';
 
 type Dealer = Pick<DealerConfig, 'location_id' | 'name' | 'view_key'>;
 
@@ -45,7 +45,7 @@ const practiceCalls = (records: CallRecord[]): CallRecord[] => records.filter(is
 /** "Matt Piarski (Sales)" when the staff member is on the dealership's staff list. */
 const staffLabel = (name: string, staff: readonly StaffMember[]): string => {
 	const listed = staff.find(member => member.name === name);
-	return listed ? `${name} (${DEPARTMENT_LABELS[listed.department]})` : name;
+	return listed ? `${name} (${STAFF_DEPARTMENT_LABELS[listed.department]})` : name;
 };
 
 /** "Jane Smith inbound call 11/10/2026 3:42 PM Bob Jones" */
