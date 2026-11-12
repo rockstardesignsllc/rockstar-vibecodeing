@@ -173,7 +173,7 @@
 }
 
 /* ---------- Calculator mockup ---------- */
-.rs-page .rs-calc { background: #161618; border: 1px solid #2a2a2e; border-radius: 28px; padding: 34px; box-shadow: 0 40px 80px rgba(0,0,0,.4); }
+.rs-page .rs-calc { color: var(--rs-white); background: #161618; border: 1px solid #2a2a2e; border-radius: 28px; padding: 34px; box-shadow: 0 40px 80px rgba(0,0,0,.4); }
 .rs-page .rs-calc__unit { font-size: 13px; color: #a1a1a6; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
 .rs-page .rs-calc__title { font-size: 22px; font-weight: 800; margin: 6px 0 26px; letter-spacing: -0.02em; }
 .rs-page .rs-calc__row { margin-bottom: 22px; }
