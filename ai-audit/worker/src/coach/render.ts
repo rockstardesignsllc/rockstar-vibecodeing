@@ -1,5 +1,5 @@
 import { GRADE_COLORS, GRADE_LABELS, grade, leftOut, rubricFor } from './rubric';
-import { DEPARTMENT_LABELS, MOOD_LABELS, PRACTICE_LABELS, TOPIC_LABELS, type CallRecord, type DealerConfig, type Grade, type Topic } from './types';
+import { DEPARTMENT_LABELS, MOOD_LABELS, PRACTICE_LABELS, TOPIC_LABELS, type CallRecord, type DealerConfig, type Grade, type StaffMember, type Topic } from './types';
 
 type Dealer = Pick<DealerConfig, 'location_id' | 'name' | 'view_key'>;
 
@@ -32,8 +32,21 @@ const scorecardName = (record: CallRecord): string =>
 const followUps = (record: CallRecord): string[] => record.analysis?.follow_ups ?? [];
 const frustrated = (record: CallRecord): boolean => record.analysis?.customer_mood === 'frustrated';
 
-/** The general scorecard covers calls with no visit to set, so a missing appointment is only shown on the others. */
-const showsAppointment = (record: CallRecord): boolean => record.appointment_set || record.department !== 'general';
+/**
+ * The general scorecard covers calls with no visit to set, so a missing appointment is only shown on the others. The
+ * practice record updates (outbound scorecard) have no visit to set either.
+ */
+const showsAppointment = (record: CallRecord): boolean => record.appointment_set || (record.department !== 'general' && !(record.practice && record.department === 'outbound'));
+
+const isPractice = (record: CallRecord): boolean => Boolean(record.practice);
+const realCalls = (records: CallRecord[]): CallRecord[] => records.filter(r => !isPractice(r));
+const practiceCalls = (records: CallRecord[]): CallRecord[] => records.filter(isPractice);
+
+/** "Matt Piarski (Sales)" when the staff member is on the dealership's staff list. */
+const staffLabel = (name: string, staff: readonly StaffMember[]): string => {
+	const listed = staff.find(member => member.name === name);
+	return listed ? `${name} (${DEPARTMENT_LABELS[listed.department]})` : name;
+};
 
 /** "Jane Smith inbound call 11/10/2026 3:42 PM Bob Jones" */
 export const noteTitle = (record: CallRecord): string =>
@@ -201,7 +214,7 @@ function byStaff(records: CallRecord[], order: (x: CallRecord, y: CallRecord) =>
 }
 
 /** Staff by average score, then customers "Last, First" with the appointment marker and a one-line summary. */
-function summaryBlock(records: CallRecord[], base: string, dealer: Dealer): string {
+function summaryBlock(records: CallRecord[], base: string, dealer: Dealer, staff: readonly StaffMember[] = []): string {
 	if (records.length === 0) return `<p style="margin:18px 0 0;color:${MUTED}">No scored calls for this day.</p>`;
 	return byStaff(records)
 		.map(group => {
@@ -212,7 +225,7 @@ function summaryBlock(records: CallRecord[], base: string, dealer: Dealer): stri
 						`<div style="padding:12px 0;border-top:1px solid ${LINE}"><strong>${esc(customerSortName(c))}</strong>${spaced(badges(c))}<div style="margin-top:4px;color:${MUTED};font-size:14px">${esc(c.analysis?.one_line_summary ?? '')} <a href="${esc(callUrl(base, dealer, c.id))}" style="color:${INK};font-weight:600;white-space:nowrap">Full summary and recording (${c.percent}%)</a></div></div>`
 				)
 				.join('');
-			return `<div style="margin:22px 0 0"><table role="presentation" cellpadding="0" cellspacing="0" style="width:100%"><tr><td style="font-size:18px;font-weight:800">${esc(group.name)}</td><td style="text-align:right">${pill(`${group.average}% average, ${GRADE_LABELS[g]}`, GRADE_COLORS[g])}</td></tr></table>${calls}</div>`;
+			return `<div style="margin:22px 0 0"><table role="presentation" cellpadding="0" cellspacing="0" style="width:100%"><tr><td style="font-size:18px;font-weight:800">${esc(staffLabel(group.name, staff))}</td><td style="text-align:right">${pill(`${group.average}% average, ${GRADE_LABELS[g]}`, GRADE_COLORS[g])}</td></tr></table>${calls}</div>`;
 		})
 		.join('');
 }
@@ -242,27 +255,44 @@ export function digestEmail(date: string, records: CallRecord[], base: string, d
 
 const viewLink = (href: string, label: string): string => `<a href="${esc(href)}" style="color:${INK};font-weight:600">${esc(label)}</a>`;
 
-/** The dashboard's home view: each staff member with their average, opening to all of their calls in the period. */
-export function staffPage(days: number, today: string, records: CallRecord[], base: string, dealer: Dealer): string {
-	const set = records.filter(r => r.appointment_set).length;
-	const heading = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)}</p><h1 style="margin:4px 0 0;font-size:22px">Call coaching by staff member</h1><p style="margin:6px 0 0;color:${MUTED};font-size:14px">Last ${days} days: ${records.length} scored call${records.length === 1 ? '' : 's'}, ${set} appointment${set === 1 ? '' : 's'} set. Click a name to see their calls. ${viewLink(dashboardUrl(base, dealer, today), 'See one day at a time')}</p>`;
-	const staff = byStaff(records, newestFirst)
+/** One collapsed row per staff member with their average, opening to their calls, newest first. */
+function staffDetails(records: CallRecord[], base: string, dealer: Dealer, staff: readonly StaffMember[]): string {
+	return byStaff(records, newestFirst)
 		.map(group => {
 			const g = grade(group.average);
 			const appointments = group.calls.filter(c => c.appointment_set).length;
+			const practice = group.calls.every(isPractice);
 			const calls = group.calls
 				.map(
 					c =>
 						`<div style="padding:12px 0;border-top:1px solid ${LINE}"><span style="color:${MUTED};font-size:13px">${esc(usDate(c.local_date))} ${esc(c.local_time)}</span><br><strong>${esc(customerName(c))}</strong> ${spaced([pill(`${c.percent}%`, GRADE_COLORS[recordGrade(c)]), ...badges(c)])}<div style="margin-top:4px;color:${MUTED};font-size:14px">${esc(c.analysis?.one_line_summary ?? '')} <a href="${esc(callUrl(base, dealer, c.id))}" style="color:${INK};font-weight:600;white-space:nowrap">Full summary and recording</a></div></div>`
 				)
 				.join('');
-			return `<details style="margin:14px 0 0;border:1px solid ${LINE};border-radius:10px;padding:0 16px"><summary style="cursor:pointer;padding:14px 0;font-size:17px;font-weight:800">${esc(group.name)} &nbsp;${pill(`${group.average}% average, ${GRADE_LABELS[g]}`, GRADE_COLORS[g])} <span style="font-size:13px;font-weight:400;color:${MUTED}">&nbsp;${group.calls.length} call${group.calls.length === 1 ? '' : 's'}, ${appointments} appointment${appointments === 1 ? '' : 's'} set</span></summary>${calls}</details>`;
+			const count = `${group.calls.length} ${practice ? 'practice ' : ''}call${group.calls.length === 1 ? '' : 's'}${practice ? '' : `, ${appointments} appointment${appointments === 1 ? '' : 's'} set`}`;
+			return `<details style="margin:14px 0 0;border:1px solid ${LINE};border-radius:10px;padding:0 16px"><summary style="cursor:pointer;padding:14px 0;font-size:17px;font-weight:800">${esc(staffLabel(group.name, staff))} &nbsp;${pill(`${group.average}% average, ${GRADE_LABELS[g]}`, GRADE_COLORS[g])} <span style="font-size:13px;font-weight:400;color:${MUTED}">&nbsp;${count}</span></summary>${calls}</details>`;
 		})
 		.join('');
-	return shell(`Call coaching: ${dealer.name}`, `${heading}${staff || `<p style="margin:18px 0 0;color:${MUTED}">No scored calls in the last ${days} days.</p>`}`);
 }
 
-export function dashboardPage(date: string, today: string, records: CallRecord[], base: string, dealer: Dealer): string {
+const practiceHeading = (count: number, period: string): string =>
+	`<h2 style="margin:34px 0 0;padding-top:22px;border-top:2px solid ${INK};font-size:20px">Practice Calls</h2><p style="margin:6px 0 0;color:${MUTED};font-size:14px">Role-play calls your team made to Rex, the call coach. ${period}: ${count} practice call${count === 1 ? '' : 's'}.</p>`;
+
+/** The dashboard's home view: each staff member with their average, opening to all of their calls in the period, then their practice calls. */
+export function staffPage(days: number, today: string, records: CallRecord[], base: string, dealer: Dealer, staff: readonly StaffMember[] = []): string {
+	const real = realCalls(records);
+	const practice = practiceCalls(records);
+	const set = real.filter(r => r.appointment_set).length;
+	const heading = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)}</p><h1 style="margin:4px 0 0;font-size:22px">Call coaching by staff member</h1><p style="margin:6px 0 0;color:${MUTED};font-size:14px">Last ${days} days: ${real.length} scored call${real.length === 1 ? '' : 's'}, ${set} appointment${set === 1 ? '' : 's'} set. Click a name to see their calls. ${viewLink(dashboardUrl(base, dealer, today), 'See one day at a time')}</p>`;
+	const none = (what: string): string => `<p style="margin:18px 0 0;color:${MUTED}">No ${what} in the last ${days} days.</p>`;
+	return shell(
+		`Call coaching: ${dealer.name}`,
+		`${heading}${staffDetails(real, base, dealer, staff) || none('scored calls')}${practiceHeading(practice.length, `Last ${days} days`)}${staffDetails(practice, base, dealer, staff) || none('practice calls')}`
+	);
+}
+
+export function dashboardPage(date: string, today: string, all: CallRecord[], base: string, dealer: Dealer, staff: readonly StaffMember[] = []): string {
+	const records = realCalls(all);
+	const practice = practiceCalls(all);
 	const picker = `<form method="get" action="${esc(dealerPath(base, dealer))}" style="margin:16px 0 0"><input type="hidden" name="key" value="${esc(dealer.view_key)}"><label style="font-size:14px;color:${MUTED}">Day <input type="date" name="date" value="${esc(date)}" max="${esc(today)}" onchange="this.form.submit()" style="font:inherit;padding:6px 8px;border:1px solid ${LINE};border-radius:8px"></label> <noscript><button type="submit">Show</button></noscript></form>`;
-	return shell(`Call coaching: ${dealer.name}`, `${dayHeading(dealer, date, records)}${picker}<p style="margin:12px 0 0;font-size:14px">${viewLink(dashboardUrl(base, dealer), 'See the last 30 days by staff member')}</p>${attentionBlock(records, base, dealer)}${summaryBlock(records, base, dealer)}`);
+	return shell(`Call coaching: ${dealer.name}`, `${dayHeading(dealer, date, records)}${picker}<p style="margin:12px 0 0;font-size:14px">${viewLink(dashboardUrl(base, dealer), 'See the last 30 days by staff member')}</p>${attentionBlock(records, base, dealer)}${summaryBlock(records, base, dealer, staff)}${practice.length ? `${practiceHeading(practice.length, usDate(date))}${summaryBlock(practice, base, dealer, staff)}` : ''}`);
 }

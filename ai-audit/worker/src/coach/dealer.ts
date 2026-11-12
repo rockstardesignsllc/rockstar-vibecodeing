@@ -5,6 +5,7 @@ import { DIRECTORY_NAME, type CoachDirectory } from './directory';
 import * as ghl from './ghl';
 import { practiceLines, scorePractice } from './practice';
 import { coachingEmail, digestEmail, noteBody, usDate } from './render';
+import { rosterMatch } from './roster';
 import { totals } from './rubric';
 import { scoreCall, transcriptText } from './score';
 import {
@@ -17,7 +18,8 @@ import {
 	type DealerConfigInput,
 	type Department,
 	type InboundDepartment,
-	type PublicDealerConfig
+	type PublicDealerConfig,
+	type StaffMember
 } from './types';
 
 const CONFIG_KEY = 'config';
@@ -86,12 +88,38 @@ const sameDealership = (name: string, heard: string): boolean => {
 /** Who is copied on a call's email: the caller's own managers on a practice call, else this dealership's. */
 const managersFor = (config: DealerConfig, record: CallRecord): string[] => record.practice?.managers ?? config.managers;
 
+type DealerLink = Pick<DealerConfig, 'location_id' | 'name' | 'view_key'>;
+
 /** A staff member found at a dealership, with the managers who get their practice scorecards. */
 export interface PracticeCaller {
-	person: ghl.Person;
+	id: string;
+	name: string;
+	email: string;
 	managers: string[];
-	dealership: string;
+	dealer: DealerLink;
 }
+
+const MAX_STAFF = 200;
+
+/** Keeps the well-formed entries of a staff list: a name and a department, with the phone and email tidied. */
+const staffList = (value: StaffMember[] | undefined): StaffMember[] =>
+	(value ?? [])
+		.map(member => ({
+			name: (member.name ?? '').trim().replace(/\s+/g, ' ').slice(0, 80),
+			department: member.department,
+			phone: (member.phone ?? '').replace(/[^+\d]/g, '').slice(0, 20),
+			email: (member.email ?? '').trim().toLowerCase().slice(0, 200)
+		}))
+		.filter(member => member.name && isInboundDepartment(member.department))
+		.slice(0, MAX_STAFF);
+
+/** A call as the dashboard shows it: the staff member under the name on the dealership's staff list. */
+const attributed = (config: DealerConfig, record: CallRecord): CallRecord => {
+	const listed = rosterMatch(config.staff ?? [], { email: record.staff_email, name: record.staff_name });
+	return listed && listed.name !== record.staff_name ? { ...record, staff_name: listed.name } : record;
+};
+
+const link = (config: DealerConfig): DealerLink => ({ location_id: config.location_id, name: config.name, view_key: config.view_key });
 
 /** One dealership's Call Coach: its settings, every scored call, the poll that finds new calls, and the 7 AM digest. */
 export class DealerCoach extends DurableObject<Env> {
@@ -190,6 +218,7 @@ export class DealerCoach extends DurableObject<Env> {
 			send_emails: input.send_emails ?? current?.send_emails ?? true,
 			score_outbound: input.score_outbound ?? current?.score_outbound ?? false,
 			managers: (input.managers ?? current?.managers ?? []).map(m => m.trim().toLowerCase()).filter(m => m.includes('@')),
+			staff: staffList(input.staff ?? current?.staff),
 			scripts: Object.fromEntries(Object.entries({ ...current?.scripts, ...input.scripts }).filter(([, script]) => script.trim())),
 			numbers: departmentMap(input.numbers ?? current?.numbers),
 			users: departmentMap(input.users ?? current?.users),
@@ -228,18 +257,18 @@ export class DealerCoach extends DurableObject<Env> {
 		return { token: config.token, location_id: config.location_id, name: config.name, view_key: config.view_key };
 	}
 
-	async day(key: string, date: string | null): Promise<CoachResult<{ date: string; today: string; records: CallRecord[] }>> {
+	async day(key: string, date: string | null): Promise<CoachResult<{ date: string; today: string; records: CallRecord[]; staff: StaffMember[] }>> {
 		const config = await this.config();
 		if (!config || key !== config.view_key) return fail(404, 'not found');
 		const now = Date.now();
 		const today = this.localParts(config, new Date(now)).date;
 		const yesterday = this.localParts(config, new Date(now - 24 * 60 * 60 * 1000)).date;
 		const chosen = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : this.scoredOn(today).length > 0 ? today : yesterday;
-		return { ok: true, value: { date: chosen, today, records: this.scoredOn(chosen) } };
+		return { ok: true, value: { date: chosen, today, records: this.scoredOn(chosen).map(record => attributed(config, record)), staff: config.staff ?? [] } };
 	}
 
 	/** Every scored call of the last 30 days, for the dashboard's by-staff view. */
-	async recent(key: string): Promise<CoachResult<{ days: number; today: string; records: CallRecord[] }>> {
+	async recent(key: string): Promise<CoachResult<{ days: number; today: string; records: CallRecord[]; staff: StaffMember[] }>> {
 		const config = await this.config();
 		if (!config || key !== config.view_key) return fail(404, 'not found');
 		const now = Date.now();
@@ -247,15 +276,42 @@ export class DealerCoach extends DurableObject<Env> {
 		const records = this.ctx.storage.sql
 			.exec<{ record: string }>("SELECT record FROM calls WHERE local_date >= ? AND status = 'scored'", since)
 			.toArray()
-			.map(row => JSON.parse(row.record) as CallRecord);
-		return { ok: true, value: { days: STAFF_VIEW_DAYS, today: this.localParts(config, new Date(now)).date, records } };
+			.map(row => attributed(config, JSON.parse(row.record) as CallRecord));
+		return { ok: true, value: { days: STAFF_VIEW_DAYS, today: this.localParts(config, new Date(now)).date, records, staff: config.staff ?? [] } };
 	}
 
 	async call(key: string, id: string): Promise<CoachResult<CallRecord>> {
 		const config = await this.config();
 		if (!config || key !== config.view_key) return fail(404, 'not found');
 		const record = this.stored(id);
-		return record && record.status === 'scored' ? { ok: true, value: record } : fail(404, 'not found');
+		return record && record.status === 'scored' ? { ok: true, value: attributed(config, record) } : fail(404, 'not found');
+	}
+
+	/**
+	 * The token and sub-account that hold a practice call's recording, for the dealership whose staff member made the
+	 * call. Given only for a call stored here as a practice call of that dealership.
+	 */
+	async practiceAccess(id: string, dealerLocation: string): Promise<Pick<DealerConfig, 'token' | 'location_id'> | null> {
+		const config = await this.config();
+		const record = this.stored(id);
+		if (!config || record?.status !== 'scored' || record.practice?.dealer?.location_id !== dealerLocation) return null;
+		return { token: config.token, location_id: config.location_id };
+	}
+
+	/** Keeps this dealership's copy of a practice call one of its staff made on another sub-account's practice line. */
+	async addPractice(record: CallRecord, host: string): Promise<void> {
+		const config = await this.config();
+		if (!config || !record.practice || record.status !== 'scored') return;
+		const local = this.localParts(config, new Date(record.at));
+		this.store({
+			...record,
+			local_date: local.date,
+			local_time: local.time,
+			contact_id: '',
+			conversation_id: '',
+			delivery: { note_added: true, email_sent: true },
+			practice: { scenario: record.practice.scenario, difficulty: record.practice.difficulty, dealership: record.practice.dealership, managers: record.practice.managers, host }
+		});
 	}
 
 	/**
@@ -367,14 +423,21 @@ export class DealerCoach extends DurableObject<Env> {
 	async practiceCaller(query: { phone: string; name: string; dealership: string }): Promise<PracticeCaller | null> {
 		const config = await this.config();
 		if (!config) return null;
+		const found = (id: string, name: string, email: string): PracticeCaller => ({ id, name, email, managers: config.managers, dealer: link(config) });
+		const named = sameDealership(config.name, query.dealership);
+		const staff = config.staff ?? [];
+		const listed = rosterMatch(staff, { phone: query.phone }) ?? (named ? rosterMatch(staff, { name: query.name }) : undefined);
 		try {
 			const people = await ghl.users(config);
 			const phone = ghl.phoneKey(query.phone);
 			const byPhone = phone ? people.filter(p => ghl.phoneKey(p.phone) === phone) : [];
-			const person = byPhone.length === 1 ? byPhone[0] : sameDealership(config.name, query.dealership) ? ghl.userNamed(people, query.name) : undefined;
-			return person ? { person, managers: config.managers, dealership: config.name } : null;
+			const person = byPhone.length === 1 ? byPhone[0] : listed ? ghl.userNamed(people, listed.name) : named ? ghl.userNamed(people, query.name) : undefined;
+			const fullName = person ? [person.first, person.last].filter(Boolean).join(' ') : '';
+			const onList = listed ?? (person ? rosterMatch(staff, { email: person.email, name: fullName }) : undefined);
+			if (!person && !onList) return null;
+			return found(person?.id ?? '', onList?.name || fullName, person?.email || onList?.email || '');
 		} catch {
-			return null;
+			return listed ? found('', listed.name, listed.email) : null;
 		}
 	}
 
@@ -398,16 +461,23 @@ export class DealerCoach extends DurableObject<Env> {
 		const contact = call.contactId ? await ghl.contact(config, call.contactId).catch(() => undefined) : undefined;
 		const caller = await this.findPracticeCaller(config, { phone: call.from ?? '', name: analysis.staff_name_heard, dealership: heard.dealership_heard });
 		const [heardFirst, ...heardLast] = analysis.staff_name_heard.split(' ');
-		const first = caller?.person.first || contact?.first || heardFirst || '';
-		const last = caller?.person.last || contact?.last || heardLast.join(' ');
-		const email = (caller?.person.email || contact?.email || (heard.email_heard.includes('@') ? heard.email_heard : '')).toLowerCase();
-		const dealership = caller?.dealership || heard.dealership_heard;
-		record.user_id = caller?.person.id ?? '';
+		const [callerFirst, ...callerLast] = (caller?.name ?? '').split(' ');
+		const first = callerFirst || contact?.first || heardFirst || '';
+		const last = caller ? callerLast.join(' ') : contact?.last || heardLast.join(' ');
+		const email = (caller?.email || contact?.email || (heard.email_heard.includes('@') ? heard.email_heard : '')).toLowerCase();
+		const dealership = caller?.dealer.name || heard.dealership_heard;
+		record.user_id = caller?.id ?? '';
 		record.staff_name = [first, last].filter(Boolean).join(' ') || 'Practice caller';
 		record.staff_email = email;
 		record.customer_first = `Rex (${PRACTICE_LABELS[heard.scenario]} practice)`;
 		record.customer_last = '';
-		record.practice = { scenario: heard.scenario, difficulty: heard.difficulty, dealership, managers: caller ? caller.managers : config.managers };
+		record.practice = {
+			scenario: heard.scenario,
+			difficulty: heard.difficulty,
+			dealership,
+			managers: caller ? caller.managers : config.managers,
+			...(caller && caller.dealer.location_id !== config.location_id ? { dealer: caller.dealer } : {})
+		};
 		if (contact && call.contactId) {
 			const fields = {
 				...(!contact.first && first ? { firstName: first } : {}),
@@ -459,8 +529,10 @@ export class DealerCoach extends DurableObject<Env> {
 				const staff = await this.staff(config, call, analysis.staff_name_heard, customer?.assigned_to ?? '');
 				const heard = analysis.customer_name_heard.split(' ');
 				record.user_id = staff?.id ?? '';
-				record.staff_name = [staff?.first, staff?.last].filter(Boolean).join(' ') || analysis.staff_name_heard || 'Unassigned';
-				record.staff_email = staff?.email ?? '';
+				const named = [staff?.first, staff?.last].filter(Boolean).join(' ') || analysis.staff_name_heard;
+				const listed = rosterMatch(config.staff ?? [], { email: staff?.email, name: named });
+				record.staff_name = listed?.name || named || 'Unassigned';
+				record.staff_email = staff?.email || listed?.email || '';
 				record.customer_first = customer?.first || heard[0] || '';
 				record.customer_last = customer?.last || heard.slice(1).join(' ') || (customer?.first || heard[0] ? '' : (call.from ?? ''));
 			}
@@ -471,6 +543,7 @@ export class DealerCoach extends DurableObject<Env> {
 			record.appointment_set = analysis.appointment_set;
 			record.status = 'scored';
 			this.store(record);
+			await this.shareWithDealer(config, record);
 			if (deliver) await this.deliver(config, record);
 			await this.ctx.storage.delete(attemptsKey);
 			return record;
@@ -528,6 +601,13 @@ export class DealerCoach extends DurableObject<Env> {
 		}
 	}
 
+	/** Gives the caller's own dealership its copy of a practice call, so the call shows on that dealership's dashboard. */
+	private async shareWithDealer(config: DealerConfig, record: CallRecord): Promise<void> {
+		const home = record.practice?.dealer;
+		if (!home) return;
+		await this.env.DEALER_COACH.get(this.env.DEALER_COACH.idFromName(home.location_id)).addPractice(record, config.location_id);
+	}
+
 	/** Each step is recorded as it succeeds, so a retry never repeats a note or an email. */
 	private async deliver(config: DealerConfig, record: CallRecord): Promise<void> {
 		const base = this.env.COACH_BASE_URL;
@@ -543,7 +623,7 @@ export class DealerCoach extends DurableObject<Env> {
 				const [first, ...rest] = record.staff_email ? record.staff_name.split(' ') : [];
 				const contactId = await ghl.contactForEmail(config, to, first ?? '', rest.join(' '));
 				const now = this.localParts(config, new Date());
-				const email = coachingEmail(record, base, config, `${usDate(now.date)} ${now.time}`);
+				const email = coachingEmail(record, base, record.practice?.dealer ?? config, `${usDate(now.date)} ${now.time}`);
 				await ghl.sendEmail(config, contactId, email.subject, email.html, managers.filter(m => m !== to.toLowerCase()));
 				record.delivery.email_sent = true;
 				this.store(record);
@@ -557,7 +637,9 @@ export class DealerCoach extends DurableObject<Env> {
 		const local = this.localParts(config, now);
 		if (local.hour < DIGEST_HOUR || (await this.ctx.storage.get<string>(DIGEST_KEY)) === local.date) return;
 		const yesterday = this.localParts(config, new Date(now.getTime() - 24 * 60 * 60 * 1000)).date;
-		const records = this.scoredOn(yesterday);
+		const records = this.scoredOn(yesterday)
+			.filter(record => !record.practice)
+			.map(record => attributed(config, record));
 		const [to, ...cc] = config.managers;
 		if (to && config.send_emails && records.length > 0) {
 			const email = digestEmail(yesterday, records, this.env.COACH_BASE_URL, config);
