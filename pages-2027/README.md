@@ -2,6 +2,18 @@
 
 Paste-ready HTML for GoHighLevel. Each file goes into the GHL page at the slug listed below.
 
+## Self-updating blocks
+
+Some sections are wrapped in `<!-- rs-block:start <site>/<name> -->` ... `<!-- rs-block:end -->` and carry `data-rs-block` and `data-rs-v`.
+Paste the whole page into GHL once. After that, change the block here, bump its `data-rs-v` and the page version stamp, run
+`python3 pages-2027/build-blocks.py <site-assets folder>` and push the result to the `site-assets` branch. `rockstar-shared.js`
+swaps the newer block into the live page; the pasted copy stays for search engines and as the backup.
+
+Current blocks: `aifordealers/automotive-call-coaching` and `aiforpowersports/powersports-call-coaching` (the whole page between
+nav and footer), `aifordealers/ai-tools-call-coach`, `aiforpowersports/ai-tools-call-coach`, `rockstarinfo/solutions-call-coach`.
+
+New menu and footer links reach pages pasted before the link existed through `LINKS` in `rockstar-shared.js`.
+
 ## rockstarinfo.com (hub)
 
 | File | Slug |
@@ -45,10 +57,13 @@ SEO for all 12 pages lives in `rockstarinfo/seo/rockstarinfo-seo.md`: the title,
 | 18-vs-pam.html | `rockstarai-vs-pam` |
 | 19-vs-dealership-accelerator.html | `rockstarai-vs-dealership-accelerator` |
 | 20-vs-matador.html | `rockstarai-vs-matador` |
+| 21-automotive-call-coaching.html | `automotive-call-coaching` |
 
 SEO for the Compare AI pages (03 and 15 to 20) lives in `aifordealers/seo/`: `aifordealers-compare-seo.md` has the title, description, keywords and JSON-LD schema for each page, and `social-images/` has the matching 1200 x 630 social images. The home page title, description, keywords and social image are in `aifordealers-home-seo.md`.
 
-Schema for all 20 pages is in `aifordealers/seo/aifordealers-schema.md`. Paste each block into that page's Header Tracking Code.
+SEO for 21-automotive-call-coaching.html (title, description, keywords, schema) is in `aifordealers/seo/aifordealers-seo.md`, social image in `aifordealers/seo/social-images/`.
+
+Schema for all 21 pages is in `aifordealers/seo/aifordealers-schema.md`. Paste each block into that page's Header Tracking Code.
 
 ## aiforpowersports.com
 
@@ -73,6 +88,9 @@ Schema for all 20 pages is in `aifordealers/seo/aifordealers-schema.md`. Paste e
 | 17-marine.html | `marine` |
 | 18-rv.html | `rv` |
 | 19-multi-line.html | `multi-line` |
+| 20-powersports-call-coaching.html | `powersports-call-coaching` |
+
+SEO for the Call Coach page is in `aiforpowersports/seo/aiforpowersports-seo.md`, with its social image in `aiforpowersports/seo/social-images/`.
 
 ## getrockstarai.com
 
