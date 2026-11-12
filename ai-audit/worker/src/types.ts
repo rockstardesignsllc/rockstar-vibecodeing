@@ -19,6 +19,8 @@ export interface Env {
 	COACH_BASE_URL: string;
 	/** The HighLevel app address dealers log in at, used for "open this call in HighLevel" links. */
 	COACH_APP_URL: string;
+	/** Comma separated phone numbers (E.164) answered by Rex, the practice call coach. Calls to them are scored as practice. */
+	COACH_PRACTICE_LINES?: string;
 	ANTHROPIC_API_KEY: string;
 	/** Optional, for example a Cloudflare AI Gateway URL for request logs and cost tracking. */
 	ANTHROPIC_BASE_URL?: string;

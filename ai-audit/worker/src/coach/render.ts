@@ -1,5 +1,5 @@
 import { GRADE_COLORS, GRADE_LABELS, grade, leftOut, rubricFor } from './rubric';
-import { DEPARTMENT_LABELS, MOOD_LABELS, TOPIC_LABELS, type CallRecord, type DealerConfig, type Grade, type Topic } from './types';
+import { DEPARTMENT_LABELS, MOOD_LABELS, PRACTICE_LABELS, TOPIC_LABELS, type CallRecord, type DealerConfig, type Grade, type Topic } from './types';
 
 type Dealer = Pick<DealerConfig, 'location_id' | 'name' | 'view_key'>;
 
@@ -27,7 +27,8 @@ export const customerSortName = (record: CallRecord): string =>
 
 const recordGrade = (record: CallRecord): Grade => grade(record.percent, record.analysis?.red_flags.length ?? 0);
 
-const scorecardName = (record: CallRecord): string => `${DEPARTMENT_LABELS[record.department]} scorecard`;
+const scorecardName = (record: CallRecord): string =>
+	record.practice ? `${PRACTICE_LABELS[record.practice.scenario]} practice, ${record.practice.difficulty} difficulty` : `${DEPARTMENT_LABELS[record.department]} scorecard`;
 const followUps = (record: CallRecord): string[] => record.analysis?.follow_ups ?? [];
 const frustrated = (record: CallRecord): boolean => record.analysis?.customer_mood === 'frustrated';
 
@@ -36,7 +37,9 @@ const showsAppointment = (record: CallRecord): boolean => record.appointment_set
 
 /** "Jane Smith inbound call 11/10/2026 3:42 PM Bob Jones" */
 export const noteTitle = (record: CallRecord): string =>
-	`${customerName(record)} ${record.direction ?? 'inbound'} call ${usDate(record.local_date)} ${record.local_time} ${record.staff_name}`;
+	record.practice
+		? `${customerName(record)} ${usDate(record.local_date)} ${record.local_time} ${record.staff_name}${record.practice.dealership ? `, ${record.practice.dealership}` : ''}`
+		: `${customerName(record)} ${record.direction ?? 'inbound'} call ${usDate(record.local_date)} ${record.local_time} ${record.staff_name}`;
 
 export const usDate = (isoDate: string): string => {
 	const [y, m, d] = isoDate.split('-');
@@ -152,7 +155,10 @@ export function coachingEmail(record: CallRecord, base: string, dealer: Dealer, 
 	const first = record.staff_email ? record.staff_name.split(' ')[0] : '';
 	const who = [customerName(record), phoneText(record.customer_phone ?? '')].filter(Boolean).join(' ');
 	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${first ? `${esc(first)}, your` : 'The'} call with ${esc(customerName(record))} has been scored</h1><p style="margin:4px 0 0;color:${MUTED};font-size:14px">${esc(record.staff_name)}, ${esc(usDate(record.local_date))} at ${esc(record.local_time)}</p>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(record.analysis?.one_line_summary ?? '')}</p>${followUps(record).length ? `<p style="margin:16px 0 6px;font-weight:700">Promised follow-ups</p>${followUpList(record)}` : ''}<p style="margin:24px 0 0">View the call coaching score and summary here:</p><p style="margin:12px 0 0">${button(callUrl(base, dealer, record.id), 'Open the call coaching summary')}</p>`;
-	return { subject: `Call Scoring for ${who} complete at ${completedAt}`, html: shell('Call coaching', inner) };
+	const subject = record.practice
+		? `Practice Call Scoring for ${record.staff_name} (${PRACTICE_LABELS[record.practice.scenario]}) complete at ${completedAt}`
+		: `Call Scoring for ${who} complete at ${completedAt}`;
+	return { subject, html: shell('Call coaching', inner) };
 }
 
 export function callPage(record: CallRecord, base: string, dealer: Dealer, app: string): string {

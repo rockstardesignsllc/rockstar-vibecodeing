@@ -5,7 +5,7 @@ import { DEPARTMENT_LABELS, INBOUND_DEPARTMENTS, MOODS, TOPICS, isMood, isTopic,
 const MAX_TRANSCRIPT_CHARS = 120000;
 
 /** The answer format, with the department limited to the scorecards offered for this call. */
-const analysisSchema = (departments: readonly Department[]) => ({
+export const analysisSchema = (departments: readonly Department[]) => ({
 	type: 'object',
 	properties: {
 		scoreable: { type: 'boolean', description: 'False for a voicemail, wrong number, spam or vendor call, a call answered by an automated or AI agent, a call with no real conversation, or a call that is not a conversation between this department and a customer.' },
@@ -106,13 +106,13 @@ const str = (value: unknown): string => (typeof value === 'string' ? value.trim(
 const list = (value: unknown): unknown[] => (Array.isArray(value) ? value : []);
 
 /** The dealership side is recorded on media channel 1 and the caller on channel 2. */
-export function transcriptText(sentences: TranscriptSentence[]): string {
+export function transcriptText(sentences: TranscriptSentence[], labels: { ours: string; caller: string } = { ours: 'Staff', caller: 'Customer' }): string {
 	const lines: string[] = [];
 	let last = '';
 	for (const sentence of sentences) {
 		const text = (sentence.transcript ?? '').trim();
 		if (!text) continue;
-		const who = sentence.mediaChannel === 2 ? 'Customer' : 'Staff';
+		const who = sentence.mediaChannel === 2 ? labels.caller : labels.ours;
 		if (who === last) lines[lines.length - 1] += ` ${text}`;
 		else lines.push(`${who}: ${text}`);
 		last = who;
@@ -120,10 +120,10 @@ export function transcriptText(sentences: TranscriptSentence[]): string {
 	return lines.join('\n').slice(0, MAX_TRANSCRIPT_CHARS);
 }
 
-const rubricText = (items: RubricItem[]): string =>
+export const rubricText = (items: RubricItem[]): string =>
 	items.map(item => `- ${item.id} (0 to ${item.max}${item.needs_appointment ? ', only if an appointment was set' : ''}): ${item.label}. ${item.guide}`).join('\n');
 
-function parseAnalysis(raw: unknown, offered: readonly Department[], fallback: Department): CallAnalysis {
+export function parseAnalysis(raw: unknown, offered: readonly Department[], fallback: Department): CallAnalysis {
 	if (!isRecord(raw)) throw new Error('analysis is not an object');
 	const wins: Win[] = list(raw.wins).filter(isRecord).map(w => ({ title: str(w.title), detail: str(w.detail) })).filter(w => w.title);
 	const tuneUps: TuneUp[] = list(raw.tune_ups)
