@@ -1,4 +1,4 @@
-<!-- Rockstar Call Coach setup v1.9 | Updated 2026-11-11 23:45 UTC -->
+<!-- Rockstar Call Coach setup v1.10 | Updated 2026-11-12 20:45 UTC -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -68,6 +68,8 @@
 		</div>
 		<label for="managers">Manager emails <small>Comma separated. They are copied on every coaching email and get the 7 AM summary.</small></label>
 		<input id="managers" type="text" placeholder="gm@dealer.com, salesmanager@dealer.com">
+		<label for="staff">Staff list <small>One person per line: name, department. Departments: sales, bdc, service. Every call by that person shows under this exact name, so "Matt" and "Matt Piarski" become one person. Optional extras on the same line: their mobile number (so Rex knows them when they call the practice line) and their email.</small></label>
+		<textarea id="staff" style="min-height:110px" placeholder="Matt Piarski, sales&#10;Dana Lopez, bdc, 727-555-0142&#10;Chris Hall, service, 727-555-0177, chris@dealer.com"></textarea>
 		<label for="numbers">Phone numbers by department <small>One per line, like +18665213366 = sales. Departments: sales, bdc, service. Optional. Every call is sorted by what the customer called about, so most dealers leave this blank.</small></label>
 		<textarea id="numbers" style="min-height:80px" placeholder="+18665213366 = sales&#10;+18449911777 = service"></textarea>
 		<label for="min">Shortest call to score (seconds)</label><input id="min" type="text" value="60">
@@ -137,6 +139,7 @@
 		$('name').value = c.name || '';
 		$('tz').value = c.timezone || '';
 		$('managers').value = (c.managers || []).join(', ');
+		$('staff').value = (c.staff || []).map(function (m) { return [m.name, m.department, m.phone, m.email].filter(Boolean).join(', '); }).join('\n');
 		$('numbers').value = Object.keys(c.numbers || {}).map(function (n) { return n + ' = ' + c.numbers[n]; }).join('\n');
 		$('min').value = c.min_seconds;
 		$('emails').checked = c.send_emails;
@@ -203,12 +206,21 @@
 			var parts = line.split('=');
 			if (parts.length === 2 && parts[0].trim()) numbers[parts[0].trim().replace(/[^+\d]/g, '')] = parts[1].trim().toLowerCase();
 		});
+		var staff = [], badLine = '';
+		$('staff').value.split('\n').forEach(function (line) {
+			var parts = line.split(',').map(function (part) { return part.trim(); }).filter(Boolean);
+			if (!parts.length || badLine) return;
+			var member = { name: parts[0], department: (parts[1] || '').toLowerCase(), phone: '', email: '' };
+			parts.slice(2).forEach(function (part) { if (part.indexOf('@') > 0) member.email = part; else member.phone = part.replace(/[^+\d]/g, ''); });
+			if (['sales', 'bdc', 'service'].indexOf(member.department) < 0) badLine = line.trim(); else staff.push(member);
+		});
+		if (badLine) { say('bad', 'Staff list: "' + badLine + '" needs a name, then a comma, then sales, bdc or service.'); return; }
 		var scripts = {};
 		DEPTS.forEach(function (d) { scripts[d] = $('s-' + d).value.trim(); });
 		var body = {
 			name: $('name').value, timezone: $('tz').value,
 			managers: $('managers').value.split(',').map(function (m) { return m.trim(); }).filter(Boolean),
-			numbers: numbers, scripts: scripts,
+			staff: staff, numbers: numbers, scripts: scripts,
 			min_seconds: Number($('min').value) || 60,
 			send_emails: $('emails').checked, score_outbound: $('outbound').checked, enabled: $('enabled').checked
 		};

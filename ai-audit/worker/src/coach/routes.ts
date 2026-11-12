@@ -7,7 +7,7 @@
  *   POST /coach/admin/pdf                      PDF framework in, plain text out (x-admin-key)
  *   GET  /coach/d/<location>?key=&date=        the manager dashboard for one day
  *   GET  /coach/d/<location>/call/<id>?key=    one call's full summary
- *   GET  /coach/d/<location>/rec/<id>?key=     that call's recording
+ *   GET  /coach/d/<location>/rec/<id>?key=     that call's recording (a practice call's comes from the practice line's sub-account)
  * Each dealership lives in its own DealerCoach Durable Object, named by its HighLevel location id.
  */
 import Anthropic from '@anthropic-ai/sdk';
@@ -19,7 +19,7 @@ import { DIRECTORY_NAME } from './directory';
 import { recording } from './ghl';
 import { callPage, dashboardPage, dashboardUrl, staffPage } from './render';
 import { pdfToText } from './score';
-import { DEPARTMENTS, isInboundDepartment, type DealerConfigInput, type Department, type InboundDepartment } from './types';
+import { DEPARTMENTS, isInboundDepartment, type DealerConfigInput, type Department, type InboundDepartment, type StaffMember } from './types';
 
 const LOCATION_ID = /^[A-Za-z0-9]{10,40}$/;
 const MESSAGE_ID = /^[A-Za-z0-9]{10,40}$/;
@@ -83,6 +83,15 @@ const flag = (value: unknown): boolean | undefined => (typeof value === 'boolean
 const departments = (value: unknown): Record<string, InboundDepartment> | undefined =>
 	isRecord(value) ? Object.fromEntries(Object.entries(value).filter((entry): entry is [string, InboundDepartment] => isInboundDepartment(entry[1]))) : undefined;
 
+/** The staff list from a request body: entries with a name and a department. */
+const staffMembers = (value: unknown): StaffMember[] | undefined =>
+	Array.isArray(value)
+		? value.filter(isRecord).flatMap(member => {
+				const name = text(member.name)?.trim();
+				return name && isInboundDepartment(member.department) ? [{ name, department: member.department, phone: text(member.phone) ?? '', email: text(member.email) ?? '' }] : [];
+			})
+		: undefined;
+
 /** Keeps only well-formed settings from a request body. Anything missing or malformed is left as it was. */
 function settings(body: Record<string, unknown>): DealerConfigInput {
 	const scripts = isRecord(body.scripts)
@@ -99,6 +108,7 @@ function settings(body: Record<string, unknown>): DealerConfigInput {
 	set('send_emails', flag(body.send_emails));
 	set('score_outbound', flag(body.score_outbound));
 	set('managers', Array.isArray(body.managers) ? body.managers.filter((m): m is string => typeof m === 'string') : undefined);
+	set('staff', staffMembers(body.staff));
 	set('scripts', scripts);
 	set('numbers', departments(body.numbers));
 	set('users', departments(body.users));
@@ -186,10 +196,10 @@ async function handleDealerView(request: Request, env: Env, parts: string[], url
 		const date = url.searchParams.get('date');
 		if (!date) {
 			const recent = await stub.recent(key);
-			return recent.ok ? html(200, staffPage(recent.value.days, recent.value.today, recent.value.records, base, access)) : notFound();
+			return recent.ok ? html(200, staffPage(recent.value.days, recent.value.today, recent.value.records, base, access, recent.value.staff)) : notFound();
 		}
 		const day = await stub.day(key, date);
-		return day.ok ? html(200, dashboardPage(day.value.date, day.value.today, day.value.records, base, access)) : notFound();
+		return day.ok ? html(200, dashboardPage(day.value.date, day.value.today, day.value.records, base, access, day.value.staff)) : notFound();
 	}
 	const id = parts[2] ?? '';
 	if (parts.length !== 3 || !MESSAGE_ID.test(id)) return notFound();
@@ -197,7 +207,10 @@ async function handleDealerView(request: Request, env: Env, parts: string[], url
 	if (!call.ok) return notFound();
 	if (parts[1] === 'call') return html(200, callPage(call.value, base, access, env.COACH_APP_URL));
 	if (parts[1] === 'rec') {
-		const audio = await recording(access, id);
+		const host = call.value.practice?.host;
+		const holder = host ? await dealer(env, host).practiceAccess(id, locationId) : access;
+		if (!holder) return notFound();
+		const audio = await recording(holder, id);
 		if (!audio.ok) return json(502, { error: `HighLevel did not return the recording (${audio.status}).` });
 		return ranged(await audio.arrayBuffer(), audio.headers.get('content-type') ?? 'audio/x-wav', request.headers.get('range'));
 	}

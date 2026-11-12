@@ -27,6 +27,16 @@ export type Mood = (typeof MOODS)[number];
 export const MOOD_LABELS: Record<Mood, string> = { satisfied: 'Satisfied', neutral: 'Neutral', frustrated: 'Frustrated' };
 export const isMood = (value: unknown): value is Mood => MOODS.some(m => m === value);
 
+/** A staff member on a dealership's list, so calls are attributed to one spelling of their name. */
+export interface StaffMember {
+	name: string;
+	department: InboundDepartment;
+	/** Their mobile number, to recognize them when they call the practice line. May be empty. */
+	phone: string;
+	/** Where their scorecards go when HighLevel has no user for them. May be empty. */
+	email: string;
+}
+
 /** One dealership (HighLevel sub-account) using Call Coach. Stored in its own DealerCoach Durable Object. */
 export interface DealerConfig {
 	location_id: string;
@@ -39,6 +49,8 @@ export interface DealerConfig {
 	/** Also score calls the dealership makes (an add-on). Inbound calls are always scored. */
 	score_outbound: boolean;
 	managers: string[];
+	/** The dealership's staff list. Absent on dealerships saved before v1.16. */
+	staff?: StaffMember[];
 	scripts: Partial<Record<Department, string>>;
 	/** Dealership phone number that was called (E.164) to the department that answers it. */
 	numbers: Record<string, InboundDepartment>;
@@ -155,6 +167,10 @@ export interface PracticeInfo {
 	dealership: string;
 	/** Who is copied on the scorecard email. */
 	managers: string[];
+	/** The caller's own dealership, when it is not the one that owns the practice line. Its dashboard shows the call. */
+	dealer?: Pick<DealerConfig, 'location_id' | 'name' | 'view_key'>;
+	/** On a dealership's copy of a practice call: the sub-account that owns the practice line and holds the recording. */
+	host?: string;
 }
 
 export type CallStatus = 'scored' | 'skipped' | 'error';

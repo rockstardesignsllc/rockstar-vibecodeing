@@ -1,5 +1,11 @@
 # Rockstar AI Audit changelog
 
+## v1.16: Call Coach staff list and Practice Calls on dealer dashboards
+- Setup page v1.10: a staff list per dealership (name, department, optional mobile and email). Calls are attributed to the listed name, so "Matt" and "Matt Piarski" are one person. Calls already scored are regrouped when the dashboard is opened; nothing is rescored.
+- Each dealership's dashboard has a "Practice Calls" section, by person, in the 30 day view and the day view. Practice calls no longer mix into the regular call lists or the 7 AM summary.
+- A practice call by a matched staff member is copied to their own dealership, and their scorecard email links to that dealership's page. The recording is streamed from the sub-account that owns the practice line, only for that dealership's own practice calls.
+- The practice line recognizes a caller by the mobile number on the staff list, then by HighLevel user phone, then by name and dealership.
+
 ## v1.15: Call Coach scores practice calls with Rex
 - Calls to the Rex practice line (`COACH_PRACTICE_LINES`, now +1 269-575-0069) are scored as practice calls: the caller is the staff member, Rex is the customer. Five scenarios, each with its own framework: inbound sales, inbound BDC, outbound prospecting, service survey, inbound service.
 - The caller is matched to a user of any dealership set up for Call Coach (by phone, else by name and dealership said on the call). Their scorecard email copies that dealership's managers. Unmatched callers get it at the email on their contact or the one they gave Rex, with the Rockstar Designs managers copied.
