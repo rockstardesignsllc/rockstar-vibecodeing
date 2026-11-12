@@ -1,4 +1,4 @@
-<!-- Rockstar Call Coach setup v1.10 | Updated 2026-11-12 20:45 UTC -->
+<!-- Rockstar Call Coach setup v1.11 | Updated 2026-11-12 21:05 UTC -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -25,6 +25,9 @@
 	textarea { min-height:140px; resize:vertical; }
 	.row { display:flex; gap:12px; flex-wrap:wrap; }
 	.row > div { flex:1 1 220px; }
+	.staff-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+	.staff-row input, .staff-row select { flex:1 1 120px; width:auto; min-width:0; }
+	.staff-row button { flex:none; margin-top:0; padding:9px 12px; }
 	button { font:inherit; font-weight:700; padding:11px 18px; border-radius:8px; border:0; background:var(--red); color:#fff; cursor:pointer; margin-top:16px; }
 	button.light { background:#fff; color:var(--ink); border:1px solid var(--line); }
 	button:disabled { opacity:.5; cursor:wait; }
@@ -68,8 +71,9 @@
 		</div>
 		<label for="managers">Manager emails <small>Comma separated. They are copied on every coaching email and get the 7 AM summary.</small></label>
 		<input id="managers" type="text" placeholder="gm@dealer.com, salesmanager@dealer.com">
-		<label for="staff">Staff list <small>One person per line: name, department. Departments: sales, bdc, service. Every call by that person shows under this exact name, so "Matt" and "Matt Piarski" become one person. Optional extras on the same line: their mobile number (so Rex knows them when they call the practice line) and their email.</small></label>
-		<textarea id="staff" style="min-height:110px" placeholder="Matt Piarski, sales&#10;Dana Lopez, bdc, 727-555-0142&#10;Chris Hall, service, 727-555-0177, chris@dealer.com"></textarea>
+		<label>Staff list <small>One row per person. Every call by that person shows under this exact name, so "Matt" and "Matt Pisarsky" become one person. Mobile and email are optional: the mobile is how Rex knows them when they call the practice line.</small></label>
+		<div id="staff"></div>
+		<button id="add-staff" type="button" class="light" style="margin-top:8px">+ Add staff member</button>
 		<label for="numbers">Phone numbers by department <small>One per line, like +18665213366 = sales. Departments: sales, bdc, service. Optional. Every call is sorted by what the customer called about, so most dealers leave this blank.</small></label>
 		<textarea id="numbers" style="min-height:80px" placeholder="+18665213366 = sales&#10;+18449911777 = service"></textarea>
 		<label for="min">Shortest call to score (seconds)</label><input id="min" type="text" value="60">
@@ -107,6 +111,27 @@
 (function () {
 	var $ = function (id) { return document.getElementById(id); };
 	var DEPTS = ['sales', 'bdc', 'service', 'outbound'];
+	var STAFF_DEPTS = [['sales', 'Sales'], ['bdc', 'BDC'], ['service', 'Service'], ['reconditioning', 'Reconditioning'], ['finance', 'Finance']];
+	/* The staff list is sent only once it was loaded or edited, so saving a dealership that was never loaded keeps its list. */
+	var staffReady = false;
+	function field(placeholder, value) {
+		var input = document.createElement('input');
+		input.type = 'text'; input.placeholder = placeholder; input.value = value || '';
+		return input;
+	}
+	function staffRow(member) {
+		var row = document.createElement('div'), select = document.createElement('select'), remove = document.createElement('button');
+		row.className = 'staff-row';
+		STAFF_DEPTS.forEach(function (d) {
+			var option = document.createElement('option');
+			option.value = d[0]; option.textContent = d[1]; option.selected = member.department === d[0];
+			select.appendChild(option);
+		});
+		remove.type = 'button'; remove.className = 'light'; remove.textContent = 'Remove';
+		remove.onclick = function () { row.remove(); };
+		[field('Name', member.name), select, field('Mobile (optional)', member.phone), field('Email (optional)', member.email), remove].forEach(function (el) { row.appendChild(el); });
+		$('staff').appendChild(row);
+	}
 	var msg = $('msg');
 	function say(kind, text, link) {
 		msg.className = kind;
@@ -139,7 +164,9 @@
 		$('name').value = c.name || '';
 		$('tz').value = c.timezone || '';
 		$('managers').value = (c.managers || []).join(', ');
-		$('staff').value = (c.staff || []).map(function (m) { return [m.name, m.department, m.phone, m.email].filter(Boolean).join(', '); }).join('\n');
+		$('staff').textContent = '';
+		(c.staff || []).forEach(staffRow);
+		staffReady = true;
 		$('numbers').value = Object.keys(c.numbers || {}).map(function (n) { return n + ' = ' + c.numbers[n]; }).join('\n');
 		$('min').value = c.min_seconds;
 		$('emails').checked = c.send_emails;
@@ -193,12 +220,13 @@
 		busy(this, true); var b = this;
 		api('GET', '/coach/admin/dealers').then(function (r) { showDealers(r.dealers); }).catch(function (e) { say('bad', e.message); }).then(function () { busy(b, false); });
 	};
-	$('loc').onchange = function () { ['name', 'tz', 'token'].forEach(function (id) { $(id).value = ''; }); };
+	$('loc').onchange = function () { ['name', 'tz', 'token'].forEach(function (id) { $(id).value = ''; }); $('staff').textContent = ''; staffReady = false; };
 	$('load').onclick = function () {
 		var path = base(); if (!path) return;
 		busy(this, true); var b = this;
 		api('GET', path).then(fill).catch(function (e) { say('bad', e.message); }).then(function () { busy(b, false); });
 	};
+	$('add-staff').onclick = function () { staffRow({}); staffReady = true; };
 	$('save').onclick = function () {
 		var path = base(); if (!path) return;
 		var numbers = {};
@@ -206,24 +234,21 @@
 			var parts = line.split('=');
 			if (parts.length === 2 && parts[0].trim()) numbers[parts[0].trim().replace(/[^+\d]/g, '')] = parts[1].trim().toLowerCase();
 		});
-		var staff = [], badLine = '';
-		$('staff').value.split('\n').forEach(function (line) {
-			var parts = line.split(',').map(function (part) { return part.trim(); }).filter(Boolean);
-			if (!parts.length || badLine) return;
-			var member = { name: parts[0], department: (parts[1] || '').toLowerCase(), phone: '', email: '' };
-			parts.slice(2).forEach(function (part) { if (part.indexOf('@') > 0) member.email = part; else member.phone = part.replace(/[^+\d]/g, ''); });
-			if (['sales', 'bdc', 'service'].indexOf(member.department) < 0) badLine = line.trim(); else staff.push(member);
+		var staff = [];
+		Array.prototype.forEach.call($('staff').children, function (row) {
+			var inputs = row.querySelectorAll('input'), name = inputs[0].value.trim();
+			if (name) staff.push({ name: name, department: row.querySelector('select').value, phone: inputs[1].value.replace(/[^+\d]/g, ''), email: inputs[2].value.trim() });
 		});
-		if (badLine) { say('bad', 'Staff list: "' + badLine + '" needs a name, then a comma, then sales, bdc or service.'); return; }
 		var scripts = {};
 		DEPTS.forEach(function (d) { scripts[d] = $('s-' + d).value.trim(); });
 		var body = {
 			name: $('name').value, timezone: $('tz').value,
 			managers: $('managers').value.split(',').map(function (m) { return m.trim(); }).filter(Boolean),
-			staff: staff, numbers: numbers, scripts: scripts,
+			numbers: numbers, scripts: scripts,
 			min_seconds: Number($('min').value) || 60,
 			send_emails: $('emails').checked, score_outbound: $('outbound').checked, enabled: $('enabled').checked
 		};
+		if (staffReady) body.staff = staff;
 		if ($('token').value.trim()) body.token = $('token').value.trim();
 		busy(this, true); var b = this;
 		api('PUT', path, body).then(function (status) { $('token').value = ''; fill(status); msg.firstChild.textContent = 'Saved. ' + msg.firstChild.textContent; })

@@ -11,6 +11,7 @@ import { scoreCall, transcriptText } from './score';
 import {
 	PRACTICE_LABELS,
 	isInboundDepartment,
+	isStaffDepartment,
 	type CallAnalysis,
 	type CallMessage,
 	type CallRecord,
@@ -110,7 +111,7 @@ const staffList = (value: StaffMember[] | undefined): StaffMember[] =>
 			phone: (member.phone ?? '').replace(/[^+\d]/g, '').slice(0, 20),
 			email: (member.email ?? '').trim().toLowerCase().slice(0, 200)
 		}))
-		.filter(member => member.name && isInboundDepartment(member.department))
+		.filter(member => member.name && isStaffDepartment(member.department))
 		.slice(0, MAX_STAFF);
 
 /** A call as the dashboard shows it: the staff member under the name on the dealership's staff list. */

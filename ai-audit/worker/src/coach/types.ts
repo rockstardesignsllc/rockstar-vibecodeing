@@ -14,6 +14,14 @@ export const DEPARTMENT_LABELS: Record<Department, string> = { sales: 'Sales', b
 export const isDepartment = (value: unknown): value is Department => DEPARTMENTS.some(d => d === value);
 export const isInboundDepartment = (value: unknown): value is InboundDepartment => INBOUND_DEPARTMENTS.some(d => d === value);
 
+/** The departments a staff member can work in. Wider than the call departments: it only labels the person. */
+export const STAFF_DEPARTMENTS = [...INBOUND_DEPARTMENTS, 'reconditioning', 'finance'] as const;
+export type StaffDepartment = (typeof STAFF_DEPARTMENTS)[number];
+
+export const STAFF_DEPARTMENT_LABELS: Record<StaffDepartment, string> = { sales: 'Sales', bdc: 'BDC', service: 'Service', reconditioning: 'Reconditioning', finance: 'Finance' };
+
+export const isStaffDepartment = (value: unknown): value is StaffDepartment => STAFF_DEPARTMENTS.some(d => d === value);
+
 export type Direction = 'inbound' | 'outbound';
 
 /** What the customer's call was about, whoever answered it. */
@@ -30,7 +38,7 @@ export const isMood = (value: unknown): value is Mood => MOODS.some(m => m === v
 /** A staff member on a dealership's list, so calls are attributed to one spelling of their name. */
 export interface StaffMember {
 	name: string;
-	department: InboundDepartment;
+	department: StaffDepartment;
 	/** Their mobile number, to recognize them when they call the practice line. May be empty. */
 	phone: string;
 	/** Where their scorecards go when HighLevel has no user for them. May be empty. */
