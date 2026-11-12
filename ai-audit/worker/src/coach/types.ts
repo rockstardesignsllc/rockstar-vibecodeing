@@ -115,6 +115,46 @@ export interface CallAnalysis {
 	tune_ups: TuneUp[];
 	red_flags: string[];
 	items: ItemResult[];
+	/** Only on a practice call with Rex. */
+	practice?: PracticeHeard;
+}
+
+/** The calls a staff member can role-play with Rex on the practice line. */
+export const PRACTICE_SCENARIOS = ['inbound_sales', 'inbound_bdc', 'outbound_prospecting', 'service_survey', 'inbound_service'] as const;
+export type PracticeScenario = (typeof PRACTICE_SCENARIOS)[number];
+export const PRACTICE_LABELS: Record<PracticeScenario, string> = {
+	inbound_sales: 'Inbound sales call',
+	inbound_bdc: 'Inbound BDC call',
+	outbound_prospecting: 'Outbound prospecting call',
+	service_survey: 'Service survey call',
+	inbound_service: 'Inbound service call'
+};
+/** The scorecard each practice scenario is scored on. */
+export const PRACTICE_DEPARTMENTS: Record<PracticeScenario, Department> = {
+	inbound_sales: 'sales',
+	inbound_bdc: 'bdc',
+	outbound_prospecting: 'outbound',
+	service_survey: 'outbound',
+	inbound_service: 'service'
+};
+export const isPracticeScenario = (value: unknown): value is PracticeScenario => PRACTICE_SCENARIOS.some(s => s === value);
+
+/** What Claude heard on a practice call with Rex, beyond the score. */
+export interface PracticeHeard {
+	scenario: PracticeScenario;
+	difficulty: string;
+	dealership_heard: string;
+	email_heard: string;
+}
+
+/** Set on a practice call with Rex. The staff member is the caller, and their managers may be at another dealership. */
+export interface PracticeInfo {
+	scenario: PracticeScenario;
+	difficulty: string;
+	/** The dealership the caller works at, as matched or as said on the call. */
+	dealership: string;
+	/** Who is copied on the scorecard email. */
+	managers: string[];
 }
 
 export type CallStatus = 'scored' | 'skipped' | 'error';
@@ -151,6 +191,8 @@ export interface CallRecord {
 	appointment_set: boolean;
 	analysis: CallAnalysis | null;
 	delivery: Delivery;
+	/** Only on a practice call with Rex. */
+	practice?: PracticeInfo;
 }
 
 export type Grade = 'green' | 'yellow' | 'red';

@@ -3,10 +3,22 @@ import { DurableObject } from 'cloudflare:workers';
 import type { Env } from '../types';
 import { DIRECTORY_NAME, type CoachDirectory } from './directory';
 import * as ghl from './ghl';
+import { practiceLines, scorePractice } from './practice';
 import { coachingEmail, digestEmail, noteBody, usDate } from './render';
 import { totals } from './rubric';
 import { scoreCall, transcriptText } from './score';
-import { isInboundDepartment, type CallMessage, type CallRecord, type DealerConfig, type DealerConfigInput, type Department, type InboundDepartment, type PublicDealerConfig } from './types';
+import {
+	PRACTICE_LABELS,
+	isInboundDepartment,
+	type CallAnalysis,
+	type CallMessage,
+	type CallRecord,
+	type DealerConfig,
+	type DealerConfigInput,
+	type Department,
+	type InboundDepartment,
+	type PublicDealerConfig
+} from './types';
 
 const CONFIG_KEY = 'config';
 const DIGEST_KEY = 'last_digest';
@@ -61,6 +73,25 @@ const departmentMap = (value: Record<string, InboundDepartment> | undefined): Re
 const outbound = (call: CallMessage): boolean => call.direction === 'outbound';
 
 const errorText = (error: unknown): string => (error instanceof Error ? error.message : String(error));
+
+/** Lower case letters and digits only, so "McCloskey Motors" and "mccloskey motors, inc." compare. */
+const plain = (text: string): string => text.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+/** True when a dealership name said on a call means this dealership: one name contains the other. */
+const sameDealership = (name: string, heard: string): boolean => {
+	const [x, y] = [plain(name), plain(heard)];
+	return x.length >= 4 && y.length >= 4 && (x.includes(y) || y.includes(x));
+};
+
+/** Who is copied on a call's email: the caller's own managers on a practice call, else this dealership's. */
+const managersFor = (config: DealerConfig, record: CallRecord): string[] => record.practice?.managers ?? config.managers;
+
+/** A staff member found at a dealership, with the managers who get their practice scorecards. */
+export interface PracticeCaller {
+	person: ghl.Person;
+	managers: string[];
+	dealership: string;
+}
 
 /** One dealership's Call Coach: its settings, every scored call, the poll that finds new calls, and the 7 AM digest. */
 export class DealerCoach extends DurableObject<Env> {
@@ -329,27 +360,91 @@ export class DealerCoach extends DurableObject<Env> {
 		};
 	}
 
+	/**
+	 * Finds the staff member who called the practice line among this dealership's users: by the phone they called from,
+	 * else by their name when they named this dealership on the call.
+	 */
+	async practiceCaller(query: { phone: string; name: string; dealership: string }): Promise<PracticeCaller | null> {
+		const config = await this.config();
+		if (!config) return null;
+		try {
+			const people = await ghl.users(config);
+			const phone = ghl.phoneKey(query.phone);
+			const byPhone = phone ? people.filter(p => ghl.phoneKey(p.phone) === phone) : [];
+			const person = byPhone.length === 1 ? byPhone[0] : sameDealership(config.name, query.dealership) ? ghl.userNamed(people, query.name) : undefined;
+			return person ? { person, managers: config.managers, dealership: config.name } : null;
+		} catch {
+			return null;
+		}
+	}
+
+	/** Looks for the practice caller at every dealership set up for Call Coach, this one first. */
+	private async findPracticeCaller(config: DealerConfig, query: { phone: string; name: string; dealership: string }): Promise<PracticeCaller | null> {
+		const own = await this.practiceCaller(query);
+		if (own) return own;
+		const others = (await this.directory().list()).filter(id => id !== config.location_id);
+		const found = await Promise.all(others.map(id => this.env.DEALER_COACH.get(this.env.DEALER_COACH.idFromName(id)).practiceCaller(query).catch(() => null)));
+		const matches = found.filter((caller): caller is PracticeCaller => caller !== null);
+		return matches.length === 1 ? (matches[0] ?? null) : null;
+	}
+
+	/**
+	 * Fills in a practice call's record. The staff member is the caller: a user of a dealership set up for Call Coach
+	 * when one matches, else whoever the call's contact and the call itself say they are.
+	 */
+	private async practiceRecord(config: DealerConfig, call: CallMessage, record: CallRecord, analysis: CallAnalysis): Promise<void> {
+		const heard = analysis.practice;
+		if (!heard) return;
+		const contact = call.contactId ? await ghl.contact(config, call.contactId).catch(() => undefined) : undefined;
+		const caller = await this.findPracticeCaller(config, { phone: call.from ?? '', name: analysis.staff_name_heard, dealership: heard.dealership_heard });
+		const [heardFirst, ...heardLast] = analysis.staff_name_heard.split(' ');
+		const first = caller?.person.first || contact?.first || heardFirst || '';
+		const last = caller?.person.last || contact?.last || heardLast.join(' ');
+		const email = (caller?.person.email || contact?.email || (heard.email_heard.includes('@') ? heard.email_heard : '')).toLowerCase();
+		const dealership = caller?.dealership || heard.dealership_heard;
+		record.user_id = caller?.person.id ?? '';
+		record.staff_name = [first, last].filter(Boolean).join(' ') || 'Practice caller';
+		record.staff_email = email;
+		record.customer_first = `Rex (${PRACTICE_LABELS[heard.scenario]} practice)`;
+		record.customer_last = '';
+		record.practice = { scenario: heard.scenario, difficulty: heard.difficulty, dealership, managers: caller ? caller.managers : config.managers };
+		if (contact && call.contactId) {
+			const fields = {
+				...(!contact.first && first ? { firstName: first } : {}),
+				...(!contact.last && last ? { lastName: last } : {}),
+				...(!contact.email && email ? { email } : {}),
+				...(dealership ? { companyName: dealership } : {})
+			};
+			if (Object.keys(fields).length > 0) {
+				await ghl.updateContact(config, call.contactId, fields).catch(error => console.error(`call coach ${config.location_id} practice contact ${call.contactId}: ${errorText(error)}`));
+			}
+		}
+	}
+
 	/** Scores one call and delivers the results. Returns nothing when the transcript is not ready yet. */
 	private async process(config: DealerConfig, call: CallMessage, deliver: boolean, forced: boolean): Promise<CallRecord | undefined> {
+		const practice = !outbound(call) && Boolean(call.to) && practiceLines(this.env.COACH_PRACTICE_LINES).includes(call.to ?? '');
 		const known: Department | undefined = outbound(call) ? 'outbound' : ((call.to ? config.numbers[call.to] : undefined) ?? (call.userId ? config.users[call.userId] : undefined));
 		const record = this.blank(config, call, known ?? config.default_department);
 		record.delivery = this.stored(call.id)?.delivery ?? {};
 		const attemptsKey = ATTEMPTS_PREFIX + call.id;
 		try {
-			const transcript = transcriptText(await ghl.transcription(config, call.id));
+			const transcript = transcriptText(await ghl.transcription(config, call.id), practice ? { ours: 'Rex', caller: 'Rep' } : undefined);
 			if (!transcript) {
 				if (!forced && Date.now() - Date.parse(call.dateAdded) < GIVE_UP_ON_TRANSCRIPT_MS) return undefined;
 				record.skip_reason = 'HighLevel has no transcript for this call';
 				this.store(record);
 				return record;
 			}
-			const analysis = await scoreCall(this.client(), this.env.MODEL, {
-				dealer: config,
-				department: record.department,
-				departmentKnown: Boolean(known),
-				transcript,
-				durationSeconds: record.duration
-			});
+			const analysis = practice
+				? await scorePractice(this.client(), this.env.MODEL, { transcript, durationSeconds: record.duration })
+				: await scoreCall(this.client(), this.env.MODEL, {
+						dealer: config,
+						department: record.department,
+						departmentKnown: Boolean(known),
+						transcript,
+						durationSeconds: record.duration
+					});
 			record.analysis = analysis;
 			record.department = analysis.department;
 			if (!analysis.scoreable) {
@@ -357,14 +452,18 @@ export class DealerCoach extends DurableObject<Env> {
 				this.store(record);
 				return record;
 			}
-			const customer = call.contactId ? await ghl.contact(config, call.contactId).catch(() => undefined) : undefined;
-			const staff = await this.staff(config, call, analysis.staff_name_heard, customer?.assigned_to ?? '');
-			const heard = analysis.customer_name_heard.split(' ');
-			record.user_id = staff?.id ?? '';
-			record.staff_name = [staff?.first, staff?.last].filter(Boolean).join(' ') || analysis.staff_name_heard || 'Unassigned';
-			record.staff_email = staff?.email ?? '';
-			record.customer_first = customer?.first || heard[0] || '';
-			record.customer_last = customer?.last || heard.slice(1).join(' ') || (customer?.first || heard[0] ? '' : (call.from ?? ''));
+			if (practice) {
+				await this.practiceRecord(config, call, record, analysis);
+			} else {
+				const customer = call.contactId ? await ghl.contact(config, call.contactId).catch(() => undefined) : undefined;
+				const staff = await this.staff(config, call, analysis.staff_name_heard, customer?.assigned_to ?? '');
+				const heard = analysis.customer_name_heard.split(' ');
+				record.user_id = staff?.id ?? '';
+				record.staff_name = [staff?.first, staff?.last].filter(Boolean).join(' ') || analysis.staff_name_heard || 'Unassigned';
+				record.staff_email = staff?.email ?? '';
+				record.customer_first = customer?.first || heard[0] || '';
+				record.customer_last = customer?.last || heard.slice(1).join(' ') || (customer?.first || heard[0] ? '' : (call.from ?? ''));
+			}
 			const total = totals(analysis);
 			record.earned = total.earned;
 			record.possible = total.possible;
@@ -414,7 +513,7 @@ export class DealerCoach extends DurableObject<Env> {
 			const record = this.stored(call.id);
 			if (!record || record.status !== 'scored') continue;
 			const noteDue = !record.delivery.note_added && Boolean(record.contact_id);
-			const emailDue = !record.delivery.email_sent && config.send_emails && Boolean(record.staff_email || config.managers[0]);
+			const emailDue = !record.delivery.email_sent && config.send_emails && Boolean(record.staff_email || managersFor(config, record)[0]);
 			if (!noteDue && !emailDue) continue;
 			const attemptsKey = ATTEMPTS_PREFIX + call.id;
 			const attempts = (await this.ctx.storage.get<number>(attemptsKey)) ?? 0;
@@ -438,13 +537,14 @@ export class DealerCoach extends DurableObject<Env> {
 			this.store(record);
 		}
 		if (!record.delivery.email_sent && config.send_emails) {
-			const to = record.staff_email || config.managers[0];
+			const managers = managersFor(config, record);
+			const to = record.staff_email || managers[0];
 			if (to) {
 				const [first, ...rest] = record.staff_email ? record.staff_name.split(' ') : [];
 				const contactId = await ghl.contactForEmail(config, to, first ?? '', rest.join(' '));
 				const now = this.localParts(config, new Date());
 				const email = coachingEmail(record, base, config, `${usDate(now.date)} ${now.time}`);
-				await ghl.sendEmail(config, contactId, email.subject, email.html, config.managers.filter(m => m !== to.toLowerCase()));
+				await ghl.sendEmail(config, contactId, email.subject, email.html, managers.filter(m => m !== to.toLowerCase()));
 				record.delivery.email_sent = true;
 				this.store(record);
 			}

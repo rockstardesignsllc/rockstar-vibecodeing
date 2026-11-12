@@ -36,6 +36,8 @@
 		"HIGHLEVEL_LOCATION_ID": "hrsRmtnUmvqCKm3d01tx",
 		"MODEL": "claude-sonnet-5-5",
 		"COACH_BASE_URL": "https://callcoach.rockstarai.app",
-		"COACH_APP_URL": "https://app.rockstarinfo.com"
+		"COACH_APP_URL": "https://app.rockstarinfo.com",
+		// Phone numbers answered by Rex, the practice call coach (HighLevel Voice AI). Calls to them are scored as practice calls
+		"COACH_PRACTICE_LINES": "+12695750069"
 	}
 }

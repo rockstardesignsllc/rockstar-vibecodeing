@@ -14,7 +14,7 @@ const headers = (dealer: Dealer, version: string): Record<string, string> => ({
 	accept: 'application/json'
 });
 
-async function request(dealer: Dealer, method: 'GET' | 'POST', path: string, version: string, body?: object): Promise<unknown> {
+async function request(dealer: Dealer, method: 'GET' | 'POST' | 'PUT', path: string, version: string, body?: object): Promise<unknown> {
 	const response = await fetch(API + path, {
 		method,
 		headers: { ...headers(dealer, version), ...(body ? { 'content-type': 'application/json' } : {}) },
@@ -173,6 +173,7 @@ export interface Person {
 	first: string;
 	last: string;
 	email: string;
+	phone: string;
 }
 
 const person = (id: string, raw: unknown): Person => {
@@ -182,7 +183,8 @@ const person = (id: string, raw: unknown): Person => {
 		id,
 		first: str(r.firstName) || full.split(' ')[0] || '',
 		last: str(r.lastName) || full.split(' ').slice(1).join(' '),
-		email: str(r.email)
+		email: str(r.email),
+		phone: str(r.phone)
 	};
 };
 
@@ -216,6 +218,16 @@ export function userNamed(people: Person[], heard: string): Person | undefined {
 	const matches = last && sameFirst.some(p => p.last.toLowerCase() === last) ? sameFirst.filter(p => p.last.toLowerCase() === last) : sameFirst;
 	return matches.length === 1 ? matches[0] : undefined;
 }
+
+/** The last ten digits of a phone number, which is how two US numbers are compared. Empty when there are fewer. */
+export const phoneKey = (phone: string): string => {
+	const digits = phone.replace(/\D/g, '');
+	return digits.length >= 10 ? digits.slice(-10) : '';
+};
+
+/** Fills in a contact's name, email or company. Only the fields given are sent. */
+export const updateContact = (dealer: Dealer, contactId: string, fields: { firstName?: string; lastName?: string; email?: string; companyName?: string }): Promise<unknown> =>
+	request(dealer, 'PUT', `/contacts/${contactId}`, VERSION, fields);
 
 export const addNote = (dealer: Dealer, contactId: string, body: string): Promise<unknown> =>
 	request(dealer, 'POST', `/contacts/${contactId}/notes`, VERSION, { body: body.slice(0, MAX_NOTE_CHARS) });

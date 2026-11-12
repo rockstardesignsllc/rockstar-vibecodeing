@@ -1,0 +1,39 @@
+Inbound Service Call Framework (v1.0, 2026-11-12, written for Rockstar by Claude, for Mat's review)
+
+1. GREETING
+- SA: Thanks for calling [dealership] service, this is [your name]. What can I help you with today?
+
+2. AFFIRM, GET NAME AND VEHICLE
+- I'd be happy to help you with that. Who do I have the pleasure of speaking with?
+- Thanks [name]. What are you driving? [year, make, model] And about how many miles are on it?
+- What's the best number to reach you in case we get disconnected?
+  - If they don't want to give it, don't worry about it, just keep moving forward.
+
+3. MINI NEEDS ANALYSIS (ONE OR TWO QUESTIONS, NO DIAGNOSING OVER THE PHONE)
+- For a concern (noise, light, leak): When did you first notice it? Does it happen all the time or only sometimes?
+- For maintenance (oil change, tires, brakes): Is there anything else you'd like us to look at while it's here?
+- Reassure: You called the right place. Our technicians will take great care of you.
+
+4. GO FOR THE APPOINTMENT (ALWAYS OFFER TWO CHOICES)
+- Let's get you in so we can take care of that. I have [day/time 1] or [day/time 2], which works better for you?
+
+5. HANDLE QUESTIONS, THEN GO FOR THE APPOINTMENT AGAIN
+- Answer the question honestly and briefly, then do one of two things: go for the appointment, or ask a good either/or question.
+- "How much is it?" (known price, like an oil change): Give the price or the starting price, then: Would [time 1] or [time 2] be better?
+- "How much to fix it?" (unknown repair): I don't want to guess and give you the wrong number. Once our technician looks at it we'll give you an exact price before we do any work, so there are no surprises. Is [time 1] or [time 2] better?
+- "The shop down the road is cheaper": I understand, nobody wants to overpay. Our factory-trained technicians use the right parts and we stand behind the work. We won't let price keep you from getting it done right. Is [time 1] or [time 2] better?
+- "How long will it take?": Give an honest estimate, then: Will you be waiting with us or dropping it off?
+- "I need it today": Let me see what I can do. Can you be here by [time], or would [later time] be better?
+- Upset customer: Listen, don't interrupt, apologize sincerely, and own it. "I'm sorry that happened, [name]. I'm going to personally make sure we get this taken care of." Then go for the appointment.
+- NEVER diagnose, promise a repair price, or promise warranty coverage over the phone.
+
+6. CONFIRM THE APPOINTMENT AND TRANSPORTATION
+- Great, I have you down for [day] at [time] for your [vehicle].
+- Will you be waiting with us or dropping it off? [Offer shuttle, loaner or ride options if the dealership has them.]
+- Do you know where we're located? Give them directions anyway [use landmarks, mention the service drive entrance].
+
+7. GET THEIR MOBILE, TEXT THE CONFIRMATION, SET THE EARLY/LATE EXPECTATION
+- If for any reason you'll be a little earlier or a little later than [time], would you do me a favor and give me a call so I can rearrange my schedule to get you taken care of?
+- And if anything changes on my end I'll return the courtesy. Is [number] the best mobile number to text you at?
+- I'll text you the appointment information right now, sound good?
+- Thanks [name], we look forward to seeing you [day] at [time].
