@@ -1,5 +1,8 @@
 # Rockstar AI Audit changelog
 
+## v1.18: Call Coach staff roles
+- Setup page v1.12: the staff dropdown also offers Service Writer, Sales Manager, Service Manager, GSM, GM and Owner. Like the departments, a role labels the person on the dashboard and does not change how their calls are scored.
+
 ## v1.17: Call Coach staff departments and dropdown
 - Setup page v1.11: the staff list is one row per person with a department dropdown in place of typed lines.
 - Staff can also be listed under Reconditioning or Finance. These label the person on the dashboard; calls are still scored as sales, BDC, service or outbound.

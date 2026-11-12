@@ -1,4 +1,4 @@
-<!-- Rockstar Call Coach setup v1.11 | Updated 2026-11-12 21:05 UTC -->
+<!-- Rockstar Call Coach setup v1.12 | Updated 2026-11-12 21:15 UTC -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -111,7 +111,7 @@
 (function () {
 	var $ = function (id) { return document.getElementById(id); };
 	var DEPTS = ['sales', 'bdc', 'service', 'outbound'];
-	var STAFF_DEPTS = [['sales', 'Sales'], ['bdc', 'BDC'], ['service', 'Service'], ['reconditioning', 'Reconditioning'], ['finance', 'Finance']];
+	var STAFF_DEPTS = [['sales', 'Sales'], ['bdc', 'BDC'], ['service', 'Service'], ['service_writer', 'Service Writer'], ['reconditioning', 'Reconditioning'], ['finance', 'Finance'], ['sales_manager', 'Sales Manager'], ['service_manager', 'Service Manager'], ['gsm', 'GSM'], ['gm', 'GM'], ['owner', 'Owner']];
 	/* The staff list is sent only once it was loaded or edited, so saving a dealership that was never loaded keeps its list. */
 	var staffReady = false;
 	function field(placeholder, value) {
