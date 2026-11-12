@@ -1,5 +1,10 @@
 # Rockstar AI Audit changelog
 
+## v1.15.1: Rex prompt v1.3
+- Rex sounds like a casual customer in the role-play and no longer repeats back what the rep said.
+- Coaching judges results, not wording: when the rep met a step's goal in their own words, Rex offers the framework line as another option instead of a correction.
+- Every call ends with a spoken goodbye. Rex no longer asks "anything else?" or hangs up silently.
+
 ## v1.15: Call Coach scores practice calls with Rex
 - Calls to the Rex practice line (`COACH_PRACTICE_LINES`, now +1 269-575-0069) are scored as practice calls: the caller is the staff member, Rex is the customer. Five scenarios, each with its own framework: inbound sales, inbound BDC, outbound prospecting, service survey, inbound service.
 - The caller is matched to a user of any dealership set up for Call Coach (by phone, else by name and dealership said on the call). Their scorecard email copies that dealership's managers. Unmatched callers get it at the email on their contact or the one they gave Rex, with the Rockstar Designs managers copied.
