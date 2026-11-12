@@ -12,7 +12,7 @@ swaps the newer block into the live page; the pasted copy stays for search engin
 Current blocks: `aifordealers/automotive-call-coaching` and `aiforpowersports/powersports-call-coaching` (the whole page between
 nav and footer), `aifordealers/ai-tools-call-coach`, `aiforpowersports/ai-tools-call-coach`, `rockstarinfo/solutions-call-coach`.
 
-New menu and footer links reach pages pasted before the link existed through `LINKS` in `rockstar-shared.js`.
+New menu and footer links reach pages pasted before the link existed through `LINKS` in `rockstar-shared.js`, and new blocks reach them through `INSERTS` (placed after a named element), so a re-paste is only needed for search engines to see the new copy.
 
 ## rockstarinfo.com (hub)
 
