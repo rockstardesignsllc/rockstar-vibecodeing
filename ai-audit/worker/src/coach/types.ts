@@ -14,11 +14,23 @@ export const DEPARTMENT_LABELS: Record<Department, string> = { sales: 'Sales', b
 export const isDepartment = (value: unknown): value is Department => DEPARTMENTS.some(d => d === value);
 export const isInboundDepartment = (value: unknown): value is InboundDepartment => INBOUND_DEPARTMENTS.some(d => d === value);
 
-/** The departments a staff member can work in. Wider than the call departments: it only labels the person. */
-export const STAFF_DEPARTMENTS = [...INBOUND_DEPARTMENTS, 'reconditioning', 'finance'] as const;
+/** The departments and roles a staff member can be listed under. Wider than the call departments: it only labels the person. */
+export const STAFF_DEPARTMENTS = [...INBOUND_DEPARTMENTS, 'service_writer', 'reconditioning', 'finance', 'sales_manager', 'service_manager', 'gsm', 'gm', 'owner'] as const;
 export type StaffDepartment = (typeof STAFF_DEPARTMENTS)[number];
 
-export const STAFF_DEPARTMENT_LABELS: Record<StaffDepartment, string> = { sales: 'Sales', bdc: 'BDC', service: 'Service', reconditioning: 'Reconditioning', finance: 'Finance' };
+export const STAFF_DEPARTMENT_LABELS: Record<StaffDepartment, string> = {
+	sales: 'Sales',
+	bdc: 'BDC',
+	service: 'Service',
+	service_writer: 'Service Writer',
+	reconditioning: 'Reconditioning',
+	finance: 'Finance',
+	sales_manager: 'Sales Manager',
+	service_manager: 'Service Manager',
+	gsm: 'GSM',
+	gm: 'GM',
+	owner: 'Owner'
+};
 
 export const isStaffDepartment = (value: unknown): value is StaffDepartment => STAFF_DEPARTMENTS.some(d => d === value);
 
