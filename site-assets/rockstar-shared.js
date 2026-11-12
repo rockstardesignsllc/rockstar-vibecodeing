@@ -9,7 +9,8 @@
 (function () {
 	'use strict';
 
-	var VERSION = '1.1.0';
+	var VERSION = '1.2.0';
+	var BASE = 'https://assets.rockstarinfo.com';
 
 	/* Every shared button. label: the button text. href: where it goes. newTab: open in a new window. */
 	var CTAS = {
@@ -25,6 +26,93 @@
 	  HTML here, e.g. PARTS.footer.aifordealers = '<div class="rs-wrap">...</div>'; ("all" covers every site).
 	*/
 	var PARTS = { nav: {}, footer: {} };
+
+	/*
+	  Extra menu and footer links, added to pages that were pasted before the link existed.
+	  after: the existing link (end of its href) the new one goes right after. A page that already has the link is left alone.
+	*/
+	var LINKS = {
+		aifordealers: [
+			{ href: 'https://aifordealers.com/automotive-call-coaching', label: 'RockstarAI Call Coach', after: '/rockstarai-reception' }
+		],
+		aiforpowersports: [
+			{ href: 'https://aiforpowersports.com/powersports-call-coaching', label: 'RockstarAI Call Coach', after: '/rockstarai-reception' }
+		]
+	};
+
+	function hasLink(box, href) {
+		var as = box.querySelectorAll('a[href]');
+		for (var i = 0; i < as.length; i++) if (as[i].getAttribute('href').replace(/\/$/, '') === href) return true;
+		return false;
+	}
+
+	function findAfter(box, end) {
+		var as = box.querySelectorAll('a[href]');
+		for (var i = 0; i < as.length; i++) if (as[i].getAttribute('href').replace(/\/$/, '').slice(-end.length) === end) return as[i];
+		return null;
+	}
+
+	function applyLinks(root) {
+		var boxes = (root || document).querySelectorAll('[data-rs-part][data-rs-site]');
+		for (var i = 0; i < boxes.length; i++) {
+			var box = boxes[i];
+			var list = LINKS[box.getAttribute('data-rs-site')];
+			if (!list) continue;
+			for (var j = 0; j < list.length; j++) {
+				var l = list[j];
+				if (hasLink(box, l.href)) continue;
+				var ref = findAfter(box, l.after);
+				if (!ref) continue;
+				var a = document.createElement('a');
+				a.href = l.href;
+				a.textContent = l.label;
+				if (ref.parentNode.tagName === 'LI') {
+					var li = document.createElement('li');
+					li.appendChild(a);
+					ref.parentNode.parentNode.insertBefore(li, ref.parentNode.nextSibling);
+				} else {
+					ref.parentNode.insertBefore(a, ref.nextSibling);
+				}
+			}
+		}
+	}
+
+	/*
+	  Self-updating blocks. A page section marked data-rs-block="<site>/<name>" data-rs-v="<version>" is swapped for
+	  https://assets.rockstarinfo.com/blocks/<site>/<name>.html when that file carries a newer data-rs-v.
+	  The pasted copy stays in the page for search engines and as the backup if this site is down.
+	*/
+	function newer(a, b) {
+		var x = String(a).split('.'), y = String(b || '0').split('.');
+		for (var i = 0; i < Math.max(x.length, y.length); i++) {
+			var d = (parseInt(x[i], 10) || 0) - (parseInt(y[i], 10) || 0);
+			if (d) return d > 0;
+		}
+		return false;
+	}
+
+	function applyBlocks(root) {
+		if (!window.fetch) return;
+		var els = (root || document).querySelectorAll('[data-rs-block]:not([data-rs-checked])');
+		Array.prototype.forEach.call(els, function (el) {
+			el.setAttribute('data-rs-checked', '1');
+			var name = el.getAttribute('data-rs-block');
+			if (!/^[a-z0-9-]+\/[a-z0-9-]+$/.test(name)) return;
+			fetch(BASE + '/blocks/' + name + '.html', { cache: 'no-cache' })
+				.then(function (r) { return r.ok ? r.text() : null; })
+				.then(function (html) {
+					if (!html) return;
+					var tpl = document.createElement('template');
+					tpl.innerHTML = html;
+					var fresh = tpl.content.querySelector('[data-rs-block="' + name + '"]');
+					if (!fresh || !newer(fresh.getAttribute('data-rs-v'), el.getAttribute('data-rs-v'))) return;
+					fresh.setAttribute('data-rs-checked', '1');
+					el.parentNode.replaceChild(fresh, el);
+					applyCtas(fresh);
+				})
+				.catch(function () {});
+		});
+	}
 
 	function applyParts(root) {
 		var els = (root || document).querySelectorAll('[data-rs-part]');
@@ -56,11 +144,13 @@
 
 	function run() {
 		applyParts(document);
+		applyLinks(document);
 		applyCtas(document);
+		applyBlocks(document);
 		document.documentElement.setAttribute('data-rs-shared', VERSION);
 	}
 
-	window.RockstarShared = { version: VERSION, ctas: CTAS, parts: PARTS, apply: function (root) { applyParts(root); applyCtas(root); } };
+	window.RockstarShared = { version: VERSION, ctas: CTAS, parts: PARTS, links: LINKS, apply: function (root) { applyParts(root); applyLinks(root); applyCtas(root); applyBlocks(root); } };
 	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
 	else run();
 	/* HighLevel can render page sections after load; catch anything added late */
