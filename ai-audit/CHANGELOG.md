@@ -4,7 +4,7 @@
 - Calls to the Rex practice line (`COACH_PRACTICE_LINES`, now +1 269-575-0069) are scored as practice calls: the caller is the staff member, Rex is the customer. Five scenarios, each with its own framework: inbound sales, inbound BDC, outbound prospecting, service survey, inbound service.
 - The caller is matched to a user of any dealership set up for Call Coach (by phone, else by name and dealership said on the call). Their scorecard email copies that dealership's managers. Unmatched callers get it at the email on their contact or the one they gave Rex, with the Rockstar Designs managers copied.
 - The practice call's note goes on the caller's contact in Rockstar Designs, and the contact's blank name, email and company are filled in so Rex knows them next time.
-- Rex's prompt (v1.1) and the new inbound service framework are in `docs/rex-practice-line/`.
+- Rex's prompt (v1.2) and the new inbound service framework are in `docs/rex-practice-line/`.
 
 ## v1.14.2: Rockstar branding on the Call Coach setup page
 - Setup page v1.9: Rockstar logo header, title "Rockstar Call Coach Setup", black, red, white and gray styling, and the logo as the tab icon.

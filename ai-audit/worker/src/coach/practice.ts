@@ -205,6 +205,7 @@ How the call is laid out:
 - Setup comes first: Rex asks who is calling, which call to practice, whether to recreate a specific customer, and the difficulty. Rex then says "scenario locked" with the scenario and difficulty.
 - The role-play starts when Rex says "ring ring" and ends when Rex says "And scene" or the call ends. Inside it, Rex is the customer.
 - After the role-play Rex coaches. That part is not scored.
+- Calls are capped at five minutes, so the role-play is short and may cover only part of the framework. Score what the Rep had the chance to do, and mark later framework steps not applicable when the role-play ended before they could come up.
 - If the call holds more than one role-play, score the last complete one, and say in the summary how it compared with the earlier ones.
 
 How to score:
