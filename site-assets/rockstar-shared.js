@@ -9,7 +9,7 @@
 (function () {
 	'use strict';
 
-	var VERSION = '1.2.0';
+	var VERSION = '1.3.0';
 	var BASE = 'https://assets.rockstarinfo.com';
 
 	/* Every shared button. label: the button text. href: where it goes. newTab: open in a new window. */
@@ -75,6 +75,59 @@
 				}
 			}
 		}
+	}
+
+	/*
+	  New sections for pages pasted before the section existed. When the page's site matches and the block is not
+	  already in the page, the block file is fetched from blocks/ and placed right after the element found by
+	  `after`. `up` moves from that element to its enclosing tag first, `next` then steps past that many siblings,
+	  and `unflip` removes the flipped layout from one element so the left/right pattern keeps alternating.
+	*/
+	var INSERTS = [
+		{ site: 'rockstarinfo', block: 'rockstarinfo/solutions-call-coach', after: '#calculator', unflip: '#churches' },
+		{ site: 'aifordealers', block: 'aifordealers/ai-tools-call-coach', after: '#reception', up: 'section', next: 1 },
+		{ site: 'aiforpowersports', block: 'aiforpowersports/ai-tools-call-coach', after: '#reception', up: 'section', next: 1 }
+	];
+
+	function pageSite() {
+		var el = document.querySelector('[data-rs-part][data-rs-site]');
+		return el ? el.getAttribute('data-rs-site') : null;
+	}
+
+	function insertTarget(ins) {
+		var ref = document.querySelector(ins.after);
+		if (ref && ins.up) ref = ref.closest(ins.up);
+		for (var i = 0; ref && i < (ins.next || 0); i++) ref = ref.nextElementSibling;
+		return ref;
+	}
+
+	function applyInserts() {
+		if (!window.fetch) return;
+		var site = pageSite();
+		INSERTS.forEach(function (ins) {
+			if (ins.site !== site || ins.started) return;
+			if (document.querySelector('[data-rs-block="' + ins.block + '"]')) return;
+			var ref = insertTarget(ins);
+			if (!ref || !ref.parentNode) return;
+			ins.started = true;
+			fetch(BASE + '/blocks/' + ins.block + '.html', { cache: 'no-cache' })
+				.then(function (r) { return r.ok ? r.text() : null; })
+				.then(function (html) {
+					if (!html || document.querySelector('[data-rs-block="' + ins.block + '"]')) return;
+					var tpl = document.createElement('template');
+					tpl.innerHTML = html;
+					var fresh = tpl.content.querySelector('[data-rs-block="' + ins.block + '"]');
+					if (!fresh) return;
+					fresh.setAttribute('data-rs-checked', '1');
+					ref.parentNode.insertBefore(fresh, ref.nextSibling);
+					if (ins.unflip) {
+						var u = document.querySelector(ins.unflip);
+						if (u) u.classList.remove('rs-feature--flip');
+					}
+					applyCtas(fresh);
+				})
+				.catch(function () { ins.started = false; });
+		});
 	}
 
 	/*
@@ -147,6 +200,7 @@
 		applyLinks(document);
 		applyCtas(document);
 		applyBlocks(document);
+		applyInserts();
 		document.documentElement.setAttribute('data-rs-shared', VERSION);
 	}
 
