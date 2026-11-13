@@ -9,7 +9,7 @@
 (function () {
 	'use strict';
 
-	var VERSION = '1.3.0';
+	var VERSION = '1.4.0';
 	var BASE = 'https://assets.rockstarinfo.com';
 
 	/* Every shared button. label: the button text. href: where it goes. newTab: open in a new window. */
@@ -92,6 +92,63 @@
 	function pageSite() {
 		var el = document.querySelector('[data-rs-part][data-rs-site]');
 		return el ? el.getAttribute('data-rs-site') : null;
+	}
+
+	/*
+	  The scrolling banner above the menu on a site's home page. text: what it says. href: where a click goes.
+	  Remove a site's line to take its banner down.
+	*/
+	var BANNERS = {
+		aifordealers: { text: "Tired of blowing appointments? Find out what you're missing on every call, click here", href: 'https://aifordealers.com/automotive-call-coaching' },
+		aiforpowersports: { text: "Tired of blowing appointments? Find out what you're missing on every call, click here", href: 'https://aiforpowersports.com/powersports-call-coaching' }
+	};
+	var BANNER_COPIES = 6;
+	var BANNER_CSS =
+		'.rs-ticker{display:block;overflow:hidden;background:#d70015;color:#fff;text-decoration:none;font:700 15px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding:10px 0;position:relative;z-index:51}' +
+		'.rs-ticker:hover,.rs-ticker:focus{color:#fff;text-decoration:none}' +
+		'.rs-ticker__track{display:flex;width:max-content;animation:rs-ticker 60s linear infinite}' +
+		'.rs-ticker:hover .rs-ticker__track,.rs-ticker:focus .rs-ticker__track{animation-play-state:paused}' +
+		'.rs-ticker__item{flex:none;padding:0 28px;white-space:nowrap}' +
+		'.rs-ticker__item u{text-underline-offset:3px}' +
+		'@keyframes rs-ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}' +
+		'@media (prefers-reduced-motion:reduce){.rs-ticker__track{animation:none;width:auto;justify-content:center}.rs-ticker__item{white-space:normal;text-align:center}.rs-ticker__item+.rs-ticker__item{display:none}}';
+
+	function isHome() {
+		var path = location.pathname.replace(/\/+$/, '');
+		return path === '' || path === '/home';
+	}
+
+	function applyBanner() {
+		var banner = BANNERS[pageSite()];
+		var nav = document.querySelector('[data-rs-part="nav"]');
+		if (!banner || !nav || !nav.parentNode || !isHome() || document.querySelector('[data-rs-banner]')) return;
+		var link = document.createElement('a');
+		link.className = 'rs-ticker';
+		link.href = banner.href;
+		link.setAttribute('data-rs-banner', '1');
+		link.setAttribute('aria-label', banner.text);
+		var style = document.createElement('style');
+		style.textContent = BANNER_CSS;
+		var track = document.createElement('span');
+		track.className = 'rs-ticker__track';
+		track.setAttribute('aria-hidden', 'true');
+		var cut = banner.text.lastIndexOf(', ');
+		/* two identical halves, so sliding one half's width loops without a jump */
+		for (var i = 0; i < BANNER_COPIES * 2; i++) {
+			var item = document.createElement('span');
+			item.className = 'rs-ticker__item';
+			if (cut < 0) item.textContent = banner.text;
+			else {
+				item.appendChild(document.createTextNode(banner.text.slice(0, cut + 2)));
+				var cta = document.createElement('u');
+				cta.textContent = banner.text.slice(cut + 2);
+				item.appendChild(cta);
+			}
+			track.appendChild(item);
+		}
+		link.appendChild(style);
+		link.appendChild(track);
+		nav.parentNode.insertBefore(link, nav);
 	}
 
 	function insertTarget(ins) {
@@ -201,10 +258,11 @@
 		applyCtas(document);
 		applyBlocks(document);
 		applyInserts();
+		applyBanner();
 		document.documentElement.setAttribute('data-rs-shared', VERSION);
 	}
 
-	window.RockstarShared = { version: VERSION, ctas: CTAS, parts: PARTS, links: LINKS, apply: function (root) { applyParts(root); applyLinks(root); applyCtas(root); applyBlocks(root); } };
+	window.RockstarShared = { version: VERSION, ctas: CTAS, parts: PARTS, links: LINKS, banners: BANNERS, apply: function (root) { applyParts(root); applyLinks(root); applyCtas(root); applyBlocks(root); } };
 	if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
 	else run();
 	/* HighLevel can render page sections after load; catch anything added late */
