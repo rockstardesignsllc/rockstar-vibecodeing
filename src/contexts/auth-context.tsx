@@ -220,10 +220,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         setupTokenRefresh();
         
-        // Navigate to intended URL or default to home
+        // Navigate to intended URL or default to create
         const intendedUrl = getIntendedUrl();
         clearIntendedUrl();
-        navigate(intendedUrl || '/');
+        navigate(intendedUrl || '/create');
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -258,10 +258,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         setupTokenRefresh();
         
-        // Navigate to intended URL or default to home
+        // Navigate to intended URL or default to create
         const intendedUrl = getIntendedUrl();
         clearIntendedUrl();
-        navigate(intendedUrl || '/');
+        navigate(intendedUrl || '/create');
       }
     } catch (error) {
       console.error('Registration error:', error);
