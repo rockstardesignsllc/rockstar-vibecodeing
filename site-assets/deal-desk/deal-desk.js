@@ -1,4 +1,4 @@
-/* Rockstar Deal Desk v3.19 | dealer and quote pages | hosted engine
+/* Rockstar Deal Desk v3.20 | dealer and quote pages | hosted engine
    Served from https://assets.rockstarinfo.com/deal-desk/ . Built by payment-calculator/build_hosted.py. Do not edit here. */
 (function () {
   var root = document.getElementById('rsec');
@@ -42,12 +42,15 @@
     rateDisplay: '',   /* starting rate option: 'shown' (Fixed rate) or 'hidden' (Hidden rate); blank keeps the usual default */
     quoteStoreUrl: '',   /* Rockstar quote store endpoint (https://.../quotes); blank turns quote saving off */
     quotePagePath: '/quote',
-    savedQuotesPath: '/saved-quotes'   /* the dealer's saved quotes page; the dealer page links to it while quote saving is on */
+    savedQuotesPath: '/saved-quotes',   /* the dealer's saved quotes page; the dealer page links to it while quote saving is on */
+    introKicker: '',   /* small line above the dealer page headline; blank uses the default, 'none' hides it */
+    introTitle: '',   /* dealer page headline; blank uses the default */
+    introText: ''   /* line under the dealer page headline; blank uses the default */
   };
   Object.assign(CONFIG, (window.__RSDD && window.__RSDD.cfg) || {});
   /* =============================================================== */
 
-  const VERSION = '3.19';
+  const VERSION = '3.20';
   const root = document.getElementById('rsec');
   if (!root) return;
   root.dataset.version = VERSION;
@@ -58,6 +61,9 @@
   const RATE_MODES = SUBPRIME ? ['f', 'h'] : ['t', 'f', 'h'];
   const POWERSPORTS = String(CONFIG.vertical || '').trim().toLowerCase() === 'powersports';
   const NO_LEASE = SUBPRIME || POWERSPORTS;
+  const INTRO_KICKER = String(CONFIG.introKicker || '').trim();
+  const INTRO_TITLE = String(CONFIG.introTitle || '').trim();
+  const INTRO_TEXT = String(CONFIG.introText || '').trim();
   const TERMS = POWERSPORTS ? [24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144] : [24, 36, 48, 60, 72, 84];
   /* placeholders and starting price for the kind of vehicle this desk sells */
   const EX = POWERSPORTS
@@ -557,9 +563,9 @@
         (GUIDE_URL ? '<a class="ec-toplink" href="' + esc(GUIDE_URL) + '" target="_blank" rel="noopener">How-to Guide</a>' : '') +
         (isHttps(STORE_URL) ? '<a class="ec-toplink" href="' + esc(savedPath()) + '">Saved quotes</a>' : '') + '</div>' +
       '<div class="ec-shell">' +
-        '<div class="ec-intro"><div class="ec-kicker">Build the deal. Send the link. Get the yes.</div>' +
-          '<h1>Create a quote your customer can work.</h1>' +
-          '<p>Fill in the deal, then text or email the link to your customer, or open it at the desk and work the numbers together.</p></div>' +
+        '<div class="ec-intro">' + (INTRO_KICKER.toLowerCase() === 'none' ? '' : '<div class="ec-kicker">' + esc(INTRO_KICKER || 'Build the deal. Send the link. Get the yes.') + '</div>') +
+          '<h1>' + esc(INTRO_TITLE || 'Create a quote your customer can work.') + '</h1>' +
+          '<p>' + esc(INTRO_TEXT || 'Fill in the deal, then text or email the link to your customer, or open it at the desk and work the numbers together.') + '</p></div>' +
         '<div class="ec-builder">' +
           '<div class="ec-card ec-form">' +
             (allDealerLocked ? '' :

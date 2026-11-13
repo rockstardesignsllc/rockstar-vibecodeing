@@ -6,5 +6,8 @@
   "accentColor": "#d8272c",
   "headerColor": "#0a0b09",
   "webhookUrl": "https://services.leadconnectorhq.com/hooks/gocUhUIqlLQsGwJwv5Vq/webhook-trigger/InwUtOEeuj3Y3G7d1Gns",
-  "quoteStoreUrl": "https://rockstar-deal-desk-quotes.rockstar-designs-llc.workers.dev/quotes"
+  "quoteStoreUrl": "https://rockstar-deal-desk-quotes.rockstar-designs-llc.workers.dev/quotes",
+  "introKicker": "none",
+  "introTitle": "Desk deals your way and get the yes!",
+  "introText": "Fill in the information, then print the deal. For remote buyers send it over by text or email so they can lock it in."
 }
