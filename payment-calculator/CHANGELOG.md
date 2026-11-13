@@ -4,6 +4,10 @@ Formerly the RockstarAI Engagement Calculator. `build.py` reads the version from
 To ship a change: add a heading for the new version, describe what changed, then run `python3 build.py`
 (`--master-only` leaves the client builds alone).
 
+## v3.20
+- New optional settings for the dealer page intro: `introKicker` (the small line above the headline; `'none'` hides it), `introTitle` (the headline) and `introText` (the line under it). Blank keeps the usual wording, so every other calculator looks the same.
+- Redemption Auto Sales: the "Build the deal. Send the link. Get the yes." line is gone, the headline reads "Desk deals your way and get the yes!" and the line under it reads "Fill in the information, then print the deal. For remote buyers send it over by text or email so they can lock it in."
+
 ## v3.19
 - Factory offers: a promotional rate shorter than 24 months (deferred interest such as "no interest for 6 months", or a store credit card's intro APR) is listed as an offer without **Use this rate**, because it cannot be applied to a 24 to 144 month loan. `offers/collect.mjs` does this on every run; the 2026-11-09 Indian and Yamaha offers were corrected by hand.
 
