@@ -1,17 +1,17 @@
 {
   "brand": "indian",
   "name": "Indian Motorcycle",
-  "updated": "2026-11-09",
-  "sourceHash": "c7b9d8b1fa72288666c6892a691a62e9f4548cd30c5584e0a12226f6125546eb",
+  "updated": "2026-11-16",
+  "sourceHash": "b37e9670223dfa72992b44552f755fe51778a162b6f7e77c79e5db92c9248600",
   "sources": [
     "https://www.indianmotorcycle.com/en-us/special-offers/",
-    "https://www.indianmotorcycle.com/en-us/special-offers/discounts-coupons/",
-    "https://www.indianmotorcycle.com/en-us/military-quote/",
-    "https://www.indianmotorcycle.com/en-us/referral-program/"
+    "https://www.indianmotorcycle.com/en-us/pre-qualification/",
+    "https://www.indianmotorcycle.com/en-us/motorcycle-financing/",
+    "https://www.indianmotorcycle.com/en-us/military-quote/"
   ],
   "offers": [
     {
-      "id": "e8519d37bfa6",
+      "id": "58951fa09325",
       "title": "1.99% APR for 36 Months and $0 Down on 2024 FTR and MY25 Scout (1250 and Scout Sixty)",
       "type": "apr",
       "amount": null,
@@ -23,15 +23,15 @@
         2025
       ],
       "models": [
-        "FTR (2024)",
-        "Scout (2025, 1250)",
-        "Scout Sixty (2025)"
+        "FTR",
+        "Scout 1250",
+        "Scout Sixty"
       ],
       "start": "2026-11-01",
       "end": "2026-11-30",
       "eligibility": "Qualified customers with approved credit",
       "combinable": "May be combined with customer cash",
-      "finePrint": "Promotional financing on new MY24 FTR and MY25 Scout models (1250 and Scout Sixty), excluding Scout Bobber Sixty. Minimum financing amount varies by dealer.",
+      "finePrint": "1.99% APR for 36 months with $0 down on new MY24 FTR and MY25 Scout models (1250 and Scout Sixty), excluding Scout Bobber Sixty. Minimum financing amount varies by dealer.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
@@ -62,7 +62,7 @@
       "end": "2026-11-30",
       "eligibility": "Qualified customers with approved credit",
       "combinable": "May not be combined with trade-in credit or customer cash",
-      "finePrint": "Promotional financing on select new 2025 models, excluding Elite, 125th Anniversary, Signature Series and Special Edition models. Minimum financing amount varies by dealer; $28.64 per $1,000 financed over 36 months.",
+      "finePrint": "1.99% APR for 36 months with $0 down on select new MY2025 models; excludes Elite, 125th Anniversary, Signature Series and Special Edition models. Minimum financing amount varies by dealer.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
@@ -90,30 +90,30 @@
       "end": "2026-11-30",
       "eligibility": "Qualified customers with approved credit",
       "combinable": "May not be combined with trade-in credit or customer cash",
-      "finePrint": "Promotional financing on new MY26 qualifying models, excluding Elite, 125th Anniversary, Signature Series and Special Edition models. Minimum financing amount varies; $29.97 per $1,000 financed over 36 months.",
+      "finePrint": "4.99% APR for 36 months with $0 down on new MY26 qualifying models; excludes Elite, 125th Anniversary, Signature Series and Special Edition models. Minimum financing amount varies by dealer.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
-      "id": "8c7ae4ae08d8",
-      "title": "No Interest for 6 Months, No Payment for 7 Months on 2024 FTR and 2025 Models",
-      "type": "other",
+      "id": "87b920f77dd8",
+      "title": "No Interest for 6 Months, No Payment for 7 Months on 2024 FTR and 2025 models",
+      "type": "apr",
       "amount": null,
-      "apr": null,
-      "termMonths": 6,
+      "apr": 8.99,
+      "termMonths": 60,
       "category": "Motorcycle",
       "modelYears": [
         2024,
         2025
       ],
       "models": [
-        "FTR (2024)",
+        "2024 FTR",
         "2025 Indian Motorcycle models"
       ],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Well-qualified applicants with approved credit, through authorized U.S. Indian Motorcycle dealers",
-      "combinable": "May not be combined with certain other offers; trade-in credit and customer cash offers on 2025 touring models state they cannot be combined with promotional financing",
-      "finePrint": "No interest accrues for 6 months and no payments for 7 months, then 8.99% APR for 60 months with repayment beginning June 1, 2027. Minimum amount financed $5,000; some buyers may need a down payment or receive a higher rate.",
+      "eligibility": "Well-qualified applicants with approved credit through authorized U.S. Indian Motorcycle dealers",
+      "combinable": "May not be combined with certain other offers; per the offer cards it is an alternative (OR) to customer cash and trade-in credit",
+      "finePrint": "No interest accrues for 6 months and no payments are due for 7 months, then 8.99% APR for 60 months with repayment beginning June 1, 2027; minimum amount financed $5,000. Subject to credit approval; some buyers may need a down payment or receive a higher rate.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
@@ -132,9 +132,9 @@
       ],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Retail buyers of a new 2024 FTR",
+      "eligibility": "All retail buyers",
       "combinable": "May be combined with promotional financing offers",
-      "finePrint": "Customer cash rebate toward a new model year 2024 FTR. Paid to dealer and not redeemable for cash.",
+      "finePrint": "$3,000 customer cash rebate on a new MY2024 FTR. Paid to dealer and not redeemable for cash.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
@@ -159,9 +159,9 @@
       ],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Retail buyers of a new qualifying model",
+      "eligibility": "All retail buyers",
       "combinable": "May be combined with valid Trade-In Credit offers, but may not be combined with promotional financing offers",
-      "finePrint": "Customer cash rebate toward a new 2025 qualifying model; excludes Elite, 125th Anniversary, Signature Series and Special Edition models. Paid to dealer and not redeemable for cash.",
+      "finePrint": "$2,000 customer cash rebate on new MY2025 qualifying models; excludes Elite, 125th Anniversary, Signature Series and Special Edition models. Paid to dealer and not redeemable for cash.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
@@ -180,9 +180,9 @@
       ],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Retail buyers of a new 2025 Chief",
+      "eligibility": "All retail buyers",
       "combinable": "May not be combined with promotional financing offers",
-      "finePrint": "Customer cash rebate toward a new model year 2025 Chief. Paid to dealer and not redeemable for cash.",
+      "finePrint": "$1,500 customer cash rebate on a new MY2025 Chief. Paid to dealer and not redeemable for cash.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
@@ -208,9 +208,9 @@
       ],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Retail buyers of a new qualifying model",
+      "eligibility": "Retail buyers of a new qualifying model with a trade-in",
       "combinable": "May be combined with valid customer cash offers, but may not be combined with promotional financing",
-      "finePrint": "Trade-in credit toward a new 2025 or 2026 qualifying model; excludes Elite, 125th Anniversary, Signature Series and Special Edition models. Limit one per vehicle purchase; paid to dealer and not redeemable for cash.",
+      "finePrint": "$1,500 Trade-In Credit toward a new MY2025 or MY2026 qualifying model; excludes Elite, 125th Anniversary, Signature Series and Special Edition models. Limit one per vehicle purchase; paid to dealer and not redeemable for cash.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
@@ -232,9 +232,9 @@
       ],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Retail buyers of a new qualifying 2025 Scout model",
+      "eligibility": "All retail buyers",
       "combinable": "May be combined with promotional financing offers",
-      "finePrint": "Customer cash rebate toward a new 2025 Scout Classic, Scout Sixty Classic, Sport Scout or Sport Scout Sixty; excludes Scout Sixty Bobber. Paid to dealer and not redeemable for cash.",
+      "finePrint": "$1,000 customer cash rebate on new MY2025 Scout Classic, Scout Sixty Classic, Sport Scout and Sport Scout Sixty; excludes Scout Sixty Bobber. Paid to dealer and not redeemable for cash.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
@@ -256,14 +256,14 @@
       ],
       "start": "2026-11-01",
       "end": "2026-11-30",
-      "eligibility": "Retail buyers of a new qualifying 2025 Scout model",
+      "eligibility": "All retail buyers",
       "combinable": "May be combined with promotional financing offers",
-      "finePrint": "Customer cash rebate toward a new 2025 Scout Bobber, Super Scout, 101 Scout or Scout Sixty Bobber Limited. Paid to dealer and not redeemable for cash.",
+      "finePrint": "$500 customer cash rebate on new MY2025 Scout Bobber, Super Scout, 101 Scout or Scout Sixty Bobber Limited. Paid to dealer and not redeemable for cash.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     },
     {
-      "id": "cf430a2f09d7",
-      "title": "Honoring Heroes Program: $1,000 in Accessories and Apparel and 1-Year IMR Elite Status",
+      "id": "05fcce961a26",
+      "title": "Honoring Heroes Program: $1,000 in accessories and apparel and 1-year IMR Elite Status",
       "type": "other",
       "amount": 1000,
       "apr": null,
@@ -278,7 +278,7 @@
       "end": "2026-11-30",
       "eligibility": "Active, reserve, National Guard and retired military personnel plus active and retired police and firefighter personnel, including volunteer firefighters and Border Patrol; verified via ID.me; excludes Puerto Rico residents",
       "combinable": "",
-      "finePrint": "Up to $1,000 MSRP in Indian Motorcycle parts, garments and/or accessories plus 1-year Rider Elite Status with purchase of a new, unregistered 2025 or 2026 Indian Motorcycle. One coupon per customer, non-transferable, not redeemable for cash or on IndianMotorcycle.com purchases.",
+      "finePrint": "Up to $1,000 MSRP in Indian Motorcycle parts, garments and/or accessories plus 1-year Indian Motorcycle Rider Elite Status with purchase of a new, unregistered 2025 or 2026 Indian Motorcycle. Limit one coupon per customer, non-transferable, not redeemable for cash and not valid on IndianMotorcycle.com purchases.",
       "sourceUrl": "https://www.indianmotorcycle.com/en-us/special-offers/"
     }
   ]
