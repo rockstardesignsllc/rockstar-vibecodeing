@@ -115,11 +115,21 @@ function badges(record: CallRecord): string[] {
 const liveCode = (record: CallRecord): PracticeCode | undefined =>
 	record.practice_code && Date.now() <= Date.parse(record.practice_code.expires_at) ? record.practice_code : undefined;
 
-/** How to practice this call with Rex, while its code works and a practice line is set. */
+/**
+ * The click-to-call box for Rex's practice line. A scored call with a live code gets the code to read out;
+ * an older call asks the rep to describe it; a practice call offers another round.
+ */
 function practiceThisCall(record: CallRecord, practiceLine: string): string {
+	if (!practiceLine) return '';
 	const code = liveCode(record);
-	if (!code || !practiceLine) return '';
-	return `<div style="margin:22px 0 0;padding:14px 16px;border:2px solid ${INK};border-radius:10px"><strong style="font-size:16px">Practice this call with Rex</strong><div style="margin:6px 0 0">Call Rex at <a href="tel:${esc(practiceLine)}" style="color:${INK};font-weight:700;white-space:nowrap">${esc(phoneText(practiceLine))}</a>, tell him you want to practice a specific call, and give him this code:</div><div style="margin:10px 0 0;font-size:28px;font-weight:800;letter-spacing:.08em">${esc(codeText(code.code))}</div><div style="margin:4px 0 0;color:${MUTED};font-size:13px">Good through ${esc(usDate(code.good_through))}. Rex plays the same customer so you can try the tune-ups again.</div></div>`;
+	const heading = isPractice(record) ? 'Want another round? Call Rex again' : 'Get instant coaching on how to improve this call';
+	const callButton = `<a href="tel:${esc(practiceLine)}" style="display:block;box-sizing:border-box;max-width:340px;margin:12px 0 0;padding:14px 16px;border-radius:8px;background:${INK};color:#ffffff;font-weight:800;text-decoration:none;font-size:16px;text-align:center">&#128222; Call Rex: <span style="white-space:nowrap">${esc(phoneText(practiceLine))}</span></a>`;
+	const how = code
+		? `<div style="margin:14px 0 0">Tell Rex you want to practice a specific call and give him this code:</div><div style="margin:8px 0 0;font-size:28px;font-weight:800;letter-spacing:.08em">${esc(codeText(code.code))}</div><div style="margin:4px 0 0;color:${MUTED};font-size:13px">Good through ${esc(usDate(code.good_through))}. Rex plays the same customer so you can try the tune-ups again.</div>`
+		: isPractice(record)
+			? `<div style="margin:12px 0 0;color:${MUTED};font-size:13px">Rex role-plays the customer, then coaches you. Each call takes about five minutes.</div>`
+			: `<div style="margin:12px 0 0;color:${MUTED};font-size:13px">Tell Rex what happened on this call and he'll play that customer, so you can try the tune-ups again.</div>`;
+	return `<div style="margin:22px 0 0;padding:16px 18px;border:2px solid ${INK};border-radius:10px"><strong style="font-size:17px">${esc(heading)}</strong><div>${callButton}</div>${how}</div>`;
 }
 
 /** On a practice call that replayed a real call: which of its tune-ups the Rep got right this time. */

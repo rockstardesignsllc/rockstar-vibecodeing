@@ -1,5 +1,9 @@
 # Rockstar AI Audit changelog
 
+## v1.21: Click-to-call Rex on every call page
+- The call page and coaching email box now reads "Get instant coaching on how to improve this call" with a big tap-to-call "Call Rex" button for the practice line, so reps never have to look up Rex's number.
+- Calls with a live practice code still show the code under the button. Older calls (no code, or past 7 days) show the button too, and ask the rep to tell Rex what happened. Practice calls show "Want another round? Call Rex again".
+
 ## v1.20: Practice a specific call with Rex (practice codes)
 - Every newly scored call gets a six-digit practice code, unique across all dealerships and good for 7 days. The coaching email and the call page show a "Practice this call with Rex" box with the practice line and the code; the dashboard shows the code next to the call while it works.
 - New `POST /coach/practice/lookup` for Rex's HighLevel custom action (Bearer `COACH_PRACTICE_KEY`). It returns what Rex needs to replay the call: scenario, what happened with the customer's name replaced by `[customer]`, what went well and the tune-ups. Bad, unclear or expired codes answer `found: false` with a message Rex can say. Spelled-out digits are understood.
