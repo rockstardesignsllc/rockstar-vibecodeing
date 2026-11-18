@@ -9,7 +9,7 @@ Paste the whole page into GHL once. After that, change the block here, bump its 
 `python3 pages-2027/build-blocks.py <site-assets folder>` and push the result to the `site-assets` branch. `rockstar-shared.js`
 swaps the newer block into the live page; the pasted copy stays for search engines and as the backup.
 
-Current blocks: `aifordealers/automotive-call-coaching` and `aiforpowersports/powersports-call-coaching` (the whole page between
+Current blocks: `aifordealers/call-coach-demo` and `aiforpowersports/call-coach-demo` (the hidden Rex demo pages, between nav and footer; the form script sits outside the block), `aifordealers/automotive-call-coaching` and `aiforpowersports/powersports-call-coaching` (the whole page between
 nav and footer), `aifordealers/ai-tools-call-coach`, `aiforpowersports/ai-tools-call-coach`, `rockstarinfo/solutions-call-coach`.
 
 New menu and footer links reach pages pasted before the link existed through `LINKS` in `rockstar-shared.js`, and new blocks reach them through `INSERTS` (placed after a named element), so a re-paste is only needed for search engines to see the new copy.
@@ -58,6 +58,7 @@ SEO for all 12 pages lives in `rockstarinfo/seo/rockstarinfo-seo.md`: the title,
 | 19-vs-dealership-accelerator.html | `rockstarai-vs-dealership-accelerator` |
 | 20-vs-matador.html | `rockstarai-vs-matador` |
 | 21-automotive-call-coaching.html | `automotive-call-coaching` |
+| 22-call-coach-demo.html | `call-coach-demo` (hidden: noindex, never linked from menus, footers or other pages) |
 
 SEO for the Compare AI pages (03 and 15 to 20) lives in `aifordealers/seo/`: `aifordealers-compare-seo.md` has the title, description, keywords and JSON-LD schema for each page, and `social-images/` has the matching 1200 x 630 social images. The home page title, description, keywords and social image are in `aifordealers-home-seo.md`.
 
@@ -89,6 +90,7 @@ Schema for all 21 pages is in `aifordealers/seo/aifordealers-schema.md`. Paste e
 | 18-rv.html | `rv` |
 | 19-multi-line.html | `multi-line` |
 | 20-powersports-call-coaching.html | `powersports-call-coaching` |
+| 21-call-coach-demo.html | `call-coach-demo` (hidden: noindex, never linked from menus, footers or other pages) |
 
 SEO for the Call Coach page is in `aiforpowersports/seo/aiforpowersports-seo.md`, with its social image in `aiforpowersports/seo/social-images/`.
 
