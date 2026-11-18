@@ -177,6 +177,36 @@ export interface PracticeHeard {
 	difficulty: string;
 	dealership_heard: string;
 	email_heard: string;
+	/** The six-digit practice code Rex looked up, digits only, or empty for general practice. */
+	code_heard: string;
+}
+
+/** How the Rep did on one tune-up from the real call, judged on the practice call. */
+export interface FixResult {
+	title: string;
+	fixed: boolean;
+	evidence: string;
+}
+
+/** The scored call a practice call was built from, by its practice code. */
+export interface PracticeSource {
+	code: string;
+	location_id: string;
+	call_id: string;
+	staff_name: string;
+	local_date: string;
+	percent: number;
+	/** Each tune-up from the real call and whether the Rep got it right on the practice call. */
+	fixes: FixResult[];
+}
+
+/** A scored call's practice code: Rex looks it up to role-play that call. */
+export interface PracticeCode {
+	code: string;
+	/** ISO time the code stops working. */
+	expires_at: string;
+	/** The dealership's local date of its last good day, YYYY-MM-DD, for "good through". */
+	good_through: string;
 }
 
 /** Set on a practice call with Rex. The staff member is the caller, and their managers may be at another dealership. */
@@ -191,6 +221,8 @@ export interface PracticeInfo {
 	dealer?: Pick<DealerConfig, 'location_id' | 'name' | 'view_key'>;
 	/** On a dealership's copy of a practice call: the sub-account that owns the practice line and holds the recording. */
 	host?: string;
+	/** The real call this practice call replayed, when the Rep gave Rex its practice code. */
+	source?: PracticeSource;
 }
 
 export type CallStatus = 'scored' | 'skipped' | 'error';
@@ -229,6 +261,8 @@ export interface CallRecord {
 	delivery: Delivery;
 	/** Only on a practice call with Rex. */
 	practice?: PracticeInfo;
+	/** On a scored call, the code a staff member gives Rex to practice it. Absent on calls scored before v1.20. */
+	practice_code?: PracticeCode;
 }
 
 export type Grade = 'green' | 'yellow' | 'red';

@@ -21,6 +21,8 @@ export interface Env {
 	COACH_APP_URL: string;
 	/** Comma separated phone numbers (E.164) answered by Rex, the practice call coach. Calls to them are scored as practice. */
 	COACH_PRACTICE_LINES?: string;
+	/** Bearer token Rex's HighLevel custom action sends to look up a practice code. Lookups are refused while it is unset. */
+	COACH_PRACTICE_KEY?: string;
 	ANTHROPIC_API_KEY: string;
 	/** Optional, for example a Cloudflare AI Gateway URL for request logs and cost tracking. */
 	ANTHROPIC_BASE_URL?: string;

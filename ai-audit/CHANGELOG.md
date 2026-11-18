@@ -1,5 +1,11 @@
 # Rockstar AI Audit changelog
 
+## v1.20: Practice a specific call with Rex (practice codes)
+- Every newly scored call gets a six-digit practice code, unique across all dealerships and good for 7 days. The coaching email and the call page show a "Practice this call with Rex" box with the practice line and the code; the dashboard shows the code next to the call while it works.
+- New `POST /coach/practice/lookup` for Rex's HighLevel custom action (Bearer `COACH_PRACTICE_KEY`). It returns what Rex needs to replay the call: scenario, what happened with the customer's name replaced by `[customer]`, what went well and the tune-ups. Bad, unclear or expired codes answer `found: false` with a message Rex can say. Spelled-out digits are understood.
+- Practice calls made with a code are scored as usual, then each tune-up from the real call is judged fixed or not yet. The practice page shows "Tune-ups from the real call: 2 of 3 fixed" and links to the real call; the email says how many were fixed. An unmatched caller is credited as the rep on the real call.
+- Rex prompt v1.4 (`docs/rex-practice-line/rex-agent-prompt.md`): "a specific call, or general practice?", code read-back, one retry, then general practice.
+
 ## v1.19: Rex demo page form
 - New `POST /coach-demo/leads` for the hidden Rex demo pages (aifordealers.com/call-coach-demo and aiforpowersports.com/call-coach-demo). The form sends name, dealership (both required), phone and email (optional).
 - The answer carries the Rex practice line from `COACH_PRACTICE_LINES`, so the number is never printed in the page source and can't be dialed without filling in the form. A filled hidden honeypot field or a submit under 2.5 seconds gets a polite answer with no number. Five tries per visitor per minute.
