@@ -580,3 +580,20 @@ dealership call coaching, ai call scoring for car dealers, automotive call monit
 | 19-vs-dealership-accelerator.html | RockstarAI vs Dealership Accelerator | `/rockstarai-vs-dealership-accelerator` |
 | 20-vs-matador.html | RockstarAI vs Matador | `/rockstarai-vs-matador` |
 | 21-automotive-call-coaching.html | RockstarAI Call Coach | `/automotive-call-coaching` |
+
+## 22. Rex Call Coach demo (HIDDEN): https://aifordealers.com/call-coach-demo
+
+**File:** `22-call-coach-demo.html`  
+**Social image:** `social-22-call-coach-demo.png`  
+**Schema:** none on purpose (hidden page). **No keywords.**  
+**Header Tracking Code:** `<meta name="robots" content="noindex, nofollow">`
+
+**Title**
+```
+Try Rex, the AI Call Coach for Dealerships | RockstarAI
+```
+
+**Description**
+```
+Call Rex, practice a sales, BDC or service call and get coached in minutes. Customized to your dealership's own scripts.
+```
