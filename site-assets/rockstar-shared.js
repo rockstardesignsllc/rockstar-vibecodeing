@@ -9,7 +9,7 @@
 (function () {
 	'use strict';
 
-	var VERSION = '1.4.0';
+	var VERSION = '1.5.0';
 	var BASE = 'https://assets.rockstarinfo.com';
 
 	/* Every shared button. label: the button text. href: where it goes. newTab: open in a new window. */
@@ -98,9 +98,17 @@
 	  The scrolling banner above the menu on a site's home page. text: what it says. href: where a click goes.
 	  Remove a site's line to take its banner down.
 	*/
+	/* Scrolling banner above the nav, per site and page path ('' is the home page). The text after the last ", " is underlined. */
+	var FREE_MONTH = { text: 'Book a quick call today to get a free month!', href: CTAS.booking.href };
 	var BANNERS = {
-		aifordealers: { text: "Tired of blowing appointments? Find out what you're missing on every call, click here", href: 'https://aifordealers.com/automotive-call-coaching' },
-		aiforpowersports: { text: "Tired of blowing appointments? Find out what you're missing on every call, click here", href: 'https://aiforpowersports.com/powersports-call-coaching' }
+		aifordealers: {
+			'': { text: "Tired of blowing appointments? Find out what you're missing on every call, click here", href: 'https://aifordealers.com/automotive-call-coaching' },
+			'/automotive-call-coaching': FREE_MONTH
+		},
+		aiforpowersports: {
+			'': { text: "Tired of blowing appointments? Find out what you're missing on every call, click here", href: 'https://aiforpowersports.com/powersports-call-coaching' },
+			'/powersports-call-coaching': FREE_MONTH
+		}
 	};
 	var BANNER_COPIES = 6;
 	var BANNER_CSS =
@@ -113,15 +121,15 @@
 		'@keyframes rs-ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}' +
 		'@media (prefers-reduced-motion:reduce){.rs-ticker__track{animation:none;width:auto;justify-content:center}.rs-ticker__item{white-space:normal;text-align:center}.rs-ticker__item+.rs-ticker__item{display:none}}';
 
-	function isHome() {
+	function pagePath() {
 		var path = location.pathname.replace(/\/+$/, '');
-		return path === '' || path === '/home';
+		return path === '/home' ? '' : path;
 	}
 
 	function applyBanner() {
-		var banner = BANNERS[pageSite()];
+		var banner = (BANNERS[pageSite()] || {})[pagePath()];
 		var nav = document.querySelector('[data-rs-part="nav"]');
-		if (!banner || !nav || !nav.parentNode || !isHome() || document.querySelector('[data-rs-banner]')) return;
+		if (!banner || !nav || !nav.parentNode || document.querySelector('[data-rs-banner]')) return;
 		var link = document.createElement('a');
 		link.className = 'rs-ticker';
 		link.href = banner.href;
