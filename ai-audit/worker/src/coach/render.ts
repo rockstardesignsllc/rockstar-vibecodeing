@@ -1,5 +1,6 @@
+import { codeText } from './practice';
 import { GRADE_COLORS, GRADE_LABELS, grade, leftOut, rubricFor } from './rubric';
-import { DEPARTMENT_LABELS, MOOD_LABELS, PRACTICE_LABELS, STAFF_DEPARTMENT_LABELS, TOPIC_LABELS, type CallRecord, type DealerConfig, type Grade, type StaffMember, type Topic } from './types';
+import { DEPARTMENT_LABELS, MOOD_LABELS, PRACTICE_LABELS, STAFF_DEPARTMENT_LABELS, TOPIC_LABELS, type CallRecord, type DealerConfig, type Grade, type PracticeCode, type StaffMember, type Topic } from './types';
 
 type Dealer = Pick<DealerConfig, 'location_id' | 'name' | 'view_key'>;
 
@@ -98,14 +99,52 @@ const spaced = (pills: string[]): string => pills.map(p => ` &nbsp;${p}`).join('
 function badges(record: CallRecord): string[] {
 	const topic = record.analysis?.topic;
 	const promised = followUps(record).length;
+	const code = liveCode(record);
 	return [
 		...(topic ? [pill(TOPIC_LABELS[topic], TOPIC_COLORS[topic])] : []),
 		...(showsAppointment(record) ? [pill(record.appointment_set ? 'Appointment set' : 'No appointment set', record.appointment_set ? GRADE_COLORS.green : GRADE_COLORS.red)] : []),
 		...(frustrated(record) ? [pill('Customer frustrated', GRADE_COLORS.red)] : []),
 		...((record.analysis?.red_flags.length ?? 0) > 0 ? [pill('Red flag', GRADE_COLORS.red)] : []),
-		...(promised ? [pill(`${promised} follow-up${promised === 1 ? '' : 's'} promised`, INK)] : [])
+		...(promised ? [pill(`${promised} follow-up${promised === 1 ? '' : 's'} promised`, INK)] : []),
+		...(record.practice?.source ? [pill('Replayed a real call', INK)] : []),
+		...(code ? [pill(`Practice code ${codeText(code.code)}`, MUTED)] : [])
 	];
 }
+
+/** The call's practice code while it still works. */
+const liveCode = (record: CallRecord): PracticeCode | undefined =>
+	record.practice_code && Date.now() <= Date.parse(record.practice_code.expires_at) ? record.practice_code : undefined;
+
+/** How to practice this call with Rex, while its code works and a practice line is set. */
+function practiceThisCall(record: CallRecord, practiceLine: string): string {
+	const code = liveCode(record);
+	if (!code || !practiceLine) return '';
+	return `<div style="margin:22px 0 0;padding:14px 16px;border:2px solid ${INK};border-radius:10px"><strong style="font-size:16px">Practice this call with Rex</strong><div style="margin:6px 0 0">Call Rex at <a href="tel:${esc(practiceLine)}" style="color:${INK};font-weight:700;white-space:nowrap">${esc(phoneText(practiceLine))}</a>, tell him you want to practice a specific call, and give him this code:</div><div style="margin:10px 0 0;font-size:28px;font-weight:800;letter-spacing:.08em">${esc(codeText(code.code))}</div><div style="margin:4px 0 0;color:${MUTED};font-size:13px">Good through ${esc(usDate(code.good_through))}. Rex plays the same customer so you can try the tune-ups again.</div></div>`;
+}
+
+/** On a practice call that replayed a real call: which of its tune-ups the Rep got right this time. */
+function replayBlock(record: CallRecord, base: string, dealer: Dealer): string {
+	const source = record.practice?.source;
+	if (!source) return '';
+	const fixed = source.fixes.filter(f => f.fixed).length;
+	const original = source.location_id === dealer.location_id ? ` <a href="${esc(callUrl(base, dealer, source.call_id))}" style="color:${INK};font-weight:600;white-space:nowrap">Open the real call</a>` : '';
+	const rows = source.fixes
+		.map(
+			f =>
+				`<li style="margin:0 0 10px;list-style:none"><strong style="color:${f.fixed ? GRADE_COLORS.green : GRADE_COLORS.red}">${f.fixed ? '&#10003; Fixed' : '&#10007; Not yet'}</strong> &nbsp;<strong>${esc(f.title)}</strong>${f.evidence ? `<div style="color:${MUTED};font-size:14px">${esc(f.evidence)}</div>` : ''}</li>`
+		)
+		.join('');
+	const intro = `<p style="margin:0">This practice replayed ${esc(source.staff_name)}'s call from ${esc(usDate(source.local_date))}, which scored ${source.percent}% (code ${esc(codeText(source.code))}).${original}</p>`;
+	return section(source.fixes.length ? `Tune-ups from the real call: ${fixed} of ${source.fixes.length} fixed` : 'Replayed a real call', INK, `${intro}${rows ? `<ul style="margin:12px 0 0;padding:0">${rows}</ul>` : ''}`);
+}
+
+/** One line for the practice email: how many of the real call's tune-ups were fixed. */
+const replayLine = (record: CallRecord): string => {
+	const source = record.practice?.source;
+	if (!source || source.fixes.length === 0) return '';
+	const fixed = source.fixes.filter(f => f.fixed).length;
+	return `<p style="margin:14px 0 0;font-weight:700">You fixed ${fixed} of ${source.fixes.length} tune-up${source.fixes.length === 1 ? '' : 's'} from your ${esc(usDate(source.local_date))} call.</p>`;
+};
 
 const followUpList = (record: CallRecord): string => `<ul style="margin:0;padding-left:20px">${followUps(record).map(f => `<li style="margin:0 0 6px">${esc(f)}</li>`).join('')}</ul>`;
 
@@ -164,17 +203,17 @@ export const highLevelUrl = (app: string, dealer: Dealer, record: CallRecord): s
 };
 
 /** The short "your call was scored" email. The coaching itself is on the page it links to. */
-export function coachingEmail(record: CallRecord, base: string, dealer: Dealer, completedAt: string): Email {
+export function coachingEmail(record: CallRecord, base: string, dealer: Dealer, completedAt: string, practiceLine: string): Email {
 	const first = record.staff_email ? record.staff_name.split(' ')[0] : '';
 	const who = [customerName(record), phoneText(record.customer_phone ?? '')].filter(Boolean).join(' ');
-	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${first ? `${esc(first)}, your` : 'The'} call with ${esc(customerName(record))} has been scored</h1><p style="margin:4px 0 0;color:${MUTED};font-size:14px">${esc(record.staff_name)}, ${esc(usDate(record.local_date))} at ${esc(record.local_time)}</p>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(record.analysis?.one_line_summary ?? '')}</p>${followUps(record).length ? `<p style="margin:16px 0 6px;font-weight:700">Promised follow-ups</p>${followUpList(record)}` : ''}<p style="margin:24px 0 0">View the call coaching score and summary here:</p><p style="margin:12px 0 0">${button(callUrl(base, dealer, record.id), 'Open the call coaching summary')}</p>`;
+	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${first ? `${esc(first)}, your` : 'The'} call with ${esc(customerName(record))} has been scored</h1><p style="margin:4px 0 0;color:${MUTED};font-size:14px">${esc(record.staff_name)}, ${esc(usDate(record.local_date))} at ${esc(record.local_time)}</p>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(record.analysis?.one_line_summary ?? '')}</p>${replayLine(record)}${followUps(record).length ? `<p style="margin:16px 0 6px;font-weight:700">Promised follow-ups</p>${followUpList(record)}` : ''}<p style="margin:24px 0 0">View the call coaching score and summary here:</p><p style="margin:12px 0 0">${button(callUrl(base, dealer, record.id), 'Open the call coaching summary')}</p>${practiceThisCall(record, practiceLine)}`;
 	const subject = record.practice
 		? `Practice Call Scoring for ${record.staff_name} (${PRACTICE_LABELS[record.practice.scenario]}) complete at ${completedAt}`
 		: `Call Scoring for ${who} complete at ${completedAt}`;
 	return { subject, html: shell('Call coaching', inner) };
 }
 
-export function callPage(record: CallRecord, base: string, dealer: Dealer, app: string): string {
+export function callPage(record: CallRecord, base: string, dealer: Dealer, app: string, practiceLine: string): string {
 	const a = record.analysis;
 	const byId = new Map((a?.items ?? []).map(item => [item.id, item]));
 	const scored = { department: record.department, appointment_set: record.appointment_set };
@@ -188,7 +227,7 @@ export function callPage(record: CallRecord, base: string, dealer: Dealer, app: 
 		})
 		.join('');
 	const inHighLevel = highLevelUrl(app, dealer, record);
-	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${esc(noteTitle(record))}</h1>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(a?.summary ?? '')}</p><audio controls preload="none" src="${esc(recordingUrl(base, dealer, record.id))}" style="width:100%;margin:18px 0 0"></audio>${inHighLevel ? `<p style="margin:16px 0 0">${button(inHighLevel, 'Open this call in Rockstar')}</p>` : ''}${coachingBlock(record)}${section('Scorecard', INK, `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px">${rows}<tr><td style="padding:10px 0;border-top:2px solid ${INK};font-weight:800">Total</td><td style="padding:10px 0;border-top:2px solid ${INK};text-align:right;font-weight:800">${record.earned} / ${record.possible}</td></tr></table>`)}<p style="margin:24px 0 0"><a href="${esc(dashboardUrl(base, dealer))}" style="color:${INK}">Back to all staff</a> &nbsp;|&nbsp; <a href="${esc(dashboardUrl(base, dealer, record.local_date))}" style="color:${INK}">All calls for ${esc(usDate(record.local_date))}</a></p>`;
+	const inner = `<p style="margin:0;font-size:13px;color:${MUTED}">${esc(dealer.name)} call coaching</p><h1 style="margin:4px 0 0;font-size:22px">${esc(noteTitle(record))}</h1>${scoreHeader(record)}<p style="margin:14px 0 0">${esc(a?.summary ?? '')}</p><audio controls preload="none" src="${esc(recordingUrl(base, dealer, record.id))}" style="width:100%;margin:18px 0 0"></audio>${inHighLevel ? `<p style="margin:16px 0 0">${button(inHighLevel, 'Open this call in Rockstar')}</p>` : ''}${practiceThisCall(record, practiceLine)}${replayBlock(record, base, dealer)}${coachingBlock(record)}${section('Scorecard', INK, `<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-size:14px">${rows}<tr><td style="padding:10px 0;border-top:2px solid ${INK};font-weight:800">Total</td><td style="padding:10px 0;border-top:2px solid ${INK};text-align:right;font-weight:800">${record.earned} / ${record.possible}</td></tr></table>`)}<p style="margin:24px 0 0"><a href="${esc(dashboardUrl(base, dealer))}" style="color:${INK}">Back to all staff</a> &nbsp;|&nbsp; <a href="${esc(dashboardUrl(base, dealer, record.local_date))}" style="color:${INK}">All calls for ${esc(usDate(record.local_date))}</a></p>`;
 	return shell(noteTitle(record), inner);
 }
 

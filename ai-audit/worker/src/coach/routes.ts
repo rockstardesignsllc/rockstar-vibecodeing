@@ -8,6 +8,7 @@
  *   GET  /coach/d/<location>?key=&date=        the manager dashboard for one day
  *   GET  /coach/d/<location>/call/<id>?key=    one call's full summary
  *   GET  /coach/d/<location>/rec/<id>?key=     that call's recording (a practice call's comes from the practice line's sub-account)
+ *   POST /coach/practice/lookup                Rex looks up a practice code mid-call   (Authorization: Bearer COACH_PRACTICE_KEY)
  * Each dealership lives in its own DealerCoach Durable Object, named by its HighLevel location id.
  */
 import Anthropic from '@anthropic-ai/sdk';
@@ -18,6 +19,7 @@ import type { CoachResult, DealerCoach, DealerStatus } from './dealer';
 import { DIRECTORY_NAME } from './directory';
 import { recording } from './ghl';
 import { callPage, dashboardPage, dashboardUrl, staffPage } from './render';
+import { PRACTICE_CODE_DAYS, practiceLines } from './practice';
 import { pdfToText } from './score';
 import { DEPARTMENTS, isInboundDepartment, isStaffDepartment, type DealerConfigInput, type Department, type InboundDepartment, type StaffMember } from './types';
 
@@ -205,7 +207,7 @@ async function handleDealerView(request: Request, env: Env, parts: string[], url
 	if (parts.length !== 3 || !MESSAGE_ID.test(id)) return notFound();
 	const call = await stub.call(key, id);
 	if (!call.ok) return notFound();
-	if (parts[1] === 'call') return html(200, callPage(call.value, base, access, env.COACH_APP_URL));
+	if (parts[1] === 'call') return html(200, callPage(call.value, base, access, env.COACH_APP_URL, practiceLines(env.COACH_PRACTICE_LINES)[0] ?? ''));
 	if (parts[1] === 'rec') {
 		const host = call.value.practice?.host;
 		const holder = host ? await dealer(env, host).practiceAccess(id, locationId) : access;
@@ -215,6 +217,62 @@ async function handleDealerView(request: Request, env: Env, parts: string[], url
 		return ranged(await audio.arrayBuffer(), audio.headers.get('content-type') ?? 'audio/x-wav', request.headers.get('range'));
 	}
 	return notFound();
+}
+
+const SPOKEN_DIGITS: Record<string, string> = { zero: '0', oh: '0', o: '0', one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9' };
+
+/** Digits in a value, with spelled-out digits ("four eight two") turned into numbers. */
+const digitsOf = (text: string): string =>
+	text
+		.toLowerCase()
+		.replace(/[a-z]+/g, word => SPOKEN_DIGITS[word] ?? ' ')
+		.replace(/\D/g, '');
+
+/** The practice code in a lookup body, wherever HighLevel puts it: six digits, spoken spacing removed. */
+function codeIn(value: unknown, depth = 0): string {
+	if (typeof value === 'string' || typeof value === 'number') {
+		const digits = digitsOf(String(value));
+		return digits.length === 6 ? digits : '';
+	}
+	if (depth > 4 || typeof value !== 'object' || value === null) return '';
+	const record = value as Record<string, unknown>;
+	if ('code' in record) {
+		const direct = codeIn(record.code, depth + 1);
+		if (direct) return direct;
+	}
+	for (const inner of Object.values(record)) {
+		const found = codeIn(inner, depth + 1);
+		if (found) return found;
+	}
+	return '';
+}
+
+const notUsable = (reason: 'not_found' | 'expired' | 'unclear', message: string): Response => json(200, { found: false, reason, message });
+
+/**
+ * Rex's mid-call lookup. Answers 200 with found false for a bad code, so the agent reads the message instead of
+ * treating it as a failed request.
+ */
+async function handlePracticeLookup(request: Request, env: Env): Promise<Response> {
+	if (request.method !== 'POST') return json(405, { error: 'method not allowed' });
+	if (!env.COACH_PRACTICE_KEY) return json(503, { error: 'practice lookups are not set up' });
+	const auth = request.headers.get('authorization') ?? '';
+	if (!sameText(auth.replace(/^Bearer\s+/i, ''), env.COACH_PRACTICE_KEY)) return json(401, { error: 'not authorized' });
+	if (!(await env.MESSAGE_LIMITER.limit({ key: 'practice-lookup' })).success) return json(429, { error: 'too many lookups, try again in a minute' });
+	const raw = (await request.text()).slice(0, 10_000);
+	let body: unknown = raw;
+	try {
+		body = JSON.parse(raw);
+	} catch {
+		// HighLevel may send the parameters form-encoded; the digits are read from the raw text.
+	}
+	const code = codeIn(body);
+	if (!code) return notUsable('unclear', 'Rex did not get six digits. Ask the caller to read the six-digit code again, one digit at a time.');
+	const entry = await env.COACH_DIRECTORY.get(env.COACH_DIRECTORY.idFromName(DIRECTORY_NAME)).findCode(code);
+	if (!entry) return notUsable('not_found', 'No call has that code. Read the digits back to check them; if they were right, offer general practice instead.');
+	if (Date.now() > entry.expires) return notUsable('expired', `That code has expired. Codes work for ${PRACTICE_CODE_DAYS} days after the call is scored. Offer general practice instead.`);
+	const brief = await dealer(env, entry.location_id).practiceBrief(entry.call_id, code);
+	return brief ? json(200, brief) : notUsable('not_found', 'That call is no longer available. Offer general practice instead.');
 }
 
 export async function handleCoach(request: Request, env: Env, parts: string[], url: URL): Promise<Response> {
@@ -227,5 +285,6 @@ export async function handleCoach(request: Request, env: Env, parts: string[], u
 		if (parts[0] === 'admin') return handleAdmin(request, env, parts.slice(1));
 	}
 	if (parts[0] === 'd') return handleDealerView(request, env, parts.slice(1), url);
+	if (parts.length === 2 && parts[0] === 'practice' && parts[1] === 'lookup') return handlePracticeLookup(request, env);
 	return json(404, { error: 'not found' });
 }

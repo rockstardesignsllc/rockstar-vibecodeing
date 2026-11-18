@@ -3,7 +3,7 @@ import { DurableObject } from 'cloudflare:workers';
 import type { Env } from '../types';
 import { DIRECTORY_NAME, type CoachDirectory } from './directory';
 import * as ghl from './ghl';
-import { practiceLines, scorePractice } from './practice';
+import { PRACTICE_CODE_DAYS, PRACTICE_CODE_GRACE_DAYS, checkFixes, practiceBrief, practiceLines, scorePractice, type PracticeBrief } from './practice';
 import { coachingEmail, digestEmail, noteBody, usDate } from './render';
 import { rosterMatch } from './roster';
 import { totals } from './rubric';
@@ -19,6 +19,7 @@ import {
 	type DealerConfigInput,
 	type Department,
 	type InboundDepartment,
+	type PracticeSource,
 	type PublicDealerConfig,
 	type StaffMember
 } from './types';
@@ -121,6 +122,15 @@ const attributed = (config: DealerConfig, record: CallRecord): CallRecord => {
 };
 
 const link = (config: DealerConfig): DealerLink => ({ location_id: config.location_id, name: config.name, view_key: config.view_key });
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** The real call a practice code points at, with who to credit when the practice caller is not matched. */
+export interface CodedCall {
+	record: CallRecord;
+	dealer: DealerLink;
+	managers: string[];
+}
 
 /** One dealership's Call Coach: its settings, every scored call, the poll that finds new calls, and the 7 AM digest. */
 export class DealerCoach extends DurableObject<Env> {
@@ -299,6 +309,34 @@ export class DealerCoach extends DurableObject<Env> {
 		return { token: config.token, location_id: config.location_id };
 	}
 
+	/** A scored call here, for a practice call that replays it by its code. */
+	async codedCall(id: string): Promise<CodedCall | null> {
+		const config = await this.config();
+		const record = this.stored(id);
+		if (!config || record?.status !== 'scored' || record.practice) return null;
+		return { record: attributed(config, record), dealer: link(config), managers: config.managers };
+	}
+
+	/** What Rex needs to replay a scored call here, or null when there is no such call. */
+	async practiceBrief(id: string, code: string): Promise<PracticeBrief | null> {
+		const coded = await this.codedCall(id);
+		const config = await this.config();
+		if (!coded || !config) return null;
+		return practiceBrief(coded.record, config.name, code, usDate(coded.record.local_date));
+	}
+
+	/** Gives a newly scored call its practice code. Scoring goes on without one if the code cannot be issued. */
+	private async givePracticeCode(config: DealerConfig, record: CallRecord): Promise<void> {
+		if (practiceLines(this.env.COACH_PRACTICE_LINES).length === 0) return;
+		const expires = Date.now() + PRACTICE_CODE_DAYS * DAY_MS;
+		try {
+			const code = await this.directory().issueCode(config.location_id, record.id, expires, expires + PRACTICE_CODE_GRACE_DAYS * DAY_MS);
+			record.practice_code = { code, expires_at: new Date(expires).toISOString(), good_through: this.localParts(config, new Date(expires)).date };
+		} catch (error) {
+			console.error(`call coach ${config.location_id} practice code ${record.id}: ${errorText(error)}`);
+		}
+	}
+
 	/**
 	 * Sends an email from this sub-account to one address, for Worker features that notify Rockstar staff. Returns false
 	 * when this sub-account is not set up for Call Coach.
@@ -322,7 +360,14 @@ export class DealerCoach extends DurableObject<Env> {
 			contact_id: '',
 			conversation_id: '',
 			delivery: { note_added: true, email_sent: true },
-			practice: { scenario: record.practice.scenario, difficulty: record.practice.difficulty, dealership: record.practice.dealership, managers: record.practice.managers, host }
+			practice: {
+				scenario: record.practice.scenario,
+				difficulty: record.practice.difficulty,
+				dealership: record.practice.dealership,
+				managers: record.practice.managers,
+				host,
+				...(record.practice.source ? { source: record.practice.source } : {})
+			}
 		});
 	}
 
@@ -467,17 +512,21 @@ export class DealerCoach extends DurableObject<Env> {
 	 * Fills in a practice call's record. The staff member is the caller: a user of a dealership set up for Call Coach
 	 * when one matches, else whoever the call's contact and the call itself say they are.
 	 */
-	private async practiceRecord(config: DealerConfig, call: CallMessage, record: CallRecord, analysis: CallAnalysis): Promise<void> {
+	private async practiceRecord(config: DealerConfig, call: CallMessage, record: CallRecord, analysis: CallAnalysis, transcript: string): Promise<void> {
 		const heard = analysis.practice;
 		if (!heard) return;
 		const contact = call.contactId ? await ghl.contact(config, call.contactId).catch(() => undefined) : undefined;
-		const caller = await this.findPracticeCaller(config, { phone: call.from ?? '', name: analysis.staff_name_heard, dealership: heard.dealership_heard });
+		const coded = await this.codedSource(config, heard.code_heard);
+		const matched = await this.findPracticeCaller(config, { phone: call.from ?? '', name: analysis.staff_name_heard, dealership: heard.dealership_heard || coded?.dealer.name || '' });
+		const caller: PracticeCaller | null =
+			matched ?? (coded ? { id: coded.record.user_id, name: coded.record.staff_name, email: coded.record.staff_email, managers: coded.managers, dealer: coded.dealer } : null);
 		const [heardFirst, ...heardLast] = analysis.staff_name_heard.split(' ');
 		const [callerFirst, ...callerLast] = (caller?.name ?? '').split(' ');
 		const first = callerFirst || contact?.first || heardFirst || '';
 		const last = caller ? callerLast.join(' ') : contact?.last || heardLast.join(' ');
 		const email = (caller?.email || contact?.email || (heard.email_heard.includes('@') ? heard.email_heard : '')).toLowerCase();
 		const dealership = caller?.dealer.name || heard.dealership_heard;
+		const source = coded ? await this.practiceSource(config, heard.code_heard, coded, transcript) : undefined;
 		record.user_id = caller?.id ?? '';
 		record.staff_name = [first, last].filter(Boolean).join(' ') || 'Practice caller';
 		record.staff_email = email;
@@ -488,7 +537,8 @@ export class DealerCoach extends DurableObject<Env> {
 			difficulty: heard.difficulty,
 			dealership,
 			managers: caller ? caller.managers : config.managers,
-			...(caller && caller.dealer.location_id !== config.location_id ? { dealer: caller.dealer } : {})
+			...(caller && caller.dealer.location_id !== config.location_id ? { dealer: caller.dealer } : {}),
+			...(source ? { source } : {})
 		};
 		if (contact && call.contactId) {
 			const fields = {
@@ -503,12 +553,43 @@ export class DealerCoach extends DurableObject<Env> {
 		}
 	}
 
+	/** The scored call a practice code points at, while the code is good (with a day's grace for scoring). */
+	private async codedSource(config: DealerConfig, code: string): Promise<CodedCall | null> {
+		if (!code) return null;
+		const entry = await this.directory().findCode(code);
+		if (!entry || Date.now() > entry.expires + PRACTICE_CODE_GRACE_DAYS * DAY_MS) return null;
+		if (entry.location_id === config.location_id) return this.codedCall(entry.call_id);
+		return this.env.DEALER_COACH.get(this.env.DEALER_COACH.idFromName(entry.location_id))
+			.codedCall(entry.call_id)
+			.catch(() => null);
+	}
+
+	/** The real call behind a practice call, with each of its tune-ups judged on the practice call. */
+	private async practiceSource(config: DealerConfig, code: string, coded: CodedCall, transcript: string): Promise<PracticeSource> {
+		const tuneUps = coded.record.analysis?.tune_ups ?? [];
+		const fixes = await checkFixes(this.client(), this.env.MODEL, transcript, tuneUps).catch(error => {
+			console.error(`call coach ${config.location_id} practice fixes for ${code}: ${errorText(error)}`);
+			return [];
+		});
+		return {
+			code,
+			location_id: coded.dealer.location_id,
+			call_id: coded.record.id,
+			staff_name: coded.record.staff_name,
+			local_date: coded.record.local_date,
+			percent: coded.record.percent,
+			fixes
+		};
+	}
+
 	/** Scores one call and delivers the results. Returns nothing when the transcript is not ready yet. */
 	private async process(config: DealerConfig, call: CallMessage, deliver: boolean, forced: boolean): Promise<CallRecord | undefined> {
 		const practice = !outbound(call) && Boolean(call.to) && practiceLines(this.env.COACH_PRACTICE_LINES).includes(call.to ?? '');
 		const known: Department | undefined = outbound(call) ? 'outbound' : ((call.to ? config.numbers[call.to] : undefined) ?? (call.userId ? config.users[call.userId] : undefined));
 		const record = this.blank(config, call, known ?? config.default_department);
-		record.delivery = this.stored(call.id)?.delivery ?? {};
+		const earlier = this.stored(call.id);
+		record.delivery = earlier?.delivery ?? {};
+		if (earlier?.practice_code) record.practice_code = earlier.practice_code;
 		const attemptsKey = ATTEMPTS_PREFIX + call.id;
 		try {
 			const transcript = transcriptText(await ghl.transcription(config, call.id), practice ? { ours: 'Rex', caller: 'Rep' } : undefined);
@@ -535,7 +616,7 @@ export class DealerCoach extends DurableObject<Env> {
 				return record;
 			}
 			if (practice) {
-				await this.practiceRecord(config, call, record, analysis);
+				await this.practiceRecord(config, call, record, analysis, transcript);
 			} else {
 				const customer = call.contactId ? await ghl.contact(config, call.contactId).catch(() => undefined) : undefined;
 				const staff = await this.staff(config, call, analysis.staff_name_heard, customer?.assigned_to ?? '');
@@ -554,6 +635,7 @@ export class DealerCoach extends DurableObject<Env> {
 			record.percent = total.percent;
 			record.appointment_set = analysis.appointment_set;
 			record.status = 'scored';
+			if (!practice && !record.practice_code) await this.givePracticeCode(config, record);
 			this.store(record);
 			await this.shareWithDealer(config, record);
 			if (deliver) await this.deliver(config, record);
@@ -635,7 +717,7 @@ export class DealerCoach extends DurableObject<Env> {
 				const [first, ...rest] = record.staff_email ? record.staff_name.split(' ') : [];
 				const contactId = await ghl.contactForEmail(config, to, first ?? '', rest.join(' '));
 				const now = this.localParts(config, new Date());
-				const email = coachingEmail(record, base, record.practice?.dealer ?? config, `${usDate(now.date)} ${now.time}`);
+				const email = coachingEmail(record, base, record.practice?.dealer ?? config, `${usDate(now.date)} ${now.time}`, practiceLines(this.env.COACH_PRACTICE_LINES)[0] ?? '');
 				await ghl.sendEmail(config, contactId, email.subject, email.html, managers.filter(m => m !== to.toLowerCase()));
 				record.delivery.email_sent = true;
 				this.store(record);
