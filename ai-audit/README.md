@@ -203,3 +203,11 @@ email, so each staff member and the first manager get a contact record there.
 ### Call Coach address
 Call Coach is served at `https://callcoach.rockstarai.app` (a custom domain on this Worker, set in `worker/wrangler.jsonc`; rockstarai.app is in the same Cloudflare account). `COACH_BASE_URL` is the address used in notes, emails and dashboard links. The workers.dev address still answers, so links sent before the change keep working.
 The setup page and admin API answer only on that address, and Cloudflare Access (Zero Trust, application `Call Coach setup`, policy `Rockstar Team`) asks for an allowed email before they load. Add a team member by adding their email to that policy. Local `wrangler dev` serves requests as that address, so setup works there unchanged.
+
+### Rex demo pages (aifordealers.com/call-coach-demo, aiforpowersports.com/call-coach-demo)
+
+Hidden pages (noindex, not linked from any menu, footer or page) where a dealer tries Rex, the practice line. The form
+posts to `POST /coach-demo/leads` (`worker/src/coachdemo.ts`); the answer carries the first number in
+`COACH_PRACTICE_LINES`, so the number never sits in the page source. The Worker then saves the contact in Rockstar
+Designs (tag `call coach demo started`) and emails mat@rockstarinfo.com. Page source: `pages-2027/aifordealers/22-call-coach-demo.html`
+and `pages-2027/aiforpowersports/21-call-coach-demo.html` on the `rockstar-2027-pages` branch.

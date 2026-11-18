@@ -1,5 +1,11 @@
 # Rockstar AI Audit changelog
 
+## v1.19: Rex demo page form
+- New `POST /coach-demo/leads` for the hidden Rex demo pages (aifordealers.com/call-coach-demo and aiforpowersports.com/call-coach-demo). The form sends name, dealership (both required), phone and email (optional).
+- The answer carries the Rex practice line from `COACH_PRACTICE_LINES`, so the number is never printed in the page source and can't be dialed without filling in the form. A filled hidden honeypot field or a submit under 2.5 seconds gets a polite answer with no number. Five tries per visitor per minute.
+- In the background: the contact is created or updated in Rockstar Designs (source "Rex Call Coach Demo", tags `call coach demo started` plus `call coach demo auto` or `call coach demo powersports`, and a note), and mat@rockstarinfo.com gets a "Rex demo started" email with a link to the contact. The email goes out through Rockstar Designs' Call Coach setup, falling back to the Worker's own HighLevel token.
+- `aiforpowersports.com` and `www.aiforpowersports.com` added to `ALLOWED_ORIGINS`.
+
 ## v1.18: Call Coach staff roles
 - Setup page v1.12: the staff dropdown also offers Service Writer, Sales Manager, Service Manager, GSM, GM and Owner. Like the departments, a role labels the person on the dashboard and does not change how their calls are scored.
 

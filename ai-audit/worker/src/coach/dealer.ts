@@ -299,6 +299,17 @@ export class DealerCoach extends DurableObject<Env> {
 		return { token: config.token, location_id: config.location_id };
 	}
 
+	/**
+	 * Sends an email from this sub-account to one address, for Worker features that notify Rockstar staff. Returns false
+	 * when this sub-account is not set up for Call Coach.
+	 */
+	async notify(to: string, subject: string, html: string): Promise<boolean> {
+		const config = await this.config();
+		if (!config?.token) return false;
+		await ghl.sendEmail(config, await ghl.contactForEmail(config, to, '', ''), subject, html, []);
+		return true;
+	}
+
 	/** Keeps this dealership's copy of a practice call one of its staff made on another sub-account's practice line. */
 	async addPractice(record: CallRecord, host: string): Promise<void> {
 		const config = await this.config();

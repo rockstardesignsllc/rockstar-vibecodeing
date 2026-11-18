@@ -12,10 +12,13 @@
  * Each demo lives in its own DemoSession Durable Object.
  *
  * Call Coach (call scoring and coaching for dealerships) lives under /coach, see coach/routes.ts.
+ *
+ * The hidden Rex demo pages post their form to POST /coach-demo/leads, see coachdemo.ts.
  */
 import { DealerCoach } from './coach/dealer';
 import { CoachDirectory } from './coach/directory';
 import { handleCoach } from './coach/routes';
+import { deliverLead, practiceNumber, readLead } from './coachdemo';
 import { demoEmbed } from './demo/embed';
 import { DemoSession, type DemoResult } from './demo/session';
 import { sameText } from './admin';
@@ -102,8 +105,25 @@ async function handleDemo(request: Request, env: Env, parts: string[], origin: s
 	return json(405, { error: 'method not allowed' }, origin);
 }
 
+/** The Rex demo page's form. The visitor gets the practice line at once; HighLevel and Mat's email follow in the background. */
+async function handleCoachDemo(request: Request, env: Env, ctx: ExecutionContext, parts: string[], origin: string | null): Promise<Response> {
+	if (parts.length !== 1 || parts[0] !== 'leads') return json(404, { error: 'not found' }, origin);
+	if (request.method !== 'POST') return json(405, { error: 'method not allowed' }, origin);
+	if (!origin) return json(403, { error: 'origin not allowed' }, null);
+	if (!(await env.START_LIMITER.limit({ key: `coach-demo:${clientKey(request)}` })).success) {
+		return json(429, { error: 'Too many tries. Please wait a minute and try again.' }, origin);
+	}
+	const parsed = await readLead(request);
+	if (!parsed.ok) return json(400, { error: parsed.error }, origin);
+	if (parsed.bot) return json(200, { ok: true, phone: null }, origin);
+	const number = practiceNumber(env);
+	if (!number) return json(503, { error: 'The practice line is being set up. Please try again later.' }, origin);
+	ctx.waitUntil(deliverLead(env, parsed.lead));
+	return json(200, { ok: true, phone: number.tel, display: number.display }, origin);
+}
+
 export default {
-	async fetch(request: Request, env: Env): Promise<Response> {
+	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const url = new URL(request.url);
 		const origin = allowedOrigin(env, request.headers.get('origin'));
 		const parts = url.pathname.split('/').filter(Boolean);
@@ -123,6 +143,7 @@ export default {
 		if (request.method === 'GET' && parts.length === 0) return json(200, { ok: true, service: 'rockstar-ai-audit' }, origin);
 		if (parts[0] === 'demo') return handleDemo(request, env, parts.slice(1), origin);
 		if (parts[0] === 'coach') return handleCoach(request, env, parts.slice(1), url);
+		if (parts[0] === 'coach-demo') return handleCoachDemo(request, env, ctx, parts.slice(1), origin);
 		if (parts[0] !== 'sessions') return json(404, { error: 'not found' }, origin);
 
 		if (parts.length === 1) {

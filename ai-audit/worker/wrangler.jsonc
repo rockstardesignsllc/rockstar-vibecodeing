@@ -30,8 +30,8 @@
 	// The BDC demo page is bundled as text and served by GET /demo/embed.js
 	"rules": [{ "type": "Text", "globs": ["**/*.html"], "fallthrough": true }],
 	"vars": {
-		// Comma separated origins allowed to run the audit and the BDC demo: the HighLevel page that holds the embed, and its preview domain
-		"ALLOWED_ORIGINS": "https://aiaudit.rockstarinfo.com,https://app.rockstarinfo.com,https://rockstarinfo.com,https://www.rockstarinfo.com,https://getrockstarai.com,https://www.getrockstarai.com,https://bdcdemo.aifordealers.com,https://aifordealers.com,https://www.aifordealers.com",
+		// Comma separated origins allowed to run the audit, the BDC demo and the Rex demo form: the HighLevel page that holds the embed, and its preview domain
+		"ALLOWED_ORIGINS": "https://aiaudit.rockstarinfo.com,https://app.rockstarinfo.com,https://rockstarinfo.com,https://www.rockstarinfo.com,https://getrockstarai.com,https://www.getrockstarai.com,https://bdcdemo.aifordealers.com,https://aifordealers.com,https://www.aifordealers.com,https://aiforpowersports.com,https://www.aiforpowersports.com",
 		"BOOKING_URL": "https://app.rockstarinfo.com/widget/bookings/rockstarai",
 		"HIGHLEVEL_LOCATION_ID": "hrsRmtnUmvqCKm3d01tx",
 		"MODEL": "claude-sonnet-5-5",
