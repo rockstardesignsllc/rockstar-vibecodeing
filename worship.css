@@ -1,0 +1,30 @@
+#cw-lyrics{--bg:#0b1220;--card:#111a2e;--line:#22304d;--gold:#d4af5a;--gold2:#f1d48b;--blue:#5b8fd6;--text:#eef2fa;--muted:#a9b4ca;--fs:1.55rem;
+  background:radial-gradient(1200px 600px at 50% -200px,#1b2b4d 0%,var(--bg) 60%);color:var(--text);
+  font-family:Montserrat,system-ui,sans-serif;padding:48px 16px 64px;line-height:1.5;box-sizing:border-box;width:100%}
+#cw-lyrics *{box-sizing:border-box}
+#cw-lyrics .cw-hero{max-width:760px;margin:0 auto 28px;text-align:center}
+#cw-lyrics .cw-kicker{color:var(--blue);letter-spacing:.28em;text-transform:uppercase;font-size:.9rem;font-weight:600}
+#cw-lyrics .cw-title{font-family:"Playfair Display",Georgia,serif;color:var(--gold2);font-size:clamp(2.3rem,7vw,3.4rem);margin:.25em 0 .1em;line-height:1.15}
+#cw-lyrics .cw-date{color:var(--muted);font-size:1.15rem}
+#cw-lyrics .cw-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:22px 0 14px}
+#cw-lyrics .cw-nav a{color:var(--text);text-decoration:none;border:1px solid var(--line);background:rgba(17,26,46,.7);
+  padding:10px 16px;border-radius:999px;font-size:1rem;transition:border-color .2s,color .2s}
+#cw-lyrics .cw-nav a:hover,#cw-lyrics .cw-nav a:focus{border-color:var(--gold);color:var(--gold2);outline:none}
+#cw-lyrics .cw-size{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.95rem}
+#cw-lyrics .cw-size button{background:transparent;color:var(--gold2);border:1px solid var(--line);border-radius:8px;
+  padding:8px 14px;font:600 1.05rem Montserrat,sans-serif;cursor:pointer}
+#cw-lyrics .cw-size button:hover{border-color:var(--gold)}
+#cw-lyrics main{max-width:760px;margin:0 auto}
+#cw-lyrics .cw-song{background:linear-gradient(180deg,rgba(17,26,46,.95),rgba(11,18,32,.95));border:1px solid var(--line);
+  border-top:3px solid var(--gold);border-radius:16px;padding:32px 22px 26px;margin:0 0 24px;text-align:center;scroll-margin-top:24px}
+#cw-lyrics .cw-song:nth-child(even){border-top-color:var(--blue)}
+#cw-lyrics .cw-song h2{font-family:"Playfair Display",Georgia,serif;color:var(--gold2);font-size:clamp(1.8rem,5.5vw,2.4rem);margin:0;line-height:1.2}
+#cw-lyrics .cw-artist{color:var(--blue);font-size:1rem;letter-spacing:.12em;text-transform:uppercase;margin:6px 0 22px}
+#cw-lyrics .cw-stanza{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;font-size:var(--fs);line-height:1.5;margin:0 0 1.1em;overflow-wrap:anywhere}
+#cw-lyrics .cw-stanza:last-child{margin-bottom:0}
+#cw-lyrics .cw-stanza span{display:block;margin-bottom:.15em}
+#cw-lyrics .cw-top{display:inline-block;margin-top:18px;color:var(--muted);font-size:.9rem;text-decoration:none;letter-spacing:.1em;text-transform:uppercase}
+#cw-lyrics .cw-top:hover{color:var(--gold2)}
+#cw-lyrics .cw-msg{text-align:center;color:var(--muted);font-style:italic;font-size:1.2rem;padding:40px 0}
+#cw-lyrics .cw-foot{text-align:center;color:var(--gold);font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:1.5rem;margin-top:12px}
+@media (min-width:700px){#cw-lyrics .cw-song{padding:40px 40px 30px}#cw-lyrics{--fs:1.85rem}}
