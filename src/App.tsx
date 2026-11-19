@@ -1,24 +1,5 @@
-import { Outlet } from 'react-router';
-import { AuthProvider } from './contexts/auth-context';
-import { AuthModalProvider } from './components/auth/AuthModalProvider';
-import { ThemeProvider } from './contexts/theme-context';
-import { Toaster } from './components/ui/sonner';
-import { AppLayout } from './components/layout/app-layout';
-import { ErrorBoundary } from './components/ErrorBoundary';
+// App.tsx is kept for backward compatibility.
+// The application entrypoint is now src/layouts/root-layout.tsx → src/layouts/app-shell.tsx
+// See src/routes.ts for the full route tree.
 
-export default function App() {
-  return (
-    <ErrorBoundary>
-      <ThemeProvider>
-        <AuthProvider>
-          <AuthModalProvider>
-            <AppLayout>
-              <Outlet />
-            </AppLayout>
-            <Toaster richColors position="top-right" />
-          </AuthModalProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  );
-}
+export { RootLayout as default } from './layouts/root-layout';
