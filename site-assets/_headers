@@ -1,0 +1,7 @@
+/*
+  Cache-Control: public, max-age=300
+  Access-Control-Allow-Origin: *
+
+# Block fragments are copies of page sections; keep them out of search so only the real pages rank
+/blocks/*
+  X-Robots-Tag: noindex
