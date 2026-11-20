@@ -9,7 +9,7 @@
 (function () {
 	'use strict';
 
-	var VERSION = '1.5.0';
+	var VERSION = '1.6.0';
 	var BASE = 'https://assets.rockstarinfo.com';
 
 	/* Every shared button. label: the button text. href: where it goes. newTab: open in a new window. */
@@ -30,13 +30,18 @@
 	/*
 	  Extra menu and footer links, added to pages that were pasted before the link existed.
 	  after: the existing link (end of its href) the new one goes right after. A page that already has the link is left alone.
+	  part: only add it to the "nav" or the "footer" (both when left out). newTab: open it in a new window.
 	*/
+	var BLOG = { href: 'https://rockstarinfo.com/blog', label: 'Rockstar Blog', after: '/contact', part: 'footer', newTab: true };
 	var LINKS = {
+		rockstarinfo: [BLOG],
 		aifordealers: [
-			{ href: 'https://aifordealers.com/automotive-call-coaching', label: 'RockstarAI Call Coach', after: '/rockstarai-reception' }
+			{ href: 'https://aifordealers.com/automotive-call-coaching', label: 'RockstarAI Call Coach', after: '/rockstarai-reception' },
+			BLOG
 		],
 		aiforpowersports: [
-			{ href: 'https://aiforpowersports.com/powersports-call-coaching', label: 'RockstarAI Call Coach', after: '/rockstarai-reception' }
+			{ href: 'https://aiforpowersports.com/powersports-call-coaching', label: 'RockstarAI Call Coach', after: '/rockstarai-reception' },
+			BLOG
 		]
 	};
 
@@ -60,12 +65,14 @@
 			if (!list) continue;
 			for (var j = 0; j < list.length; j++) {
 				var l = list[j];
+				if (l.part && l.part !== box.getAttribute('data-rs-part')) continue;
 				if (hasLink(box, l.href)) continue;
 				var ref = findAfter(box, l.after);
 				if (!ref) continue;
 				var a = document.createElement('a');
 				a.href = l.href;
 				a.textContent = l.label;
+				if (l.newTab) { a.target = '_blank'; a.rel = 'noopener'; }
 				if (ref.parentNode.tagName === 'LI') {
 					var li = document.createElement('li');
 					li.appendChild(a);
