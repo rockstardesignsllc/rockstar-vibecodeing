@@ -30,6 +30,8 @@ New menu and footer links reach pages pasted before the link existed through `LI
 | 10-disclaimer.html | `disclaimer` |
 | 11-cookie-compliance-policy.html | `cookie-compliance-policy` |
 | 12-isp.html | `isp` |
+| 13-blog-header.html | not pasted: menu for the HighLevel blog, served as block `rockstarinfo/blog-header` by `rockstar-blog.js` |
+| 14-blog-footer.html | not pasted: footer for the HighLevel blog, served as block `rockstarinfo/blog-footer` by `rockstar-blog.js` |
 
 SEO for all 12 pages lives in `rockstarinfo/seo/rockstarinfo-seo.md`: the title, description, keywords, social image and JSON-LD schema for each page. The social images are in `rockstarinfo/social-images/`.
 
