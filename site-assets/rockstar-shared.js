@@ -9,7 +9,7 @@
 (function () {
 	'use strict';
 
-	var VERSION = '1.6.0';
+	var VERSION = '1.7.0';
 	var BASE = 'https://assets.rockstarinfo.com';
 
 	/* Every shared button. label: the button text. href: where it goes. newTab: open in a new window. */
@@ -33,15 +33,18 @@
 	  part: only add it to the "nav" or the "footer" (both when left out). newTab: open it in a new window.
 	*/
 	var BLOG = { href: 'https://rockstarinfo.com/blog', label: 'Rockstar Blog', after: '/contact', part: 'footer', newTab: true };
+	var BLOG_NAV = { href: 'https://rockstarinfo.com/blog', label: 'Blog', after: '/contact', part: 'nav', newTab: true };
 	var LINKS = {
-		rockstarinfo: [BLOG],
+		rockstarinfo: [BLOG, { href: 'https://rockstarinfo.com/blog', label: 'Blog', after: '/contact', part: 'nav' }],
 		aifordealers: [
 			{ href: 'https://aifordealers.com/automotive-call-coaching', label: 'RockstarAI Call Coach', after: '/rockstarai-reception' },
-			BLOG
+			BLOG,
+			BLOG_NAV
 		],
 		aiforpowersports: [
 			{ href: 'https://aiforpowersports.com/powersports-call-coaching', label: 'RockstarAI Call Coach', after: '/rockstarai-reception' },
-			BLOG
+			BLOG,
+			BLOG_NAV
 		]
 	};
 
