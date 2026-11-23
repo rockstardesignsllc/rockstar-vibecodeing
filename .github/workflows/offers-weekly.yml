@@ -4,8 +4,11 @@
 name: Weekly rebate offers
 
 on:
-  schedule:
-    - cron: '0 11 * * 1'
+  # PAUSED 2026-11-23 at Mat's request: no automatic runs until Rockstar has paying clients, so the
+  # collector stops spending Anthropic API credit. It can still be run by hand from the Actions tab
+  # ("Run workflow"). To turn the Monday run back on, delete the "#" from the next two lines.
+  # schedule:
+  #   - cron: '0 11 * * 1'
   workflow_dispatch:
     inputs:
       brand:
