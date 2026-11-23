@@ -79,11 +79,55 @@ async function callsIn(dealer: Dealer, window: CallWindow, maxPages: number): Pr
 	return { calls, pages };
 }
 
+const CALL_TYPES = new Set(['TYPE_CALL', 'TYPE_IVR_CALL']);
+const CONVERSATION_PAGE = 100;
+const CONVERSATION_MESSAGES = 30;
+/** How far apart a conversation's last call time and the matching call's dateAdded may be, in ms. */
+const SAME_CALL_MS = 5000;
+
+/** The call messages of one conversation, newest first as HighLevel returns them. */
+async function conversationCalls(dealer: Dealer, conversationId: string): Promise<CallMessage[]> {
+	const query = new URLSearchParams({ limit: String(CONVERSATION_MESSAGES) });
+	const result = await request(dealer, 'GET', `/conversations/${encodeURIComponent(conversationId)}/messages?${query}`, CONVERSATIONS_VERSION);
+	const outer = isRecord(result) && isRecord(result.messages) ? result.messages : {};
+	const list = Array.isArray(outer.messages) ? outer.messages : [];
+	return list.filter(isCall).filter(m => CALL_TYPES.has(m.messageType ?? ''));
+}
+
+/**
+ * Calls the export list leaves out. HighLevel's export skips some conversations entirely (seen on the practice line,
+ * 2026-11-23), so the conversations whose last call falls in the window and has no match in the export are read directly.
+ */
+async function missedCalls(dealer: Dealer, window: CallWindow, exported: CallMessage[]): Promise<CallMessage[]> {
+	const query = new URLSearchParams({ locationId: dealer.location_id, sortBy: 'last_message_date', sort: 'desc', limit: String(CONVERSATION_PAGE) });
+	const result = await request(dealer, 'GET', `/conversations/search?${query}`, CONVERSATIONS_VERSION);
+	const conversations = isRecord(result) && Array.isArray(result.conversations) ? result.conversations.filter(isRecord) : [];
+	const missed: CallMessage[] = [];
+	for (const conversation of conversations) {
+		const id = str(conversation.id);
+		const lastCall = typeof conversation.lastCallTimestamp === 'number' ? conversation.lastCallTimestamp : 0;
+		if (!id || lastCall < window.start || lastCall > window.end) continue;
+		const covered = exported.some(call => call.conversationId === id && Math.abs(Date.parse(call.dateAdded) - lastCall) < SAME_CALL_MS);
+		if (covered) continue;
+		const known = new Set(exported.map(call => call.id));
+		for (const call of await conversationCalls(dealer, id)) {
+			const at = Date.parse(call.dateAdded);
+			if (at >= window.start && at <= window.end && !known.has(call.id)) missed.push({ ...call, locationId: call.locationId ?? dealer.location_id });
+		}
+	}
+	return missed;
+}
+
 /** The last day of call messages in the sub-account, newest first. */
 export async function recentCalls(dealer: Dealer): Promise<CallMessage[]> {
 	const now = Date.now();
-	const { calls } = await callsIn(dealer, { start: now - RECENT_DAYS * DAY_MS, end: now }, MAX_RECENT_PAGES);
-	return calls.sort((x, y) => Date.parse(y.dateAdded) - Date.parse(x.dateAdded));
+	const window = { start: now - RECENT_DAYS * DAY_MS, end: now };
+	const { calls } = await callsIn(dealer, window, MAX_RECENT_PAGES);
+	const missed = await missedCalls(dealer, window, calls).catch(error => {
+		console.error(`call coach ${dealer.location_id} conversation sweep: ${error instanceof Error ? error.message : String(error)}`);
+		return [];
+	});
+	return [...calls, ...missed].sort((x, y) => Date.parse(y.dateAdded) - Date.parse(x.dateAdded));
 }
 
 /**
@@ -113,7 +157,8 @@ const bestOf = (calls: CallMessage[]): CallMessage | undefined => {
 /**
  * Finds one call by its message id, or the best call of a conversation by the conversation id, by reading the
  * sub-account's calls from the newest days backward. HighLevel refuses the single-message read to Private Integration
- * tokens, so the export list is the only way to reach a call without its contact.
+ * tokens, so a call the export leaves out is looked for in its conversation (for a conversation id) or among the
+ * last day's conversations (for a message id).
  */
 export async function findCall(dealer: Dealer, id: string): Promise<CallSearch> {
 	const search: CallSearch = { looked_at: 0, newest: '', oldest: '' };
@@ -134,7 +179,11 @@ export async function findCall(dealer: Dealer, id: string): Promise<CallSearch> 
 		const call = calls.find(c => c.id === id) ?? bestOf(calls.filter(c => c.conversationId === id));
 		if (call) return { ...search, call };
 	}
-	return search;
+	const direct = await conversationCalls(dealer, id).catch(() => []);
+	const fallback = bestOf(direct);
+	if (fallback) return { ...search, looked_at: search.looked_at + direct.length, call: { ...fallback, locationId: fallback.locationId ?? dealer.location_id } };
+	const recent = (await recentCalls(dealer).catch(() => [])).find(c => c.id === id);
+	return recent ? { ...search, call: recent } : search;
 }
 
 const sentences = (result: unknown): TranscriptSentence[] => {

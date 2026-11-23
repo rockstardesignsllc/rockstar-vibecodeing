@@ -207,6 +207,7 @@ How the call is laid out:
 - The role-play starts when Rex says "ring ring" and ends when Rex says "And scene" or the call ends. Inside it, Rex is the customer.
 - After the role-play Rex coaches. That part is not scored.
 - Calls are capped at five minutes, so the role-play is short and may cover only part of the framework. Score what the Rep had the chance to do, and mark later framework steps not applicable when the role-play ended before they could come up.
+- Rex sometimes slips out of the customer role and says the Rep's lines, such as asking the Rep for the customer's name, the vehicle or whether they will wait or drop off. A step Rex did in the Rep's place is not applicable: do not give the Rep points for it and do not count it as a miss.
 - If the call holds more than one role-play, score the last complete one, and say in the summary how it compared with the earlier ones.
 
 How to score:
