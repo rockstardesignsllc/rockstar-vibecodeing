@@ -104,6 +104,7 @@ export interface CallMessage {
 	conversationId?: string;
 	userId?: string;
 	dateAdded: string;
+	messageType?: string;
 	from?: string;
 	to?: string;
 	meta?: { call?: { duration?: number; status?: string } };

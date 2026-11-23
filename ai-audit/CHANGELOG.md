@@ -1,5 +1,10 @@
 # Rockstar AI Audit changelog
 
+## v1.22: Practice calls HighLevel's call list misses; Rex stays the customer
+- HighLevel's message export leaves some conversations out entirely, so a practice call on Rex's line (2026-11-23, from a tester who said "Jones Ford") was never seen, never scored and never emailed. Each check now also reads the newest conversations: any conversation whose last call in the past day has no match in the export has its calls read directly. The test box finds such calls too.
+- Practice scoring: a step Rex did in the Rep's place (when Rex slipped out of the customer role) is not applicable, neither credit nor a miss.
+- Rex prompt v1.5 (`docs/rex-practice-line/rex-agent-prompt.md`): a "who is who" section up top, a per-line check during the role-play with the questions a customer never asks, no filling in steps the rep skips, a recovery line when the rep says Rex slipped, frameworks labeled as the rep's lines only, a final reminder at the end, and the scorecard email spelled back letter by letter.
+
 ## v1.21: Click-to-call Rex on every call page
 - The call page and coaching email box now reads "Get instant coaching on how to improve this call" with a big tap-to-call "Call Rex" button for the practice line, so reps never have to look up Rex's number.
 - Calls with a live practice code still show the code under the button. Older calls (no code, or past 7 days) show the button too, and ask the rep to tell Rex what happened. Practice calls show "Want another round? Call Rex again".
