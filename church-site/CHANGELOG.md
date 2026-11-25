@@ -3,6 +3,9 @@
 The current version and date are also stamped at the top of every built page in
 `dist/` and at the top of `styles.css`.
 
+## v1.5 — 2026-11-25
+- Home page: updated the weekly message video.
+
 ## v1.4 — 2026-11-16
 - Home page: updated the weekly message video.
 
