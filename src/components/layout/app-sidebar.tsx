@@ -228,7 +228,7 @@ export function AppSidebar() {
 															: 'justify-start bg-accent',
 													)}
 													onClick={() =>
-														navigate('/')
+														navigate('/create')
 													}
 												>
 													<Plus className="h-4 w-4 text-neutral-50" />
